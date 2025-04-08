@@ -41,7 +41,7 @@ digit-solution-framework/
 ## 📄 Documentation
 
 - 📐 [Design Document](https://docs.google.com/document/d/13LR7TQMsIg0nD5-Wdl4kj1r3kYjzLyKD0FVzvJkkR3s/edit?tab=t.0#heading=h.gfwh8242orfp)  
-- 📑 [API & Service Specification](./design/generic-service.yaml)  
+- 📑 [API & Service Specification](https://editor.swagger.io/?url=https://raw.githubusercontent.com/egovernments/DIGIT-Studio/refs/heads/master/design/generic-service.yaml)  
 - ⚙️ [Sample Service Configuration](./design/serviceConfig.json)
 
 ---
@@ -74,10 +74,3 @@ For any questions or support, reach out to the core team
 
 ## 🛡️ License
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-
-
-
-
-
-
