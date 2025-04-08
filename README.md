@@ -21,8 +21,9 @@ The **Digit Solution Framework** addresses these challenges by offering:
 ---
 
 ## 🧱 Repository Structure
+```
 digit-solution-framework/
-├── docs/
+├── design/
 │   ├── design.md             # Architecture & Design Overview
 │   ├── serviceConfig.json    #  Example of a Configurable Service
 │   └── generic-service.yaml   # Service Specifications
@@ -34,14 +35,14 @@ digit-solution-framework/
 │   ├── application-service/      # Dynamic UI components
 │   └── transformer/   # Admin & control center
 ├── README.md
-
+```
 ---
 
 ## 📄 Documentation
 
-- 📐 [Design Document](./docs/design.md)  
-- 📑 [API & Service Specification](./docs/spec.md)  
-- ⚙️ [Sample Service Configuration](./docs/service-config.yaml)
+- 📐 [Design Document](https://docs.google.com/document/d/13LR7TQMsIg0nD5-Wdl4kj1r3kYjzLyKD0FVzvJkkR3s/edit?tab=t.0#heading=h.gfwh8242orfp)  
+- 📑 [API & Service Specification](./design/generic-service.yaml)  
+- ⚙️ [Sample Service Configuration](./design/serviceConfig.json)
 
 ---
 
