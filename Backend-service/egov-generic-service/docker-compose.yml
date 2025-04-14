@@ -1,0 +1,25 @@
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: egov-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: egov_generic_db
+    ports:
+      - "5432:5432"
+
+  egov-generic-service:
+    build: .
+    container_name: egov-generic-service
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: egov_generic_db
+    depends_on:
+      - postgres
