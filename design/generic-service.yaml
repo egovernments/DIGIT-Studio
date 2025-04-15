@@ -511,7 +511,7 @@ components:
       properties:
         tenantId:
           description: Tenant Identifier
-          example: pg.citya
+          example: pg
           type: string
           minLength: 2
           maxLength: 64
@@ -751,7 +751,7 @@ components:
       properties:
         tenantId:
           description: Tenant Identifier
-          example: pg.citya
+          example: pg
           type: string
           minLength: 2
           maxLength: 64
