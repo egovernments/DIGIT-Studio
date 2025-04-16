@@ -28,14 +28,14 @@ paths:
           in: query
           description: businessService
           required: false
-          example: NewTL
+          example: newtl
           schema:
             maxLength: 256
             type: string
             format: varchar
         - name: module
           in: query
-          example: Tradelicence
+          example: tradelicence
           description: campaign for which resource has to be generated
           required: false
           schema:
@@ -165,14 +165,14 @@ paths:
         - name: businessService
           in: query
           description: Search application by business service
-          example: NEWTL
+          example: newtl
           required: false
           schema:
             type: string
         - name: module
           in: query
           description: Search application by module
-          example: Tradelicence
+          example: tradelicence
           required: false
           schema:
             type: string
@@ -282,10 +282,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApplicationSearchRequest'
+              $ref: '#/components/schemas/ApplicationRequest'
       responses:
-        '200':
-          description: Return search results
+        '202':
+          description: Return updated Application
           content:
             '*/*':
               schema:
@@ -373,7 +373,7 @@ components:
           example: tradelicence
         businessService:
           description: captures the businessService information to be used in workflow service like NEWTL / RENEWTL NEWPROPERTY etc
-          example: NEWTL
+          example: newtl
           type: string
           minLength: 2
           maxLength: 64
@@ -468,7 +468,7 @@ components:
           description: all the enabled service like tradelicence / propertytax etc
           minLength: 2
           maxLength: 64
-          example: newTL
+          example: newtl
         module:
           type: string
           description: all the enabled service like tradelicence / propertytax etc
@@ -500,7 +500,7 @@ components:
         RequestInfo:
           $ref: >-
                 https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/RequestInfo
-        Application:
+        PublicService:
           $ref: '#/components/schemas/Application'
         Workflow:
           $ref: >-
@@ -512,7 +512,7 @@ components:
         ResponseInfo:
           $ref: >-
                 https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ResponseInfo
-        Applications:
+        PublicServices:
           type: array
           items:
             $ref: '#/components/schemas/Application'
@@ -535,7 +535,7 @@ components:
             example: 'c453edf5-0b89-4040-8f34-b8fbdfac1b2e'
         businessService:
           description: Search bill by business service
-          example: NEWTL
+          example: newtl
           type: string
           minLength: 2
           maxLength: 64
