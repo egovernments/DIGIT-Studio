@@ -1,28 +1,29 @@
 openapi: 3.0.3
 info:
-  title: Generic Service API
+  title: Generic Public Service API
   description: |
-    This API allows interaction with the Generic Service system.
+    This API allows interaction with the Public Service system.
 
     **Author:** Jagankumar E  
-    This spec was created for solving generic service gets created based on the config and using DIGIT 2.9 core services and provides users an application capability with workflows.
+    This spec was created for solving public service gets created based on the config and using DIGIT 2.9 core services and provides users an application capability with workflows.
   version: 1.0.0
   contact:
     name: Jagankumar E
     email: jagan.kumar@egovernments.org
     
 paths:
-  /generic-service/v1/service/{tenantId}:
+  /public-service/v1/service:
     get:
       tags:
-        - Generic Service - Service Handler
+        - Public Service - Service Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
-          example: pg
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: businessService
           in: query
           description: businessService
@@ -66,13 +67,15 @@ paths:
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
     post:
       tags:
-        - Generic Service - Service Handler
+        - Public Service - Service Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
       requestBody:
         content:
           application/json:
@@ -93,16 +96,18 @@ paths:
                 $ref: >-
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
   
-  /generic-service/v1/service/{tenantId}/{serviceCode}:
+  /public-service/v1/service/{serviceCode}:
     put:
       tags:
-        - Generic Service - Service Handler
+        - Public Service - Service Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: serviceCode
           description: unique serviceCode of the service
           in: path
@@ -129,17 +134,18 @@ paths:
                 $ref: >-
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
 
-  /generic-service/v1/application/{tenantId}/{serviceCode}:
+  /public-service/v1/application/{serviceCode}:
     get:
       tags:
-        - Generic Service - Application Handler
+        - Public Service - Application Handler
       parameters:
-        - name: tenantId
-          in: path
-          example: pg
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: serviceCode
           description: unique serviceCode of the service
           in: path
@@ -196,7 +202,7 @@ paths:
           schema:
             type: string
       responses:
-        '202':
+        '200':
           description: Accepted account updation request.
           content:
             '*/*':
@@ -211,13 +217,15 @@ paths:
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
     post:
       tags:
-        - Generic Service - Application Handler
+        - Public Service - Application Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: serviceCode
           description: unique serviceCode of the service
           in: path
@@ -244,16 +252,18 @@ paths:
                 $ref: >-
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
     
-  /generic-service/v1/application/{tenantId}/{serviceCode}/{applicationId}:
+  /public-service/v1/application/{serviceCode}/{applicationId}:
     put:
       tags:
-        - Generic Service - Application Handler
+        - Public Service - Application Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: serviceCode
           description: unique serviceCode of the service
           in: path
@@ -288,16 +298,18 @@ paths:
                 $ref: >-
                   https://raw.githubusercontent.com/egovernments/DIGIT-OSS/master/core-services/docs/common-contract_v1-1.yml#/components/schemas/ErrorRes
   
-  /generic-service/v1/form/{tenantId}/{serviceCode}:
+  /public-service/v1/form/{serviceCode}:
     get:
       tags:
-        - Generic Service - Form Handler
+        - Public Service - Form Handler
       parameters:
-        - name: tenantId
-          in: path
+        - name: X-Tenant-Id
+          in: header
           required: true
           schema:
             type: string
+          example: pg
+          description: allowed TenantId 
         - name: serviceCode
           description: unique serviceCode of the service
           in: path
@@ -305,7 +317,7 @@ paths:
           schema:
             type: string
       responses:
-        '202':
+        '200':
           description: Accepted account registration request.
           content:
             '*/*':
