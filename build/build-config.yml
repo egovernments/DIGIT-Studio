@@ -18,18 +18,18 @@
 # -
 config:
   # Business Services
-  - name: "builds/Backend-service/egov-generic-service/"
+  - name: "builds/DIGIT-Studio/studio-services/generic-service/"
     build:
-      - work-dir: "Backend-service/egov-generic-service"
-        image-name: "egov-generic-service"
+      - work-dir: "studio-services/generic-service"
+        image-name: "generic-service"
         dockerfile: "build/maven/Dockerfile"
-      - work-dir: "Backend-service/egov-generic-service/script"
-        image-name: "egov-generic-service-db"
+      - work-dir: "studio-services/generic-service/script"
+        image-name: "generic-service-db"
 
-  - name: "builds/Backend-service/Application-Service"
+  - name: "builds/DIGIT-Studio/studio-services/application-service"
     build:
-      - work-dir: "Backend-service/Application-Service"
-        image-name: "Application-Service"
+      - work-dir: "studio-services/application-service"
+        image-name: "application-service"
         dockerfile: "build/maven/Dockerfile"
-      - work-dir: "business-services/Application-Service/script"
-        image-name: "Application-Service-db"
+      - work-dir: "studio-services/application-service/script"
+        image-name: "application-service-db"
