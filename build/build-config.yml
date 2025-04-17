@@ -1,0 +1,35 @@
+#
+# config:
+# -   name: < Name of the job, foo/bar would create job named bar inside folder foo >
+#     build:
+#     - work-dir: < Working directory of the app to be built >
+#       dockerfile: < Path to the dockerfile, optional, assumes dockerfile in working directory if not provided >
+#       image-name: < Docker image name  >
+# -
+# -
+#
+# config:
+# -   name: < Name of the job, foo/bar would create job named bar inside folder foo >
+#     build:
+#     - work-dir: < Working directory of the app to be built >
+#       dockerfile: < Path to the dockerfile, optional, assumes dockerfile in working directory if not provided >
+#       image-name: < Docker image name  >
+# -
+# -
+config:
+  # Business Services
+  - name: "builds/Backend-service/egov-generic-service/"
+    build:
+      - work-dir: "Backend-service/egov-generic-service"
+        image-name: "egov-generic-service"
+        dockerfile: "build/maven/Dockerfile"
+      - work-dir: "Backend-service/egov-generic-service/script"
+        image-name: "egov-generic-service-db"
+
+  - name: "builds/Backend-service/Application-Service"
+    build:
+      - work-dir: "Backend-service/Application-Service"
+        image-name: "Application-Service"
+        dockerfile: "build/maven/Dockerfile"
+      - work-dir: "business-services/Application-Service/script"
+        image-name: "Application-Service-db"
