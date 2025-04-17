@@ -18,7 +18,7 @@
 # -
 config:
   # Business Services
-  - name: "builds/DIGIT-Studio/studio-services/generic-service/"
+  - name: "builds/DIGIT-Studio/studio-services/generic-service"
     build:
       - work-dir: "studio-services/generic-service"
         image-name: "generic-service"
