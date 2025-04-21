@@ -11,11 +11,15 @@ import (
 )
 
 type PublicController struct {
-	service *service.PublicService
+	service         *service.PublicService
+	workflowService *service.WorkflowService
 }
 
-func NewServiceController(service *service.PublicService) *PublicController {
-	return &PublicController{service: service}
+func NewServiceController(service *service.PublicService, workflowService *service.WorkflowService) *PublicController {
+	return &PublicController{
+		service:         service,
+		workflowService: workflowService,
+	}
 }
 
 func (c *PublicController) CreateServiceHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +45,17 @@ func (c *PublicController) CreateServiceHandler(w http.ResponseWriter, r *http.R
 		http.Error(w, "Failed to create service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	_ = service.NewWorkflowService()
+	if workflowReq, ok := model.BuildWorkflowRequestFromService(req); ok {
+		resp, err := c.workflowService.CreateBusinessService(ctx, *workflowReq)
+		if err != nil {
+			log.Printf("Workflow call failed: %v", err)
+		} else {
+			log.Printf("Workflow call success: %s", resp.Status)
+			defer resp.Body.Close()
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }

@@ -28,10 +28,11 @@ func main() {
 	// Initialize services
 	appSvc := service.NewApplicationService(appRepo)
 	serviceSvc := service.NewPublicService(publicRepo)
+	workflowSvc := service.NewWorkflowService()
 
 	// Initialize controllers
 	appCtrl := controller.NewApplicationController(appSvc)
-	serviceCtrl := controller.NewServiceController(serviceSvc)
+	serviceCtrl := controller.NewServiceController(serviceSvc, workflowSvc)
 
 	// Setup router
 	router := mux.NewRouter()
