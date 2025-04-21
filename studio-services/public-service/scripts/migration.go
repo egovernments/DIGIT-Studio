@@ -37,7 +37,7 @@ func RunMigrations() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	migrationsDir := filepath.Join(wd, "scripts/migration")
+	migrationsDir := filepath.Join(wd, "scripts/migration/sql")
 
 	files, err := ioutil.ReadDir(migrationsDir)
 	if err != nil {

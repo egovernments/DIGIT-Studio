@@ -17,8 +17,11 @@ func main() {
 	// Load env and initialize common stuff
 	config.LoadEnv()
 	utils.InitLogger()
-	repository.InitDB()
-	db.RunMigrations()
+
+	if os.Getenv("FLYWAY_ENABLED") == "true" {
+		repository.InitDB()
+		db.RunMigrations()
+	}
 
 	// Initialize repositories
 	dbConn := repository.GetDB()
