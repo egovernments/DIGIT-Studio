@@ -6,7 +6,7 @@
   "module": "dist/index.modern.js",
   "source": "src/index.js",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "homepage": "https://unified-dev.digit.org/storybook/",
   "author": "Jagankumar <jagan.kumar@egov.org.in>",
@@ -66,7 +66,8 @@
     "react-drag-drop-files": "2.3.10",
     "@cyntler/react-doc-viewer": "1.10.3",
     "react-webcam":"7.2.0",
-    "react-lottie":"1.2.4"
+    "react-lottie":"1.2.4",
+    "styled-components":"5.0.0"
   },
   "browserslist": {
     "production": [
