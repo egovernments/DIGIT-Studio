@@ -43,7 +43,7 @@ export const serviceConfig = {
             "type": "string",
             "reference": "mdms",
             "required": false,
-            "schema": "common-masters.StructureType" 
+            "schema": "Tradelicence.StructureType" 
           },
           {
             "name": "tradeStructureSubType",
