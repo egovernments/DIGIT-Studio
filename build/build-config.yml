@@ -18,18 +18,16 @@
 # -
 config:
   # Business Services
-  - name: "builds/DIGIT-Studio/studio-services/generic-service"
+  - name: "builds/DIGIT-Studio/studio-services/public-service"
     build:
-      - work-dir: "studio-services/generic-service"
-        image-name: "generic-service"
+      - work-dir: "studio-services/public-service"
+        image-name: "public-service"
         dockerfile: "build/maven/Dockerfile"
-      - work-dir: "studio-services/generic-service/script"
-        image-name: "generic-service-db"
-
-  - name: "builds/DIGIT-Studio/studio-services/application-service"
+      - work-dir: "studio-services/public-service/scripts/migration"
+        image-name: "public-service-db"
+        
+  - name: "builds/DIGIT-Studio/studio-ui/digit-studio"
     build:
-      - work-dir: "studio-services/application-service"
-        image-name: "application-service"
-        dockerfile: "build/maven/Dockerfile"
-      - work-dir: "studio-services/application-service/script"
-        image-name: "application-service-db"
+      - work-dir: "micro-ui/"
+        dockerfile: "micro-ui/web/Dockerfile"
+        image-name: "digit-studio"

@@ -1,4 +1,4 @@
-# 🏛️ Digit Solution Framework
+# 🏛️ Digit Studio
 
 A unified, configurable architecture to streamline service development and UI integration for government and urban governance projects. This framework enables teams to build scalable, reusable, and maintainable digital solutions by consolidating common services, UIs, and configurations.
 
