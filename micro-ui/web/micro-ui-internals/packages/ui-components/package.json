@@ -6,7 +6,7 @@
   "module": "dist/index.modern.js",
   "source": "src/index.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=14"
   },
   "homepage": "https://unified-dev.digit.org/storybook/",
   "author": "Jagankumar <jagan.kumar@egov.org.in>",
