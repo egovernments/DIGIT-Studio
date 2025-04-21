@@ -33,3 +33,9 @@ config:
         dockerfile: "build/maven/Dockerfile"
       - work-dir: "studio-services/application-service/script"
         image-name: "application-service-db"
+        
+  - name: "builds/DIGIT-Studio/studio-ui/digit-studio-ui"
+    build:
+      - work-dir: "micro-ui/"
+        dockerfile: "micro-ui/web/Dockerfile"
+        image-name: "digit-studio-ui"
