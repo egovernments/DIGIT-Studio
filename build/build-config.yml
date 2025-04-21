@@ -34,7 +34,7 @@ config:
       - work-dir: "studio-services/application-service/script"
         image-name: "application-service-db"
         
-  - name: "builds/DIGIT-Studio/studio-services/public-services-ui"
+  - name: "builds/DIGIT-Studio/studio-ui/public-services-ui"
     build:
       - work-dir: "micro-ui/"
         dockerfile: "micro-ui/web/Dockerfile"
