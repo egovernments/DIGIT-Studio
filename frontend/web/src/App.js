@@ -13,7 +13,8 @@ const enabledModules = [
   "Engagement",
   "Workbench",
   "HCMWORKBENCH",
-  "sample"
+  "PublicServices",
+
 ];
 
 const moduleReducers = (initData) => ({
