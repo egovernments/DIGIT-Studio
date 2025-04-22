@@ -4,22 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
-	_ "github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"log"
 	"net"
 	"os"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
-var config map[string]string
-
-func InitDB() {
-	// Load .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+func InitDB() *sql.DB {
+	// Load .env locally, skip in Kubernetes
+	if os.Getenv("KUBERNETES_SERVICE_HOST") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("No .env file found (probably running in Kubernetes)")
+		}
 	}
 
 	user := os.Getenv("DB_USER")
@@ -37,13 +36,13 @@ func InitDB() {
 		user, password, host, port, dbname,
 	)
 
-	// Force IPv4 (avoid [::1] issue)
+	// Force IPv4 resolution
 	net.DefaultResolver.PreferGo = true
 	net.DefaultResolver.Dial = func(ctx context.Context, network, address string) (net.Conn, error) {
 		return net.Dial("tcp4", address)
 	}
 
-	db, err = sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Error while opening DB connection: ", err)
 	}
@@ -52,13 +51,6 @@ func InitDB() {
 		log.Fatal("Database ping failed: ", err)
 	}
 
-	log.Println("Database connected successfully!")
-}
-
-// GetDB returns the database connection instance
-func GetDB() *sql.DB {
-	if db == nil {
-		log.Fatal("Database not initialized. Call InitDB() first.")
-	}
+	log.Println("✅ Database connected successfully!")
 	return db
 }

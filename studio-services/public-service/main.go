@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"public-service/config"
 	"public-service/controller"
 	"public-service/repository"
 	db "public-service/scripts"
@@ -14,19 +13,18 @@ import (
 )
 
 func main() {
-	// Load env and initialize common stuff
-	config.LoadEnv()
 	utils.InitLogger()
 
+	// Init DB always, migrations optional
+	dbConn := repository.InitDB()
+
 	if os.Getenv("FLYWAY_ENABLED") == "true" {
-		repository.InitDB()
 		db.RunMigrations()
 	}
 
 	// Initialize repositories
-	dbConn := repository.GetDB()
 	publicRepo := repository.NewPublicRepository(dbConn)
-	appRepo := repository.NewApplicationRepository(dbConn, publicRepo) // Inject PublicRepo
+	appRepo := repository.NewApplicationRepository(dbConn, publicRepo)
 
 	// Initialize services
 	appSvc := service.NewApplicationService(appRepo)
@@ -53,8 +51,8 @@ func main() {
 	// Start server
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
-		port = "8080" // default fallback
+		port = "8080"
 	}
-	log.Printf("Server started at :%s\n", port)
+	log.Printf(" Server started at :%s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
