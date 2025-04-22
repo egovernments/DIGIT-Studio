@@ -10,11 +10,11 @@ export const serviceConfig = {
             "label": "Financial Year ",
             "disable" : false,
             "type": "string",
-            "defaultValue" : "2025_26",
-            "prefix": "FINANCIALYEAR",
-            //"reference": "mdms",
+            //"defaultValue" : "2025_26",
+            //"prefix": "FINANCIALYEAR",
+            "reference": "mdms",
             "required": false,
-            //"schema": "egf-master.FinancialYear" 
+            "schema": "egf-master.FinancialYear2" 
           },
           {
             "name": "licenseType",
@@ -245,7 +245,7 @@ export const serviceConfig = {
                   "type": "string",
                   "reference": "mdms",
                   "required": true,
-                  "schema": "TradeLicense.TradeType"
+                  "schema": "TradeLicense.AccessoriesCategory"
                 }
                 // {
                 //   "name": "count",
