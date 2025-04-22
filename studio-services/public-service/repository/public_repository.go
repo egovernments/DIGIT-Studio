@@ -39,11 +39,11 @@ func (r PublicRepository) CreateService(ctx context.Context, req model.ServiceRe
 		req.RequestInfo.UserInfo = &model.User{}
 	}
 
-	if req.RequestInfo.UserInfo.Id == uuid.Nil {
-		req.RequestInfo.UserInfo.Id = uuid.New()
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
 	}
 
-	createdBy := req.RequestInfo.UserInfo.Id
+	createdBy := req.RequestInfo.UserInfo.Uuid
 
 	ServiceID := uuid.New()
 
@@ -262,11 +262,11 @@ func (r *PublicRepository) UpdateService(ctx context.Context, req model.ServiceR
 		req.RequestInfo.UserInfo = &model.User{}
 	}
 
-	if req.RequestInfo.UserInfo.Id == uuid.Nil {
-		req.RequestInfo.UserInfo.Id = uuid.New()
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
 	}
 
-	modifiedBy := req.RequestInfo.UserInfo.Id
+	modifiedBy := req.RequestInfo.UserInfo.Uuid
 
 	appQuery := `
 		UPDATE service
@@ -291,6 +291,10 @@ func (r *PublicRepository) UpdateService(ctx context.Context, req model.ServiceR
 	)
 	if err != nil {
 		return model.ServiceResponse{}, fmt.Errorf("failed to update service: %w", err)
+	}
+	req.Service.AuditDetails = model.AuditDetails{
+		LastModifiedBy:   modifiedBy,
+		LastModifiedTime: *big.NewInt(nowMillis),
 	}
 
 	return model.ServiceResponse{

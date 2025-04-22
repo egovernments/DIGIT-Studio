@@ -11,14 +11,12 @@ import (
 )
 
 type PublicController struct {
-	service         *service.PublicService
-	workflowService *service.WorkflowService
+	service *service.PublicService
 }
 
-func NewServiceController(service *service.PublicService, workflowService *service.WorkflowService) *PublicController {
+func NewServiceController(service *service.PublicService) *PublicController {
 	return &PublicController{
-		service:         service,
-		workflowService: workflowService,
+		service: service,
 	}
 }
 
@@ -26,6 +24,7 @@ func (c *PublicController) CreateServiceHandler(w http.ResponseWriter, r *http.R
 	var req model.ServiceRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
+		log.Printf("❌ JSON decode error: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
@@ -45,16 +44,6 @@ func (c *PublicController) CreateServiceHandler(w http.ResponseWriter, r *http.R
 		http.Error(w, "Failed to create service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_ = service.NewWorkflowService()
-	if workflowReq, ok := model.BuildWorkflowRequestFromService(req); ok {
-		resp, err := c.workflowService.CreateBusinessService(ctx, *workflowReq)
-		if err != nil {
-			log.Printf("Workflow call failed: %v", err)
-		} else {
-			log.Printf("Workflow call success: %s", resp.Status)
-			defer resp.Body.Close()
-		}
-	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
@@ -65,6 +54,7 @@ func (c *PublicController) UpdateServiceHandler(w http.ResponseWriter, r *http.R
 	var serviceRequest model.ServiceRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&serviceRequest); err != nil {
+		log.Printf("❌ JSON decode error: %v", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}

@@ -139,6 +139,7 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 	var req model.ApplicationRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
+		log.Printf("Update Service error: %v", err)
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}

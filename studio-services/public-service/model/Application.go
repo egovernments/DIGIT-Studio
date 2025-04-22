@@ -14,7 +14,7 @@ type Application struct {
 	WorkflowStatus    string                 `json:"workflowStatus"` // ✅ only once, not duplicated
 	ServiceCode       string                 `json:"serviceCode"`
 	ServiceDetails    map[string]interface{} `json:"serviceDetails"` // ✅ correct jsonb field
-	Applicants        []User                 `json:"applicants"`
+	Applicants        []Applicant            `json:"applicants"`
 	AdditionalDetails map[string]interface{} `json:"additionalDetails"` // ✅ correct jsonb field
 	Address           Address                `json:"address"`
 	Workflow          WorkFlow               `json:"workflow"`

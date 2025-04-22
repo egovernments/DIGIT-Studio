@@ -3,12 +3,19 @@ package model
 import "github.com/google/uuid"
 
 type User struct {
-	Id           uuid.UUID `json:"id"`
-	Type         string    `json:"type"`
-	UserId       string    `json:"userId"`
-	Name         string    `json:"name"`
-	MobileNumber int64     `json:"mobileNumber"`
-	EmailId      string    `json:"emailId"`
-	Prefix       string    `json:"prefix"`
-	Active       bool      `json:"active"`
+	Uuid         uuid.UUID   `json:"uuid"`
+	UserName     string      `json:"userName"`
+	Name         string      `json:"name"`
+	MobileNumber string      `json:"mobileNumber"`
+	EmailId      interface{} `json:"emailId"`
+	Locale       interface{} `json:"locale"`
+	Type         string      `json:"type"`
+	Roles        []struct {
+		Name     string `json:"name"`
+		Code     string `json:"code"`
+		TenantId string `json:"tenantId"`
+	} `json:"roles"`
+	Active        bool        `json:"active"`
+	TenantId      string      `json:"tenantId"`
+	PermanentCity interface{} `json:"permanentCity"`
 }

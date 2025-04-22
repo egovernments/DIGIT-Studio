@@ -14,7 +14,7 @@ import (
 
 func RunMigrations() {
 	// Load environment variables
-	/*config.LoadEnv()*/
+	config.LoadEnv()
 
 	dbUser := config.GetEnv("DB_USER")
 	dbPassword := config.GetEnv("DB_PASSWORD")

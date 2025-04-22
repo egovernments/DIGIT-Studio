@@ -53,17 +53,17 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 		req.RequestInfo.UserInfo = &model.User{}
 	}
 
-	if req.RequestInfo.UserInfo.Id == uuid.Nil {
-		req.RequestInfo.UserInfo.Id = uuid.New()
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
 	}
 
-	createdBy := req.RequestInfo.UserInfo.Id
+	createdBy := req.RequestInfo.UserInfo.Uuid
 	appID := uuid.New()
 
 	// Set missing IDs
 	req.Application.Address.Id = uuid.New()
 	req.Application.Workflow.Id = uuid.New()
-	req.RequestInfo.UserInfo.Id = createdBy
+	req.RequestInfo.UserInfo.Uuid = createdBy
 
 	// Always generate new Application Number
 	req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
@@ -276,7 +276,7 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 			refId                                                                                              sql.NullString
 			ref                                                                                                model.Reference
 			applicantId                                                                                        sql.NullString
-			applicant                                                                                          model.User
+			applicant                                                                                          model.Applicant
 		)
 
 		err := rows.Scan(
@@ -388,11 +388,11 @@ func (r *ApplicationRepository) Update(ctx context.Context, req model.Applicatio
 		req.RequestInfo.UserInfo = &model.User{}
 	}
 
-	if req.RequestInfo.UserInfo.Id == uuid.Nil {
-		req.RequestInfo.UserInfo.Id = uuid.New()
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
 	}
 
-	modifiedBy := req.RequestInfo.UserInfo.Id
+	modifiedBy := req.RequestInfo.UserInfo.Uuid
 	// Marshal complex fields
 	serviceDetailsJSON, _ := json.Marshal(req.Application.ServiceDetails)
 	additionalDetailsJSON, _ := json.Marshal(req.Application.AdditionalDetails)
@@ -487,11 +487,13 @@ func (r *ApplicationRepository) Update(ctx context.Context, req model.Applicatio
 			return model.ApplicationResponse{}, fmt.Errorf("failed to update applicant: %w", err)
 		}
 	}
-
+	req.Application.AuditDetails.LastModifiedBy = modifiedBy
+	req.Application.AuditDetails.LastModifiedTime = *big.NewInt(nowMillis)
 	return model.ApplicationResponse{
 		ResponseInfo: model.ResponseInfo{
-			ApiId: req.RequestInfo.ApiId,
-			Ver:   req.RequestInfo.Ver,
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
 		},
 		Application: req.Application,
 	}, nil
