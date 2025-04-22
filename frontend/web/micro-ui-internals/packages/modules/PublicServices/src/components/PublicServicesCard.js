@@ -19,7 +19,7 @@ const PublicServicesCard = () => {
       },
       {
         label: t("Services Apply (PGR)"),
-        link: `/${window?.contextPath}/employee/publicservices/tl/Apply`,
+        link: `/${window?.contextPath}/employee/publicservices/pgr/Apply`,
       },
     ],
   };
