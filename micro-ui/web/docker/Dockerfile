@@ -31,7 +31,7 @@ RUN cd web/ \
 FROM nginx:mainline-alpine
 
 # Set the working directory for Nginx
-ENV WORK_DIR=/var/web/digit-ui
+ENV WORK_DIR=/var/web/digit-studio
 
 # Create the target directory for the web build
 RUN mkdir -p ${WORK_DIR}
