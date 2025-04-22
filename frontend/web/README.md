@@ -1,5 +1,5 @@
 
-# workbench ui 
+# digit-studio
 
 A React App built on top of DIGIT UI Core.
 
@@ -32,7 +32,7 @@ Clone the project
 
 Go to the Sub directory to run UI
 ```bash
-    cd into micro-ui/web/micro-ui-internals
+    cd into frontend/web/micro-ui-internals
 ```
 
 Install dependencies
@@ -43,7 +43,7 @@ Install dependencies
 
 Add .env file
 ```bash
-    micro-ui/web/micro-ui-internals/example/.env
+    frontend/web/micro-ui-internals/example/.env
 ```
 
 Start the server
@@ -118,7 +118,7 @@ For support, add the issues in https://github.com/egovernments/DIGIT-core/issues
 Go to the Sub directory to run UI
 
 ```bash
-    cd into micro-ui/web
+    cd into frontend/web
 ```
     
 ```bash
@@ -127,7 +127,7 @@ Go to the Sub directory to run UI
 
 Add .env file
 ```bash
-    micro-ui/web/.env
+    frontend/web/.env
 ```
 
 Start the server
