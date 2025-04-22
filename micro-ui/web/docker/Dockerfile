@@ -12,7 +12,6 @@ RUN ls -lah
 #RUN node web/envs.js
 RUN cd web/ \
     &&  ./install-deps.sh \
-    && yarn list styled-components \
     && yarn install \
     && yarn build:webpack 
 
