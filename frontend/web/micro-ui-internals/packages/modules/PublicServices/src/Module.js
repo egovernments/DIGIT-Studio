@@ -15,7 +15,9 @@ export const PublicServicesModule = ({ stateCode, userType, tenants }) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   
   // Define the modules that this component depends on
+  let moduleList = ["tl","pgr"];
   const moduleCode = ["sample", "common", "workflow"];
+  moduleList.forEach((ob) => moduleCode.push(`studio-${ob}`));
   
   // Get the current language selected in the DIGIT Store
   const language = Digit.StoreData.getCurrentLanguage();

@@ -13,13 +13,17 @@ const DigitDemoComponent = () => {
 
   const onSubmit = (data) => {
     ///
-    console.log(data, "datakkk");
+    console.log(data, "Final Submit Data");
   };
   const { module } = useParams();
 
   /* use newConfig instead of commonFields for local development in case needed */
+let configMap = {
+  pgr : serviceConfigPGR,
+  tl : serviceConfig
+}
 
-  const configs = generateFormConfig(module === "PGR" ? serviceConfigPGR : serviceConfig,module === "PGR" ?"PGR" : "Tradelicence");
+  const configs = generateFormConfig(configMap[module],module.toUpperCase());
   return (
     <FormComposerV2
       heading={t("New Trade License Application")}

@@ -3,16 +3,18 @@ export const serviceConfig = {
     "moduleName": "CommonService",
     "ServiceConfiguration": [
       {
-        "service": "Tradelicence",
+        "service": "TL",
         "fields": [
           {
             "name": "financialYear",
             "label": "Financial Year ",
             "disable" : false,
             "type": "string",
-            "reference": "mdms",
+            "defaultValue" : "2025_26",
+            "prefix": "FINANCIALYEAR",
+            //"reference": "mdms",
             "required": false,
-            "schema": "egf-master.FinancialYear" 
+            //"schema": "egf-master.FinancialYear" 
           },
           {
             "name": "licenseType",
