@@ -29,7 +29,7 @@ const App = ({ path, stateCode, userType, tenants }) => {
         <React.Fragment>
           <SampleBreadCrumbs location={location} />
         </React.Fragment>
-        <PrivateRoute path={`${path}/digit-demo-apply/:module`} component={() => <DigitDemoComponent />} />
+        <PrivateRoute path={`${path}/:module/Apply`} component={() => <DigitDemoComponent />} />
       </AppContainer>
     </Switch>
   );

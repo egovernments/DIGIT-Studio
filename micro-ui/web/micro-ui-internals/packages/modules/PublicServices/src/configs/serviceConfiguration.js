@@ -19,6 +19,7 @@ export const serviceConfig = {
             "label": "License Type ",
             "disable" : false,
             "defaultValue" : "PERMANENT",
+            "prefix": "LICENSETYPE",
             "type": "string",
             "required": false,
           },
@@ -128,7 +129,104 @@ export const serviceConfig = {
                   "reference": "mdms",
                   "required": false,
                   "schema": "Tradelicence.TradeType"
+                },
+                {
+                  "name": "tradeSubType",
+                  "label": "Trade Sub Type ",
+                  "disable" : false,
+                  "type": "string",
+                  "reference": "mdms",
+                  "required": false,
+                  "schema": "Tradelicence.TradeSubType"
                 }
+              ]
+          },
+          {
+            "name": "tradeAddress",
+            "label": "Trade Address ",
+            "type": "object",
+              "properties": [
+                {
+                  "name": "pincode",
+                  "label": "Pincode ",
+                  "disable" : false,
+                  "type": "string",
+                  "maxLength": 6,
+                  "minLength": 0,
+                  "validation": {
+                    "regex": "^[1-9][0-9]{5}$",
+                    "message": "Only 6 numbers allowed"
+                  },
+                  "required": false,
+                  "orderNumber": 1
+                },
+                {
+                  "name": "city",
+                  "label": "City ",
+                  "disable" : false,
+                  "defaultValue" : "DEV",
+                  "prefix": "CITY",
+                  "type": "string",
+                  "required": false,
+                },
+                {
+                  "name": "streetName",
+                  "label": "Street Name ",
+                  "disable" : false,
+                  "type": "string",
+                  "maxLength": 256,
+                  "minLength": 0,
+                  "validation": {
+                    "regex": "^[1-9][0-9]{5}$",
+                    "message": "Only 6 numbers allowed"
+                  },
+                  "required": false,
+                  "orderNumber": 1
+                },
+              ]
+          },
+          {
+            "name": "ownershipDetails",
+            "label": "Ownership Details ",
+            "type": "object",
+              "properties": [
+                {
+                  "name": "OwnerName",
+                  "label": "Owner Name ",
+                  "disable" : false,
+                  "type": "string",
+                  "maxLength": 256,
+                  "minLength": 0,
+                  "validation": {
+                    "regex": "^[1-9][0-9]{5}$",
+                    "message": "Only 6 numbers allowed"
+                  },
+                  "required": false,
+                  "orderNumber": 1
+                },
+                {
+                  "name": "mobileNumber",
+                  "label": "Mobile Number ",
+                  "disable" : false,
+                  "type": "mobileNumber",
+                  "maxLength": 256,
+                  "minLength": 0,
+                  "validation": {
+                    "regex": "^[6-9]\d{9}$",
+                    "message": "Only 9 numbers allowed"
+                  },
+                  "required": false,
+                  "orderNumber": 1
+                },
+                {
+                  "name": "gender",
+                  "label": "Gender ",
+                  "disable" : false,
+                  "type": "string",
+                  "reference": "mdms",
+                  "required": false,
+                  "schema": "common-masters.GenderType" 
+                },
               ]
           },
           {

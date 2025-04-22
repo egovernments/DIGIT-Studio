@@ -13,6 +13,7 @@ RUN ls -lah
 RUN cd web/ \
     &&  ./install-deps.sh \
     && yarn install \
+    && yarn list styled-components \
     && yarn build:webpack 
 
 FROM nginx:mainline-alpine

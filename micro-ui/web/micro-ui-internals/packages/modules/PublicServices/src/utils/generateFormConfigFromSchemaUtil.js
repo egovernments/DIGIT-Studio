@@ -44,7 +44,7 @@ export const generateFormConfig = (serviceConfig, serviceName) => {
               options: [
                 {
                   code: field.defaultValue,
-                  name: `TRADELICENSE_LICENSETYPE_${field.defaultValue}`,
+                  name: `TRADELICENSE_${field.prefix}_${field.defaultValue}`,
                 },
               ]
               }
@@ -136,7 +136,7 @@ export const generateFormConfig = (serviceConfig, serviceName) => {
  
 
   const formconfig = [{
-    head: "TradeDetails",
+    head: " ",
     subHead: " ",
     body: body,
   }]

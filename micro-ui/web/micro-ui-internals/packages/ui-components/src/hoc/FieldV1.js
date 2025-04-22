@@ -480,6 +480,20 @@ const FieldV1 = ({
                     key={index}
                     className="mb-4 border p-4 rounded bg-white relative shadow-sm"
                   >
+                     {/* Cross Button to Remove */}
+                     <button
+                      type="button"
+                      style={{marginLeft:"98%", marginTop:"1rem"}}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+                      onClick={() => {
+                        const updated = [...(formData?.[populators?.name] || [])];
+                        updated.splice(index, 1);
+                        controllerProps.setValue(`${populators?.name}[${index}]`, undefined);
+                      }}
+                    >
+                      &times;
+                    </button>
+
                     <Controller
                       render={(props) => {
                         //const childformValues = props?.field?.value || [];
@@ -503,32 +517,22 @@ const FieldV1 = ({
                       defaultValue={item}
                     />
 
-                    {/* Cross Button to Remove */}
-                    <button
-                      type="button"
-                      className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
-                      onClick={() => {
-                        const updated = [...(formData?.[populators?.name] || [])];
-                        updated.splice(index, 1);
-                        controllerProps.setValue(`${populators?.name}[${index}]`, undefined);
-                      }}
-                    >
-                      &times;
-                    </button>
+
                   </div>
                 ))}
 
       {/* Add Another Button */}
-      <button
+      <Button
         type="button"
-        className="mt-2 text-blue-600 underline"
+        label="Add"
+        style={{ marginTop: "1rem" }}
+        //className="mt-2 text-blue-600 underline"
         onClick={() => {
           const updated = [...(formData?.[populators?.name] || []), {}];
           controllerProps.setValue(populators?.name, updated);
         }}
       >
-        + Add another
-      </button>
+      </Button>
     </div>
   );
 
