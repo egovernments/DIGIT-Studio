@@ -12,7 +12,7 @@ const CustomDropdown = ({ t, config, inputRef, label, onChange,id, value, errorS
   if (config?.mdmsConfig?.filter) {
     master["filter"] = config?.mdmsConfig?.filter;
   }
-
+debugger;
   const { isLoading, data } = window?.Digit?.Hooks.useCustomMDMS(Digit?.ULBService?.getStateId(), config?.mdmsConfig?.moduleName, [master], {
     select: config?.mdmsConfig?.select
     ? createFunction(config?.mdmsConfig?.select)

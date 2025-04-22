@@ -58,7 +58,7 @@ export const serviceConfig = {
               "tradeStructureType"
             ],
             "required": false,
-            "schema": "common-masters.StructureType"
+            "schema": "Tradelicence.StructureSubType"
           },
           {
             "name": "tradeCommencementDate",
@@ -118,7 +118,7 @@ export const serviceConfig = {
                   "type": "string",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "TradeLicense.TradeType"
+                  "schema": "Tradelicence.TradeCategory"
                 },
                 {
                   "name": "tradeType",
@@ -127,7 +127,7 @@ export const serviceConfig = {
                   "type": "string",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "TradeLicense.TradeType"
+                  "schema": "Tradelicence.TradeType"
                 }
               ]
           },
