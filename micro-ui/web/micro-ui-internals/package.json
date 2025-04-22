@@ -32,8 +32,10 @@
   },
   "resolutions": {
     "**/@babel/runtime": "7.20.1",
+    "**/styled-components": "5.0.0",
+    "**/@babel/traverse": "7.25.9",
     "**/babel-preset-react-app": "10.0.0",
-    "styled-components": "5.0.0"
+    "**/@jridgewell/gen-mapping": "0.3.5"
   },
   "devDependencies": {
     "husky": "7.0.4",
@@ -50,6 +52,7 @@
     "microbundle-crl": "0.13.11",
     "@egovernments/digit-ui-react-components": "1.8.19",
     "@egovernments/digit-ui-components": "0.2.0-studio.1",
+    "ajv": "8.12.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "6.15.8",
