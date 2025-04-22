@@ -28,7 +28,7 @@ digit-solution-framework/
 │   ├── serviceConfig.json    #  Example of a Configurable Service
 │   └── generic-service.yaml   # Service Specifications
 ├── frontend/
-│   ├── common-ui/        # Shared services and utilities
+│   ├── web/        # Shared services and utilities
 │   └── console-ui/   # Admin & control center
 ├── backend/
 │   ├── generic-service/        # Shared services and utilities
