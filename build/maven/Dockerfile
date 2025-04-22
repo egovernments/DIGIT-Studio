@@ -1,58 +1,32 @@
-# syntax=docker/dockerfile:1
+# Stage 1: Build the Go binary
+FROM golang:1.24-alpine AS build
 
-# Use official Golang image to build
-FROM golang:1.21-alpine AS build
-
-# Accept working directory and TYPE from build args
 ARG WORK_DIR
-ARG SERVICE_TYPE=app  # default is 'app', can be overridden to 'db'
-
-ENV WORK_DIR=${WORK_DIR}
-ENV SERVICE_TYPE=${SERVICE_TYPE}
-
-# Set working directory
 WORKDIR /app
 
-# Copy go.mod and go.sum first (if exists)
+# Install git (sometimes required by Go modules)
+RUN apk add --no-cache git
+
+# Copy go.mod and go.sum, then download dependencies
 COPY ${WORK_DIR}/go.mod ${WORK_DIR}/go.sum ./
+RUN go mod download
 
-# Download dependencies (only if go.mod exists)
-RUN if [ -f go.mod ]; then go mod download; fi
+# Copy source code
+COPY ${WORK_DIR}/ ./
 
-# Copy full source code
-COPY ${WORK_DIR} .
+# Build the Go binary
+RUN go build -o service-binary
 
-# Build based on type
-RUN if [ "$SERVICE_TYPE" = "db" ]; then \
-      go build -o /app/migration scripts/migration.go; \
-    else \
-      go build -o /app/main main.go; \
-    fi
+# Stage 2: Create a minimal runtime image
+FROM alpine:3.18
 
-# Final minimal image
-FROM alpine:latest
-
-# Install tini to properly handle PID 1 (optional but good practice)
-RUN apk add --no-cache tini
-
-# Set working directory
 WORKDIR /opt/egov
 
-# Copy compiled binaries
-COPY --from=build /app/main /opt/egov/main
-COPY --from=build /app/migration /opt/egov/migration
+# Copy the binary and start script
+COPY --from=build /app/service-binary .
+COPY build/maven/start.sh .
 
-# Copy SQL migrations if any
-COPY ${WORK_DIR}/scripts/migration /opt/egov/migration-scripts/
+# Make start.sh executable
+RUN chmod +x ./start.sh
 
-# Expose default app port (optional)
-EXPOSE 8080
-
-# Entry point based on type
-ENTRYPOINT ["/sbin/tini", "--"]
-
-CMD if [ "$SERVICE_TYPE" = "db" ]; then \
-      echo "Running database migration..." && ./migration; \
-    else \
-      echo "Starting Go application..." && ./main; \
-    fi
+CMD ["./start.sh"]
