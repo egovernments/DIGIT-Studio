@@ -11,6 +11,7 @@ import (
 	"log"
 	"math/big"
 	"public-service/model"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -194,18 +195,21 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 	var args []interface{}
 	var conditions []string
 	argPos := 1
+
+	// Check if service exists
 	searchServiceCriteria := model.SearchCriteria{
 		TenantId:    criteria.TenantId,
 		ServiceCode: criteria.ServiceCode,
 	}
 	existingService, _ := r.publicRepo.SearchService(ctx, searchServiceCriteria)
 	if len(existingService.Services) == 0 {
-		return model.SearchResponse{}, errors.New("Service with given serviceCode not present in the application .please create service.")
+		return model.SearchResponse{}, errors.New("Service with given serviceCode not present in the application. Please create the service.")
 	}
+
 	queryBuilder.WriteString(`
 		SELECT 
 			a.id, a.tenant_id, a.module, a.business_service, a.status, a.channel, a.application_number,
-			a.workflow_status, a.service_code,a.service_details, a.additional_details, a.address, a.workflow,
+			a.workflow_status, a.service_code, a.service_details, a.additional_details, a.address, a.workflow,
 			a.createdby, a.last_modifiedby, a.created_at, a.updated_at,
 			r.id, r.reference_type, r.module, r.tenant_id, r.reference_no, r.active,
 			ap.id, ap.type, ap.user_id, ap.name, ap.mobile_number, ap.email_id, ap.prefix, ap.active
@@ -214,7 +218,7 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 		LEFT JOIN applicant ap ON a.id = ap.application_id
 	`)
 
-	// Dynamic where clauses
+	// Dynamic WHERE clause
 	if criteria.TenantId != "" {
 		conditions = append(conditions, fmt.Sprintf("a.tenant_id = $%d", argPos))
 		args = append(args, criteria.TenantId)
@@ -250,13 +254,12 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 		args = append(args, criteria.Status)
 		argPos++
 	}
-
 	if len(conditions) > 0 {
 		queryBuilder.WriteString(" WHERE ")
 		queryBuilder.WriteString(strings.Join(conditions, " AND "))
 	}
 
-	log.Println("query in search :", queryBuilder.String())
+	log.Println("query in search:", queryBuilder.String())
 	rows, err := r.db.QueryContext(ctx, queryBuilder.String(), args...)
 	if err != nil {
 		return model.SearchResponse{}, err
@@ -273,10 +276,12 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 			serviceDetailsJSON, additionalDetailsJSON, addressJSON, workflowJSON                               []byte
 			createdBy, lastModifiedBy                                                                          uuid.UUID
 			createdAt, updatedAt                                                                               time.Time
-			refId                                                                                              sql.NullString
-			ref                                                                                                model.Reference
-			applicantId                                                                                        sql.NullString
-			applicant                                                                                          model.Applicant
+
+			refId, refType, refModule, refTenantId, refNo sql.NullString
+			refActive                                     sql.NullBool
+
+			applicantId, applicantType, applicantUserId, applicantName, applicantMobile, applicantEmail, applicantPrefix sql.NullString
+			applicantActive                                                                                              sql.NullBool
 		)
 
 		err := rows.Scan(
@@ -298,19 +303,19 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 			&createdAt,
 			&updatedAt,
 			&refId,
-			&ref.ReferenceType,
-			&ref.Module,
-			&ref.TenantId,
-			&ref.ReferenceNo,
-			&ref.Active,
+			&refType,
+			&refModule,
+			&refTenantId,
+			&refNo,
+			&refActive,
 			&applicantId,
-			&applicant.Type,
-			&applicant.UserId,
-			&applicant.Name,
-			&applicant.MobileNumber,
-			&applicant.EmailId,
-			&applicant.Prefix,
-			&applicant.Active,
+			&applicantType,
+			&applicantUserId,
+			&applicantName,
+			&applicantMobile,
+			&applicantEmail,
+			&applicantPrefix,
+			&applicantActive,
 		)
 		if err != nil {
 			return model.SearchResponse{}, err
@@ -336,7 +341,6 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 				},
 			}
 
-			// Unmarshal JSON fields
 			_ = json.Unmarshal(serviceDetailsJSON, &app.ServiceDetails)
 			_ = json.Unmarshal(additionalDetailsJSON, &app.AdditionalDetails)
 			_ = json.Unmarshal(addressJSON, &app.Address)
@@ -345,15 +349,37 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 			appMap[appId] = app
 		}
 
-		// Add Reference if present
 		if refId.Valid {
-			ref.Id, _ = uuid.Parse(refId.String)
+			ref := model.Reference{
+				Id:            uuid.MustParse(refId.String),
+				ReferenceType: refType.String,
+				Module:        refModule.String,
+				TenantId:      refTenantId.String,
+				ReferenceNo:   refNo.String,
+				Active:        refActive.Bool,
+			}
 			app.Reference = append(app.Reference, ref)
 		}
 
-		// Add Applicant if present
 		if applicantId.Valid {
-			applicant.Id, _ = uuid.Parse(applicantId.String)
+			applicant := model.Applicant{
+				Id:     uuid.MustParse(applicantId.String),
+				Type:   applicantType.String,
+				UserId: applicantUserId.String,
+				Name:   applicantName.String,
+				MobileNumber: func() int64 {
+					if applicantMobile.Valid {
+						num, err := strconv.ParseInt(applicantMobile.String, 10, 64)
+						if err == nil {
+							return num
+						}
+					}
+					return 0
+				}(),
+				EmailId: applicantEmail.String,
+				Prefix:  applicantPrefix.String,
+				Active:  applicantActive.Bool,
+			}
 			app.Applicants = append(app.Applicants, applicant)
 		}
 	}
