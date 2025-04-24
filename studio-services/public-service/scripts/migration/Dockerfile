@@ -2,7 +2,7 @@ FROM flyway/flyway:10.7.1
 
 WORKDIR /flyway
 
-# Copy migration scripts and shell
+# Copy migration scripts 
 COPY sql ./sql
 COPY migration.sh .
 
