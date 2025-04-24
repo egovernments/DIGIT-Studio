@@ -1,10 +1,12 @@
-FROM flyway/flyway:10.7.1
+FROM egovio/flyway:10.7.1
+
+WORKDIR /flyway
 
 # Copy migration scripts
-COPY sql /flyway/sql
-COPY migrate.sh /usr/bin/migrate.sh
+COPY sql ./sql
+COPY migration.sh .
 
 # Make script executable
-RUN chmod +x /usr/bin/migrate.sh
+RUN chmod +x ./migration.sh
 
-ENTRYPOINT ["/usr/bin/migrate.sh"]
+ENTRYPOINT ["./migration.sh"]
