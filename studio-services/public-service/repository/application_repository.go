@@ -36,7 +36,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 		return model.ApplicationResponse{}, errors.New("Service with given serviceCode not present in the application .please create service.")
 	}
 
-	searchCriteria := model.SearchCriteria{
+	/*searchCriteria := model.SearchCriteria{
 		TenantId:        req.Application.TenantId,
 		Module:          req.Application.Module,
 		BusinessService: req.Application.BusinessService,
@@ -47,7 +47,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 	log.Println("existingApps : ", existingApps)
 	if len(existingApps.Application) > 0 {
 		return model.ApplicationResponse{}, errors.New("application already exists with same tenantid,businessservice ,servicecode and module")
-	}
+	}*/
 
 	now := time.Now()
 	if req.RequestInfo.UserInfo == nil {

@@ -7,37 +7,40 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	_ "os"
 	"public-service/model"
 	"public-service/service"
+	"public-service/utils"
 	"strings"
 )
 
 type ApplicationController struct {
-	service *service.ApplicationService
+	service            *service.ApplicationService
+	workflowIntegrator *service.WorkflowIntegrator
 }
 
-func NewApplicationController(service *service.ApplicationService) *ApplicationController {
-	return &ApplicationController{service: service}
+func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator) *ApplicationController {
+	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator}
 }
+
 func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
 	serviceCode := mux.Vars(r)["serviceCode"]
 
-	// Check if serviceCode is missing
 	if serviceCode == "" {
-		http.Error(w, "Path variable 'serviceCode' is required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Path variable 'serviceCode' is required")
 		return
 	}
 
 	var req model.ApplicationRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	tenantID := r.Header.Get("X-Tenant-Id")
 	if tenantID == "" {
-		http.Error(w, "X-Tenant-Id header is required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Missing header 'X-Tenant-Id'")
 		return
 	}
 
@@ -49,10 +52,18 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	}
 
 	ctx := context.Background()
+	log.Println("inside CreateApplicationHandler")
 	res, err := c.service.CreateApplication(ctx, req, serviceCode)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,24 +71,19 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 }
 
 func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract path parameter 'serviceCode'
 	var criteria model.SearchRequest
 	serviceCode := mux.Vars(r)["serviceCode"]
 
-	// Check if serviceCode is missing
 	if serviceCode == "" {
-		http.Error(w, "'serviceCode' path parameter is required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Path variable 'serviceCode' is required")
 		return
 	}
 
-	// Check if X-Tenant-Id header is present
 	tenantID := r.Header.Get("X-Tenant-Id")
 	if tenantID == "" {
-		http.Error(w, "X-Tenant-Id header is required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Missing header 'X-Tenant-Id'")
 		return
 	}
-
-	// Decode request body
 
 	if criteria.SearchCriteria.TenantId == "" {
 		criteria.SearchCriteria.TenantId = tenantID
@@ -92,7 +98,6 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 	if businessService != "" {
 		criteria.SearchCriteria.BusinessService = businessService
 	}
-
 	if status != "" {
 		criteria.SearchCriteria.Status = status
 	}
@@ -103,44 +108,36 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 		criteria.SearchCriteria.Ids = strings.Split(idsParam, ",")
 	}
 	log.Println("inside search", criteria.SearchCriteria)
-	// Prepare context
 	ctx := context.Background()
-
-	// Call service to search applications based on criteria
 	res, err := c.service.SearchApplication(ctx, criteria.SearchCriteria)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	// Set response headers and encode the response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
 
 func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract path parameters
 	serviceCode := mux.Vars(r)["serviceCode"]
 	applicationId := mux.Vars(r)["applicationId"]
 
-	// Check if serviceCode and applicationId are missing
 	if serviceCode == "" || applicationId == "" {
-		http.Error(w, "Both 'serviceCode' and 'applicationId' path parameters are required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Path variable 'serviceCode' is required")
 		return
 	}
 
-	// Check if X-Tenant-Id header is present
 	tenantID := r.Header.Get("X-Tenant-Id")
 	if tenantID == "" {
-		http.Error(w, "X-Tenant-Id header is required", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Missing header 'X-Tenant-Id'")
 		return
 	}
 
-	// Decode request body
 	var req model.ApplicationRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		log.Printf("Update Service error: %v", err)
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
@@ -155,21 +152,24 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 	if req.Application.Id == uuid.Nil {
 		parsedID, err := uuid.Parse(applicationId)
 		if err != nil {
-			http.Error(w, "invalid applicationId format:", http.StatusBadRequest)
+			utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid application id")
 		}
 		req.Application.Id = parsedID
 	}
-	// Prepare context
 	ctx := context.Background()
-
-	// Call service to update the application
 	res, err := c.service.UpdateApplication(ctx, req, serviceCode, applicationId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	// Set response headers and encode the response
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
