@@ -74,6 +74,8 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 	wfHost := os.Getenv("WORKFLOW_HOST")
 	wfPath := os.Getenv("WORKFLOW_TRANSITION_PATH")
 	if wfHost == "" || wfPath == "" {
+		log.Println("wfHost", wfHost)
+		log.Println("wfPath", wfPath)
 		return errors.New("workflow host or path is not set in environment variables")
 	}
 
