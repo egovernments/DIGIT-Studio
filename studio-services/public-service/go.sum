@@ -1,5 +1,7 @@
 github.com/Priyansuvaish/digit_client v0.0.0-20250423075614-b09d7b5d8d91 h1:vCIRPftBtBpCQe8QZBmOqOBHOiQ39pP+IiZrbPHuekE=
 github.com/Priyansuvaish/digit_client v0.0.0-20250423075614-b09d7b5d8d91/go.mod h1:6fWVLdeR+sjWrGMx8JKd2WHlkAcaoPvtj4mPI7r88ZA=
+github.com/Priyansuvaish/digit_client v0.0.0-20250425051418-fc875050d549 h1:oUUXBXEYYRnssA+VoDMSskNk9wOeI9uCuPwIcPJTQng=
+github.com/Priyansuvaish/digit_client v0.0.0-20250425051418-fc875050d549/go.mod h1:6fWVLdeR+sjWrGMx8JKd2WHlkAcaoPvtj4mPI7r88ZA=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
