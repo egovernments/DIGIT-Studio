@@ -60,7 +60,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	}
 
 	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&req)
+	err = c.workflowIntegrator.CallWorkflow(&res, req)
 	if err != nil {
 		log.Printf("Workflow integration failed: %v", err)
 		// Optional: return HTTP error or log only
@@ -164,7 +164,7 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 	}
 
 	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&req)
+	err = c.workflowIntegrator.CallWorkflow(&res, req)
 	if err != nil {
 		log.Printf("Workflow integration failed: %v", err)
 		// Optional: return HTTP error or log only

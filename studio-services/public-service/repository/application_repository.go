@@ -161,8 +161,9 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 
 	return model.ApplicationResponse{
 		ResponseInfo: model.ResponseInfo{
-			ApiId: req.RequestInfo.ApiId,
-			Ver:   req.RequestInfo.Ver,
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
 		},
 		Application: model.Application{
 			Id:                appID,

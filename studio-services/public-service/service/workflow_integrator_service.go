@@ -39,8 +39,8 @@ func NewWorkflowIntegrator() *WorkflowIntegrator {
 }
 
 // CallWorkflow integrates with the workflow and updates the application with the workflow response.
-func (wi *WorkflowIntegrator) CallWorkflow(applicationRequest *model.ApplicationRequest) error {
-	app := applicationRequest.Application
+func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.ApplicationResponse, req model.ApplicationRequest) error {
+	app := applicationResponse.Application
 	log.Println("inside CallWorkflow")
 	log.Println("🔥🔥🔥 Inside CallWorkflow - LOG TRIGGERED 🔥🔥🔥")
 	requestPayload := make(map[string]interface{})
@@ -63,7 +63,7 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationRequest *model.Application
 
 	processInstance[DOCUMENTS_KEY] = app.Workflow.Documents
 
-	requestPayload[REQUEST_INFO_KEY] = applicationRequest.RequestInfo
+	requestPayload[REQUEST_INFO_KEY] = req.RequestInfo
 	requestPayload[WORKFLOW_REQUEST_KEY] = []map[string]interface{}{processInstance}
 	log.Println("inside CallWorkflow", requestPayload)
 	payloadBytes, err := json.Marshal(requestPayload)
