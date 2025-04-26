@@ -440,34 +440,34 @@ const FieldV1 = ({
               control={controllerProps?.control}
             />
           );
-          case "childForm":
-            const childConfig = populators?.childform || [];
-            return (
-              <div className="border rounded-xl p-4 mb-4 shadow-sm bg-gray-50">
-                <Controller
-                  render={(props) => {
-                    return <FormComposer
-                    config={childConfig}
-                    //fieldPath={`tradeUnits`}
-                    //defaultValues={controllerProps?.getValues(populators?.name)}
-                    onFormValueChange={(setValue, childformData, formState) => {
-                     if(childformData && !isEqual(formData?.[populators?.name],childformData)){
-                     controllerProps.setValue(populators?.name, {...childformData});
-                     }
-                    }}
-                    //onChange={props.onChange}
-                    parentName={populators?.name}
-                    inline={true}
-                    hideHeader={true}
-                  />
-                  }}
-                  rules={{ required: required, ...populators.validation }}
-                  defaultValue={formData?.[populators?.name]}
-                  name={populators?.name}
-                  control={controllerProps?.control}
-              />
-              </div>
-            );
+          // case "childForm":
+          //   const childConfig = populators?.childform || [];
+          //   return (
+          //     <div className="border rounded-xl p-4 mb-4 shadow-sm bg-gray-50">
+          //       <Controller
+          //         render={(props) => {
+          //           return <FormComposer
+          //           config={childConfig}
+          //           //fieldPath={`tradeUnits`}
+          //           //defaultValues={controllerProps?.getValues(populators?.name)}
+          //           onFormValueChange={(setValue, childformData, formState) => {
+          //            if(childformData && !isEqual(formData?.[populators?.name],childformData)){
+          //            controllerProps.setValue(populators?.name, {...childformData});
+          //            }
+          //           }}
+          //           //onChange={props.onChange}
+          //           parentName={populators?.name}
+          //           inline={true}
+          //           hideHeader={true}
+          //         />
+          //         }}
+          //         rules={{ required: required, ...populators.validation }}
+          //         defaultValue={formData?.[populators?.name]}
+          //         name={populators?.name}
+          //         control={controllerProps?.control}
+          //     />
+          //     </div>
+          //   );
 
             case "multiChildForm":
             const multichildConfig = populators?.childform || [];

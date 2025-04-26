@@ -25,8 +25,9 @@ const Response = () => {
       <Banner
         successful={isResponseSuccess}
         message={t(state?.message || "SUCCESS")}
-        info={`${state?.showID ? t("CONTRACTS_WO_ID") : ""}`}
+        info={`${state?.showID ? t("COMMON_APPLICATION_ID") : ""}`}
         whichSvg={`${isResponseSuccess ? "tick" : null}`}
+        applicationNumber={state?.applicationNumber}
       />
       <div style={{ display: "flex" }}>
         <LinkLabel style={{ display: "flex", marginRight: "3rem" }} onClick={() => navigate("home")}>

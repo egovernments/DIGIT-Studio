@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Switch } from "react-router-dom";
 // import Inbox from "./SampleInbox";
 import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
+import Response from "./Response";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -29,7 +30,8 @@ const App = ({ path, stateCode, userType, tenants }) => {
         <React.Fragment>
           <SampleBreadCrumbs location={location} />
         </React.Fragment>
-        <PrivateRoute path={`${path}/:module/Apply`} component={() => <DigitDemoComponent />} />
+        <PrivateRoute path={`${path}/:module/:service/Apply`} component={() => <DigitDemoComponent />} />
+        <PrivateRoute path={`${path}/:module/:service/response`} component={() => <Response />} />
       </AppContainer>
     </Switch>
   );
