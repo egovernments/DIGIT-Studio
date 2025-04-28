@@ -13,3 +13,8 @@ linters:
 
 gocyclo:
   min-complexity: 15
+
+
+linters-settings:
+  goanalysis_metalinter:
+    enable: false
