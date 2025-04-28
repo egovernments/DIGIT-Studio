@@ -12,6 +12,7 @@ import (
 	"public-service/config" // 👈 import your config package
 )
 
+
 func RunMigrations() {
 	// Load environment variables
 	config.LoadEnv()
