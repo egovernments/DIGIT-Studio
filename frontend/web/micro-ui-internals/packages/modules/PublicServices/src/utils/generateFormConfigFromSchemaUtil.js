@@ -1,32 +1,24 @@
+import { AddressFields } from "./templateConfig";
+import { ApplicantFields } from "./templateConfig";
+export const generateFormConfig = (config,module,service) => {
+  const serviceFields = config?.ServiceConfiguration?.[0]?.fields || [];
 
-export const generateFormConfig = (serviceConfig, serviceName) => {
-
-  let config = [];
-  if(serviceName)
-  config = serviceConfig.ServiceConfiguration.find(
-    (svc) => svc.service === serviceName && Array.isArray(svc.fields)
-  );
-  else
-  config = serviceConfig;
-
-  console.log(config,"config");
-  if (!config) return [];
-
-  let body = [];
-  let fields = serviceName ? config.fields : (config?.items ? config.items.properties : config.properties);
-  body = fields.map((field) => {
-    let fieldType = "component"; // default
-    let populators = {
-      name: field.name,
-    };
-
-    if (field.type === "string" && (field.reference === "mdms" || field.defaultValue)) {
-      fieldType = "radioordropdown";
-      populators = {
-        ...populators,
+  const createField = (field) => {
+    return {
+      type: field.format || field.type,
+      label : `${module}_${service}_${field.name.toUpperCase()}`,
+      populators: {
+        name: field.name,
         optionsKey: "name",
-        error: "sample required message",
+        error: field?.validation?.message || "field is required",
         required: !!field.required,
+        validation: field.validation,
+        required: field.required,
+        disable: field.disable,
+        defaultValue: field.defaultValue,
+        prefix: field.prefix,
+        reference: field.reference,
+        dependencies: field.dependencies,
         ...(
           field?.schema
             ? {
@@ -50,96 +42,60 @@ export const generateFormConfig = (serviceConfig, serviceName) => {
               }
             : {}
         ),
-
-        // mdmsv2: {
-        //             schemaCode: field?.schema,
-        //           },
-      };
-    } else if (field.type === "string") {
-      fieldType = "text";
-      populators = {
-        ...populators,
-        error: "sample error message",
-      };
-
-      if (field.validation?.regex) {
-        populators.validation = {
-          pattern: new RegExp(field.validation.regex),
-        };
-      }
-    }
-    else if (field.type === "mobileNumber") {
-      fieldType = "mobileNumber";
-      populators = {
-        ...populators,
-        error: "sample error message",
-      };
-
-      if (field.validation?.regex) {
-        populators.validation = {
-          pattern: new RegExp(field.validation.regex),
-        };
-      }
-    }
-    else if (field.type === "date") {
-      fieldType = "date";
-      populators = {
-        ...populators,
-        error: "sample error message",
-      };
-
-      if (field.validation?.regex) {
-        populators.validation = {
-          pattern: new RegExp(field.validation.regex),
-        };
-      }
-    }
-    else if (field.type === "object") {
-      fieldType = "childForm";
-      populators = {
-        ...populators,
-        childform: generateFormConfig(field),
-        error: "sample error message",
-      };
-
-      if (field.validation?.regex) {
-        populators.validation = {
-          pattern: new RegExp(field.validation.regex),
-        };
-      }
-    }
-    else if (field.type === "array") {
-      fieldType = "multiChildForm";
-      populators = {
-        ...populators,
-        childform: generateFormConfig(field),
-        error: "sample error message",
-      };
-
-      if (field.validation?.regex) {
-        populators.validation = {
-          pattern: new RegExp(field.validation.regex),
-        };
-      }
-    }
-
-    return {
-      label: field.label?.trim() || field.name,
-      isMandatory: !!field.required,
-      //description: `${field.label?.trim() || field.name} if any`,
-      key: field.name,
-      type: fieldType,
-      disable: field?.disable || false,
-      populators,
+      },
     };
-  });
- 
+  };
 
-  const formconfig = [{
-    head: " ",
-    subHead: " ",
-    body: body,
-  }]
-  console.log(formconfig,"formmm")
-  return formconfig;
-}
+  const createChildForm = (objectField) => {
+    return {
+      head: `${module}_${service}_${objectField.name.toUpperCase()}`,
+      name: objectField.name,
+      body: objectField.properties.map((subField) => createField(subField)),
+      type: "childform",
+      step: 1,
+    };
+  };
+
+  const createMultiChildForm = (arrayField) => {
+    return {
+      head: `${module}_${service}_${arrayField.name.toUpperCase()}`,
+      name: arrayField.name,
+      type: "multiChildForm",
+      body: arrayField.items.properties.map((subField) => createField(subField)),
+      step:2
+    };
+  };
+
+  const basicFields = [];
+  const stepForms = [];
+
+  serviceFields.forEach((field) => {
+    if (field.type === "object") {
+      stepForms.push(createChildForm(field));
+    } else if (field.type === "array") {
+      stepForms.push(createMultiChildForm(field));
+    } else {
+      basicFields.push(createField(field));
+    }
+  });
+
+  
+  const addressFieldsStep = AddressFields[0]?.type === "object" ? createChildForm(AddressFields[0]) : createMultiChildForm(AddressFields[0]);
+  const applicantFieldsStep = ApplicantFields[0].type === "array"? createMultiChildForm(ApplicantFields[0]) : createChildForm(ApplicantFields[0]);
+
+  const steps = [];
+
+  if (basicFields.length > 0) {
+    steps.push({
+      head: "Service Details",
+      body: basicFields,
+      type: "form",
+    });
+  }
+  //need to add condition here for address
+   
+
+  return [...steps, ...stepForms, addressFieldsStep, applicantFieldsStep];
+
+};
+
