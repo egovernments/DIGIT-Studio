@@ -19,21 +19,31 @@ jobs:
         with:
           go-version: '1.21'
 
+      - name: Move into public-service
+        working-directory: studio-services/public-service
+        run: echo "Moved into public-service"
+
       - name: Install golangci-lint
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+        working-directory: studio-services/public-service
 
       - name: Run golangci-lint
         run: golangci-lint run ./...
+        working-directory: studio-services/public-service
 
       - name: Install gosec
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+        working-directory: studio-services/public-service
 
       - name: Run gosec
         run: gosec ./...
+        working-directory: studio-services/public-service
 
       - name: Run Tests
         run: go test -v ./...
+        working-directory: studio-services/public-service
 
       - name: Run Benchmarks
         run: go test -bench=. ./...
+        working-directory: studio-services/public-service
