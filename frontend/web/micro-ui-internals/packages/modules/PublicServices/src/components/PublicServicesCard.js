@@ -8,15 +8,19 @@ const PublicServicesCard = () => {
 
   const propsForModuleCard = {
     Icon: "BeenHere",
-    moduleName: t("Digit Studio"),
+    moduleName: t("DIGIT_STUDIO"),
     kpis: [
 
     ],
     links: [
       {
-        label: t("Services Apply (TL)"),
-        link: `/${window?.contextPath}/employee/publicservices/tl/NewTL/Apply`,
+        label: t("DIGIT_STUDIO_APPLY"),
+        link: `/${window?.contextPath}/employee/publicservices/modules?selectedPath=Apply`,
       },
+      // {
+      //   label: t("Services Search"),
+      //   link: `/${window?.contextPath}/employee/publicservices/modules?selectedpath=Search`,
+      // },
       {
         label: t("Services Apply (PGR)"),
         link: `/${window?.contextPath}/employee/publicservices/pgr/Newpgr/Apply`,

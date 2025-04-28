@@ -6,6 +6,8 @@ import { Switch } from "react-router-dom";
 // import Inbox from "./SampleInbox";
 import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
 import Response from "./Response";
+import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
+import ModulePageComponent from "./DigitDemo/modulePageComponent";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -32,6 +34,8 @@ const App = ({ path, stateCode, userType, tenants }) => {
         </React.Fragment>
         <PrivateRoute path={`${path}/:module/:service/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/:module/:service/response`} component={() => <Response />} />
+        <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
+        <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
       </AppContainer>
     </Switch>
   );

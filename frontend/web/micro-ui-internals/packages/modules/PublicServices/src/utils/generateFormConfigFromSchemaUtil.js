@@ -1,12 +1,12 @@
 import { AddressFields } from "./templateConfig";
 import { ApplicantFields } from "./templateConfig";
-export const generateFormConfig = (config) => {
+export const generateFormConfig = (config,module,service) => {
   const serviceFields = config?.ServiceConfiguration?.[0]?.fields || [];
 
   const createField = (field) => {
     return {
       type: field.format || field.type,
-      label : field.label,
+      label : `${module}_${service}_${field.name.toUpperCase()}`,
       populators: {
         name: field.name,
         optionsKey: "name",
@@ -48,7 +48,7 @@ export const generateFormConfig = (config) => {
 
   const createChildForm = (objectField) => {
     return {
-      head: objectField.label,
+      head: `${module}_${service}_${objectField.name.toUpperCase()}`,
       name: objectField.name,
       body: objectField.properties.map((subField) => createField(subField)),
       type: "childform",
@@ -58,7 +58,7 @@ export const generateFormConfig = (config) => {
 
   const createMultiChildForm = (arrayField) => {
     return {
-      head: arrayField.label,
+      head: `${module}_${service}_${arrayField.name.toUpperCase()}`,
       name: arrayField.name,
       type: "multiChildForm",
       body: arrayField.items.properties.map((subField) => createField(subField)),

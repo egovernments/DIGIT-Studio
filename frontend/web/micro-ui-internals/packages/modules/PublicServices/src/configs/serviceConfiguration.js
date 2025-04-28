@@ -3,7 +3,7 @@ export const serviceConfig = {
     "moduleName": "CommonService",
     "ServiceConfiguration": [
       {
-        "module": "TL",
+        "module": "Tradelicense",
         "service": "NewTL",
         "fields": [
           {
@@ -14,7 +14,6 @@ export const serviceConfig = {
                 {
                   "name": "financialYear",
                   "label": "Financial Year ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   //"defaultValue" : "2025_26",
@@ -26,7 +25,6 @@ export const serviceConfig = {
                 {
                   "name": "licenseType",
                   "label": "License Type ",
-                  "disable" : false,
                   "defaultValue" : "PERMANENT",
                   "prefix": "LICENSETYPE",
                   "type": "string",
@@ -36,7 +34,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeName",
                   "label": "Trade Name ",
-                  "disable" : false,
                   "type": "string",
                   "format": "text",
                   "maxLength": 128,
@@ -51,7 +48,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeStructureType",
                   "label": "Trade Structure Type ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
@@ -64,7 +60,6 @@ export const serviceConfig = {
                   //same master how to give custom output for options
                   // 1st way is to separate out master
                   // 2nd way to pass custom logck in mdms
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
@@ -77,7 +72,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeCommencementDate",
                   "label": "Trade Commencement Date ",
-                  "disable" : false,
                   "type": "date",
                   "format": "date",
                   "required": false,
@@ -92,7 +86,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeCategory",
                   "label": "Trade Category ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
@@ -102,7 +95,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeType",
                   "label": "Trade Type ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
@@ -112,7 +104,6 @@ export const serviceConfig = {
                 {
                   "name": "tradeSubType",
                   "label": "Trade Sub Type ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
@@ -225,7 +216,6 @@ export const serviceConfig = {
                 {
                   "name": "accessoryType",
                   "label": "Accessory type ",
-                  "disable" : false,
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",

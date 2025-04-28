@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Banner, Card, LinkLabel, AddFileFilled, ArrowLeftWhite, ActionBar, SubmitBar } from "@egovernments/digit-ui-react-components";
+import { Banner, Card, LinkLabel, AddFileFilled, ArrowLeftWhite, ActionBar, SubmitBar, ArrowRightInbox } from "@egovernments/digit-ui-react-components";
 
 const Response = () => {
   const { t } = useTranslation();
@@ -17,6 +17,9 @@ const Response = () => {
       case "home": {
         history.push(`/${window.contextPath}/employee`);
       }
+      case "view": {
+        history.push(state.redirectionUrl);
+      }
     }
   };
 
@@ -31,8 +34,8 @@ const Response = () => {
       />
       <div style={{ display: "flex" }}>
         <LinkLabel style={{ display: "flex", marginRight: "3rem" }} onClick={() => navigate("home")}>
-          <ArrowLeftWhite fill="#F47738" style={{ marginRight: "8px", marginTop: "3px" }} />
-          {t("CORE_COMMON_GO_TO_HOME")}
+          <ArrowRightInbox fill="#F47738" style={{ marginRight: "8px", marginTop: "3px" }} />
+          {t("VIEW_APPLICATION")}
         </LinkLabel>
       </div>
       <ActionBar>

@@ -17,19 +17,21 @@ const DigitDemoComponent = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
   const tenantId = Digit.ULBService.getCurrentTenantId();
+  const queryStrings = Digit.Hooks.useQueryParams();
   
   const configMap = {
     pgr: serviceConfigPGR,
-    tl: serviceConfig
+    TradeLicense: serviceConfig
   };
 
-  const rawConfig = generateFormConfig(configMap[module], module.toUpperCase());
+  const rawConfig = generateFormConfig(configMap[module], module.toUpperCase(),service?.toUpperCase());
   const steps = rawConfig.map((config) => config.head || config.label || "Untitled Section");
 
   const currentFormConfig = rawConfig[currentStep - 1];
+  let schemaCode = queryStrings?.serviceCode || "SVC-DEV-TRADELICENSE-NEWTL-04";
 
   const reqCreate = {
-    url: `/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04`,
+    url: `/public-service/v1/application/${schemaCode}`,
     params: {},
     body: {},
     method: "POST",
@@ -55,7 +57,7 @@ const DigitDemoComponent = () => {
       // Final submit
       await mutation.mutate(
         {
-          url: `/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04`,
+          url: `/public-service/v1/application/${schemaCode}`,
           params: {},
           headers: { "x-tenant-id": tenantId },
           method: "POST",
@@ -73,6 +75,7 @@ const DigitDemoComponent = () => {
                 message: "Application Created Successfully",
                 showID: true,
                 applicationNumber: data?.Application?.applicationNumber,
+                redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?id=${data?.Application?.id}`,
               },
             });
           },
@@ -112,7 +115,7 @@ const DigitDemoComponent = () => {
         activeSteps={currentStep}
       />
       <FormComposerV2
-        heading={t("Local Business License Issuing System")}
+        heading={t(`${module.toUpperCase()}_${service.toUpperCase()}_HEADING`)}
         label={currentStep === steps.length ? t("Submit") : t("Next")}
         description={" "}
         text={" "}

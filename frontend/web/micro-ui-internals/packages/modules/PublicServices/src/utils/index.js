@@ -129,4 +129,222 @@ import { UICustomizations } from "../configs/UICustomizations";
 
 
 
+  export const generateViewConfigFromResponse = (application, t) => {
+    // const getTranslatedValue = (prefix, value) => {
+    //   if (!value) return "NA";
+    //   return t ? t(`${prefix}_${value}`) : value;
+    // };
+
+    const extractSectionValues = (data, prefix) => {
+      const shouldTranslate = (value) => {
+        if (typeof value !== "string") return false;
+        const cleaned = value.replace(/-/g, "_");
+        const hasOnlyNumbersOrDate = /^[\d_\-]+$/.test(value); // matches 2025-04-16, 2025_04_16, etc.
+    
+        return (
+          cleaned.includes("_") &&
+          !hasOnlyNumbersOrDate &&  // don't translate if it's numbers/dates
+          /^[A-Z_]+$/.test(cleaned)  // must be UPPERCASE and underscore
+        );
+      };
+    
+      const formatField = (key, value) => {
+        const isTranslate = shouldTranslate(value);
+        const cleanedValue = typeof value === "string" ? value.replace(/-/g, "_") : value;
+        return {
+          key: t(`${application?.module.toUpperCase()}_${application?.businessService.toUpperCase()}_${key.toUpperCase()}`),
+          value: isTranslate ? t(`COMMON_${key.toUpperCase()}_${cleanedValue}`) : (value || "NA"),
+          isTranslate,
+        };
+      };
+    
+      if (Array.isArray(data)) {
+        return data.flatMap((item, index) => {
+          const itemFields = Object.keys(item || {})
+            .filter((key) => {
+              const value = item[key];
+              return key.toLowerCase() !== "id" && value !== undefined && value !== null && value !== "";
+            })
+            .map((key) => formatField(key, item[key]));
+    
+          if (itemFields.length > 0) {
+            return [
+              {
+                key: `Item ${index + 1}`,
+                value: "",
+                isTranslate: false,
+              },
+              ...itemFields
+            ];
+          }
+          return [];
+        });
+      } else {
+        return Object.keys(data || {})
+          .filter((key) => {
+            const value = data[key];
+            return key.toLowerCase() !== "id" && value !== undefined && value !== null && value !== "";
+          })
+          .map((key) => formatField(key, data[key]));
+      }
+    };
+    
+    
+    
+  
+    const serviceDetails = application.serviceDetails || {};
+    const addressDetails = application.address || {};
+    const applicantDetails = application.applicants?.[0] || {};
+  
+    const cards = [];
+  
+    // Service Details card
+    if (Object.keys(serviceDetails).length > 0) {
+      const serviceSections = Object.keys(serviceDetails)
+        .map((serviceKey) => {
+          const data = serviceDetails[serviceKey];
+          const values = extractSectionValues(
+            data,
+            `${serviceKey.toUpperCase()}`
+          );
+          if (values.length > 0) {
+            const headerKey = `${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}_${serviceKey.toUpperCase()}`;
+            return {
+              head: headerKey,
+              type: "DATA",
+              sectionHeader: { value: headerKey, inlineStyles: {} },
+              values,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+  
+      if (serviceSections.length > 0) {
+        cards.push({
+          sections: serviceSections,
+        });
+      }
+    }
+  
+    // Address Details card
+    const addressValues = extractSectionValues(addressDetails, "ADDRESS");
+    if (addressValues.length > 0) {
+      const headerKey = "ADDRESS_DETAILS";
+      cards.push({
+        sections: [
+          {
+            head: headerKey,
+            type: "DATA",
+            sectionHeader: { value: headerKey, inlineStyles: {} },
+            values: addressValues,
+          },
+        ],
+      });
+    }
+  
+    // Applicant Details card
+    const applicantValues = extractSectionValues(applicantDetails, "APPLICANT");
+    if (applicantValues.length > 0) {
+      const headerKey = "APPLICANT_DETAILS";
+      cards.push({
+        sections: [
+          {
+            head: headerKey,
+            type: "DATA",
+            sectionHeader: { value: headerKey, inlineStyles: {} },
+            values: applicantValues,
+          },
+        ],
+      });
+    }
+  
+    cards.push(
+      {
+        navigationKey: "card1",
+        sections: [
+          {
+            type: "WFHISTORY",
+            businessService: "NewTL",
+            applicationNo: "APL-DEV-TL-NEWTL-28",
+            tenantId: "dev",
+            timelineStatusPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}`,
+            breakLineRequired: false,
+            config : {
+              select: (data) => {
+                return {...data, timeline: data?.timeline.filter((ob) => ob?.performedAction !== "DRAFT")}
+              },
+            }
+          },
+          {
+            type: "WFACTIONS",
+            forcedActionPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}_ACTION`,
+            businessService: "NewTL",
+            applicationNo: "APL-DEV-TL-NEWTL-28",
+            tenantId: "dev",
+            applicationDetails: application,
+            url: "/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04",
+            moduleCode: "TradeLicense",
+            //editApplicationNumber: undefined,
+            //editCallback : getRedirectionCallback
+          },
+        ],
+      }
+    )
+    const config = {
+      cards,
+      apiResponse: application,
+      additionalDetails: application.additionalDetails || {},
+      horizontalNav: {
+        showNav: false,
+        configNavItems: [],
+        activeByDefault: "",
+      },
+    };
+  
+    return config;
+  };
+
+  export const transformResponseforModulePage = (data) => {
+    const moduleData = {}; // Object to store modules and their corresponding business services
+  
+    // Process each item
+    data.forEach((item) => {
+      const module = item.module;
+  
+      // If module is already processed, add the businessService to its list
+      if (!moduleData[module]) {
+        moduleData[module] = {
+          heading: `${module.toUpperCase()}_HEADING`,
+          cardDescription: `${module.toUpperCase()}_CARDDESCRIPTION`,
+          businessServices: new Set(), // Set to store unique businessServices
+          module: module,
+          //serviceCode : item?.serviceCode
+        };
+      }
+  
+      // Add the businessService to the set (to ensure uniqueness)
+      moduleData[module].businessServices.add({businessService : item.businessService, serviceCode: item?.serviceCode});
+    });
+  
+    // Convert the moduleData object to an array of objects
+    return Object.keys(moduleData).map((module) => {
+      const moduleInfo = moduleData[module];
+      return {
+        heading: moduleInfo.heading,
+        cardDescription: moduleInfo.cardDescription,
+        businessServices: Array.from(moduleInfo.businessServices), // Convert the Set to an array
+        module: module,
+        //serviceCode : moduleInfo?.serviceCode,
+      };
+    });
+  };
+  
+  
+  
+  
+  
+  
+
+
 export default {};
