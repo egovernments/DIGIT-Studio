@@ -1,4 +1,4 @@
-package main
+package scripts
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	_ "github.com/lib/pq"
-	"public-service/config" // 👈 import your config package
+	"public-service/config" // Import your config package
 )
 
 func RunMigrations() {
@@ -66,10 +66,4 @@ func RunMigrations() {
 			log.Printf("Migration applied: %s", filePath)
 		}
 	}
-}
-
-func main() {
-	log.Println("Starting migrations...")
-	RunMigrations()
-	log.Println("Migrations completed.")
 }
