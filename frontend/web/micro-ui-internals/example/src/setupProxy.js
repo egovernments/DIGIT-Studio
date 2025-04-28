@@ -56,6 +56,7 @@ module.exports = function (app) {
     "/egov-url-shortening/shortener",
     "/inbox/v1/_search",
     "/inbox/v2/_search",
+    "/public-service",
     "/tl-services",
     "/tl-calculator",
     "/org-services",
