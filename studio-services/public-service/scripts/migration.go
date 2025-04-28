@@ -1,4 +1,4 @@
-package scripts
+package main
 
 import (
 	"database/sql"
@@ -11,7 +11,6 @@ import (
 	_ "github.com/lib/pq"
 	"public-service/config" // 👈 import your config package
 )
-
 
 func RunMigrations() {
 	// Load environment variables
@@ -26,7 +25,7 @@ func RunMigrations() {
 	// Build the database URL
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	// Connect to database
+	// Connect to the database
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
@@ -40,6 +39,7 @@ func RunMigrations() {
 	}
 	migrationsDir := filepath.Join(wd, "scripts/migration/sql")
 
+	// Read files in migrations folder
 	files, err := ioutil.ReadDir(migrationsDir)
 	if err != nil {
 		log.Fatalf("Could not read migrations directory: %v", err)
@@ -66,4 +66,10 @@ func RunMigrations() {
 			log.Printf("Migration applied: %s", filePath)
 		}
 	}
+}
+
+func main() {
+	log.Println("Starting migrations...")
+	RunMigrations()
+	log.Println("Migrations completed.")
 }
