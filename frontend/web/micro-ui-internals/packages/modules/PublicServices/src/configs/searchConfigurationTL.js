@@ -4,17 +4,19 @@ export const searchConfig = {
     headerLabel: "Search",
     type: "search",
     apiDetails: {
-        serviceName: `/egov-mdms-service/v2/_search`,
-        requestParam: {},
-        requestBody: {
-            MdmsCriteria: {},
-        },
-        minParametersForSearchForm: 0,
-        masterName: "commonUiConfig",
-        moduleName: "SearchMDMSConfig",
-        tableFormJsonPath: "requestBody.MdmsCriteria",
-        filterFormJsonPath: "requestBody.MdmsCriteria.custom",
-        searchFormJsonPath: "requestBody.MdmsCriteria.custom",
+        apiDetails: {
+            serviceName: `/egov-mdms-service/v2/_search`,
+            requestParam: {},
+            requestBody: {
+              MdmsCriteria: {},
+            },
+            minParametersForSearchForm: 0,
+            masterName: "commonUiConfig",
+            moduleName: "SearchMDMSConfig",
+            tableFormJsonPath: "requestBody.MdmsCriteria",
+            filterFormJsonPath: "requestBody.MdmsCriteria.custom",
+            searchFormJsonPath: "requestBody.MdmsCriteria.custom",
+          },
     },
     sections: {
         search: {

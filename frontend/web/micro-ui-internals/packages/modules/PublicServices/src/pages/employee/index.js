@@ -3,18 +3,16 @@ import { BreadCrumb } from "@egovernments/digit-ui-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Switch } from "react-router-dom";
-// import Inbox from "./SampleInbox";
 import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
-<<<<<<< HEAD
 import SearchTL from "./DigitDemo/searchTL";
-=======
 import Response from "./Response";
 import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
 import ModulePageComponent from "./DigitDemo/modulePageComponent";
->>>>>>> b01370c89f4b0b62efc2282855ec14eb308987bf
+
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
+
   const crumbs = [
     {
       internalLink: `/${window?.contextPath}/employee`,
@@ -35,17 +33,17 @@ const SampleBreadCrumbs = ({ location }) => {
 
 
 const App = ({ path, stateCode, userType, tenants }) => {
-
-  const tenantId=`dev`;
+  const tenantId = Digit.ULBService.getCurrentTenantId();
+  
   const request = {
     url : "/public-service/v1/service",
-    method: "GET",
     headers: {
-      "X-Tenant-Id" : tenantId ,
+      "X-Tenant-Id" : tenantId
     },
+    method: "GET",
   }
   const {isLoading, data} = Digit.Hooks.useCustomAPIHook(request);
-  console.log("dattaa",data);
+  console.log("dataa",data);
 
   return (
     <Switch>
@@ -58,7 +56,6 @@ const App = ({ path, stateCode, userType, tenants }) => {
         <PrivateRoute path={`${path}/tl/Search`} component={() => <SearchTL />} />
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
->>>>>>> b01370c89f4b0b62efc2282855ec14eb308987bf
       </AppContainer>
     </Switch>
   );
