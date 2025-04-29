@@ -33,7 +33,7 @@ const Response = () => {
         applicationNumber={state?.applicationNumber}
       />
       <div style={{ display: "flex" }}>
-        <LinkLabel style={{ display: "flex", marginRight: "3rem" }} onClick={() => navigate("home")}>
+        <LinkLabel style={{ display: "flex", marginRight: "3rem" }} onClick={() => navigate("view")}>
           <ArrowRightInbox fill="#F47738" style={{ marginRight: "8px", marginTop: "3px" }} />
           {t("VIEW_APPLICATION")}
         </LinkLabel>

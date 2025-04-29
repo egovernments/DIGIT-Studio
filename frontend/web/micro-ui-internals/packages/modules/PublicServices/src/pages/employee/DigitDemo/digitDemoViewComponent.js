@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { generateViewConfigFromResponse } from "../../../utils";
+import WorkflowActions from "../../../components/WorkflowActions";
 
 const DigitDemoViewComponent = () => {
   const { t } = useTranslation();
@@ -45,6 +46,52 @@ const DigitDemoViewComponent = () => {
         </div>
       }
       <ViewComposer data={config} isLoading={false} />
+      <WorkflowActions
+          forcedActionPrefix={`WF_${response?.businessService}_ACTION`}
+          businessService={response?.businessService}
+          applicationNo={response?.applicationNumber}
+          tenantId={tenantId}
+          applicationDetails={response}
+          url={`/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04/${response?.id}`}
+          //setStateChanged={setStateChanged}
+          moduleCode={response?.module}
+          //editApplicationNumber={""}
+          // WorflowValidation={(setShowModal) => {
+          //   try {
+          //     let validationFlag = false;
+          //     for (const validation of mbValidationMr?.musterRollValidation) {
+          //       if (validation?.type === "error") {
+          //         validationFlag = true;
+          //         setShowToast({ type: "error", label: t(validation?.message) });
+          //         break;
+          //       } else if (validation?.type === "warn") {
+          //         validationFlag = true;
+          //         setShowPopUp({ setShowWfModal: setShowModal, label: t(validation?.message) });
+          //         break;
+          //       }
+          //     }
+          //     if (!validationFlag) setShowModal(true);
+          //   } catch (error) {
+          //     showToast(error.message);
+          //   }
+          // }}
+          // editCallback={() => {
+          //   setModify(true);
+          //   setshowEditTitle(true);
+          //   setSaveAttendanceState((prevState) => {
+          //     return {
+          //       ...prevState,
+          //       displaySave: true,
+          //       updatePayload: data?.applicationData?.individualEntries?.map((row) => {
+          //         return {
+          //           totalAttendance: row?.modifiedTotalAttendance || row?.actualTotalAttendance,
+          //           id: row?.id,
+          //         };
+          //       }),
+          //     };
+          //   });
+          // }}
+        />
       {/* <ActionBar>
         {displayMenu ? <Menu localeKeyPrefix={"WORKS"} options={actionULB} optionKey={"name"} t={t} onSelect={onActionSelect} /> : null}
         <SubmitBar label={t("ACTIONS")} onSubmit={() => setDisplayMenu(!displayMenu)} />
