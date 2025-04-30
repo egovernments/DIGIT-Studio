@@ -288,6 +288,7 @@
       },
       "documents": [
         {
+                    "states":["applied","approved"]
           "category": "address-proof",
           "documentTypes": [
             "aadhar",
@@ -346,7 +347,9 @@
         }
       ],
       "idgen": {
-        "format": "tl.application.number"
+       
+        "format": "tl.application.number",
+           "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]",
       },
       "localization": {
         "modules": [
@@ -409,15 +412,19 @@
       "pdf": [
         {
           "key": "tl-application",
-          "type": "application"
+          "type": "application",
+          "states":["applied","approved"]
+
         },
         {
           "key": "tl-bill",
-          "type": "bill"
+          "type": "bill",
+          "states":["applied","approved"]
         },
         {
           "key": "tl-receipt",
-          "type": "receipt"
+          "type": "receipt",
+          "states":["applied","approved"]
         }
       ],
       "bill": {
@@ -487,7 +494,8 @@
         "businessService": "RenewTL"
       },
       "idgen": {
-        "format": "tl.renewalapplication.number"
+        "format": "tl.renewalapplication.number",
+         "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]",
       },
       "rules": [
         {
@@ -502,6 +510,7 @@
           ],
           "active": true,
           "isMandatory": false,
+          "workflowAction":["apply","approved"]
           "allowedFileTypes": [
             "jpeg",
             "jpg",
@@ -514,7 +523,8 @@
       "pdf": [
         {
           "key": "tl-renew-application",
-          "type": "application"
+          "type": "application",
+          "states":["applied","approved"]
         }
       ],
       "calculator": {
