@@ -112,7 +112,7 @@ func mapToIndividualRequest(req model.Applicant, info model.RequestInfo) individ
 	mobileStr := strconv.FormatInt(req.MobileNumber, 10)
 
 	individualrequest := individual.Individual{
-		Id:                 req.UserId,
+		IndividualId:       req.UserId,
 		IsSystemUser:       true,
 		IsSystemUserActive: req.Active,
 		Name: &individual.Name{

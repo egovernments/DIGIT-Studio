@@ -65,7 +65,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		if len(resp.Individual) == 0 {
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
-			if createdResp.Individual.Id != "" {
+			if createdResp.Individual.IndividualId != "" {
 				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, "Failed to create individual")
@@ -73,7 +73,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			}
 		} else {
 			// Individual exists, update applicant UserId
-			req.Application.Applicants[i].UserId = resp.Individual[i].Id
+			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
 		}
 	}
 
