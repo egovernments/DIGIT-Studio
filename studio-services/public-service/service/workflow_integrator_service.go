@@ -102,7 +102,7 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 	if len(wfResponse.ProcessInstances) == 0 {
 		return errors.New("no process instance returned from workflow")
 	}
-	app.ProcessInstance = &wfResponse.ProcessInstances[0]
+	app.ProcessInstance = &wfResponse.ProcessInstances
 	return nil
 }
 
@@ -146,6 +146,6 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 	if len(wfResponse.ProcessInstances) == 0 {
 		return errors.New("no process instance returned from workflow")
 	}
-	app.ProcessInstance = &wfResponse.ProcessInstances[0]
+	app.ProcessInstance = &wfResponse.ProcessInstances
 	return nil
 }
