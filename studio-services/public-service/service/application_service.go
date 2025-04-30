@@ -18,7 +18,7 @@ func NewApplicationService(repo *repository.ApplicationRepository, enrichmentSer
 }
 
 func (s *ApplicationService) CreateApplication(ctx context.Context, req model.ApplicationRequest, ServiceCode string) (model.ApplicationResponse, error) {
-	return s.repo.Create(ctx, req, ServiceCode)
+	return s.repo.CreateUsingKafka(ctx, req, ServiceCode)
 }
 
 func (s *ApplicationService) SearchApplication(ctx context.Context, criteria model.SearchCriteria) (model.SearchResponse, error) {

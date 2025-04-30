@@ -2,10 +2,13 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/segmentio/kafka-go"
 	"log"
 	"net/http"
 	"os"
+	"public-service/config"
 	"public-service/controller"
+	producer "public-service/kafka"
 	"public-service/repository"
 	db "public-service/scripts"
 	"public-service/service"
@@ -21,10 +24,17 @@ func main() {
 	if os.Getenv("FLYWAY_ENABLED") == "true" {
 		db.RunMigrations()
 	}
-
+	writerFunc := func(topic string) *kafka.Writer {
+		return kafka.NewWriter(kafka.WriterConfig{
+			Brokers:  []string{config.GetEnv("KAFKA_BOOTSTRAP_SERVERS")}, // Example: "localhost:9092"
+			Topic:    topic,
+			Balancer: &kafka.LeastBytes{},
+		})
+	}
+	kafkaProducer := producer.NewPublicServiceProducer(writerFunc)
 	// Initialize repositories
 	publicRepo := repository.NewPublicRepository(dbConn)
-	appRepo := repository.NewApplicationRepository(dbConn, publicRepo)
+	appRepo := repository.NewApplicationRepository(dbConn, publicRepo, kafkaProducer)
 	restRepo := repository.NewRestCallRepository()
 	// Initialize services
 

@@ -10,6 +10,8 @@ import (
 	"github.com/lib/pq"
 	"log"
 	"math/big"
+	"public-service/config"
+	producer "public-service/kafka"
 	"public-service/model"
 	"strconv"
 	"strings"
@@ -17,12 +19,13 @@ import (
 )
 
 type ApplicationRepository struct {
-	db         *sql.DB
-	publicRepo *PublicRepository
+	db            *sql.DB
+	publicRepo    *PublicRepository
+	kafkaProducer *producer.PublicServiceProducer
 }
 
-func NewApplicationRepository(db *sql.DB, publicRepo *PublicRepository) *ApplicationRepository {
-	return &ApplicationRepository{db: db, publicRepo: publicRepo}
+func NewApplicationRepository(db *sql.DB, publicRepo *PublicRepository, kafkaProducer *producer.PublicServiceProducer) *ApplicationRepository {
+	return &ApplicationRepository{db: db, publicRepo: publicRepo, kafkaProducer: kafkaProducer}
 }
 
 // Create Application
@@ -728,5 +731,80 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 		ResponseInfo: model.ResponseInfo{
 			Status: "successful",
 		},
+	}, nil
+}
+
+func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.ApplicationRequest, serviceCode string) (model.ApplicationResponse, error) {
+	searchServiceCriteria := model.SearchCriteria{
+		TenantId:    req.Application.TenantId,
+		ServiceCode: serviceCode,
+	}
+	existingService, _ := r.publicRepo.SearchService(ctx, searchServiceCriteria)
+	if len(existingService.Services) == 0 {
+		return model.ApplicationResponse{}, errors.New("Service with given serviceCode not present in the application. Please create service.")
+	}
+
+	_ = time.Now()
+	if req.RequestInfo.UserInfo == nil {
+		req.RequestInfo.UserInfo = &model.User{}
+	}
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
+	}
+	createdBy := req.RequestInfo.UserInfo.Uuid
+	appID := uuid.New()
+
+	req.RequestInfo.UserInfo.Uuid = createdBy
+	req.Application.Id = appID
+	req.Application.Address.Id = uuid.New()
+	req.Application.Workflow.Id = uuid.New()
+
+	// Generate application number
+	req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
+
+	// Generate IDs for references
+	for i := range req.Application.Reference {
+		req.Application.Reference[i].Id = uuid.New()
+	}
+
+	// Generate IDs for applicants
+	for i := range req.Application.Applicants {
+		req.Application.Applicants[i].Id = uuid.New()
+	}
+
+	// Audit info
+	nowMillis := time.Now().UnixMilli()
+	req.Application.AuditDetails = model.AuditDetails{
+		CreatedBy:        createdBy,
+		LastModifiedBy:   createdBy,
+		CreatedTime:      *big.NewInt(nowMillis),
+		LastModifiedTime: *big.NewInt(nowMillis),
+	}
+
+	// Marshal and push to Kafka
+	if r.kafkaProducer != nil {
+		messageBytes, err := json.Marshal(req)
+		log.Println("request", string(messageBytes))
+		if err != nil {
+			log.Printf("failed to marshal kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+		err = r.kafkaProducer.Push(ctx, config.GetEnv("SAVE_PUBLIC_SERVICE_APPLICATION_TOPIC"), messageBytes)
+		if err != nil {
+			log.Printf("failed to push kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+	} else {
+		return model.ApplicationResponse{}, errors.New("Kafka producer is not initialized")
+	}
+
+	// Return enriched response
+	return model.ApplicationResponse{
+		ResponseInfo: model.ResponseInfo{
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
+		},
+		Application: req.Application,
 	}, nil
 }
