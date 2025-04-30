@@ -66,7 +66,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
 			if createdResp.Individual.Id != "" {
-				req.Application.Applicants[i].UserId = createdResp.Individual.Id
+				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, "Failed to create individual")
 				return
