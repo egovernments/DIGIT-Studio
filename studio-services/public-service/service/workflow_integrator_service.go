@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"public-service/config"
 
 	"public-service/model"
 )
@@ -51,6 +52,7 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 	processInstance[BUSINESS_SERVICE_KEY] = app.BusinessService
 	processInstance[MODULE_NAME_KEY] = app.Module
 	processInstance[ACTION_KEY] = app.Workflow.Action
+	log.Println("workflow")
 	processInstance[COMMENT_KEY] = app.Workflow.Comment
 
 	if len(app.Workflow.Assignees) > 0 {
@@ -77,6 +79,50 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 		log.Println("wfHost", wfHost)
 		log.Println("wfPath", wfPath)
 		return errors.New("workflow host or path is not set in environment variables")
+	}
+
+	url := wfHost + wfPath
+	resp, err := wi.HttpClient.Post(url, "application/json", bytes.NewReader(payloadBytes))
+	if err != nil {
+		return fmt.Errorf("failed to call workflow: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var errResp map[string]interface{}
+		_ = json.NewDecoder(resp.Body).Decode(&errResp)
+		return fmt.Errorf("workflow service returned status %d: %v", resp.StatusCode, errResp)
+	}
+
+	var wfResponse model.ProcessInstanceResponse
+	if err := json.NewDecoder(resp.Body).Decode(&wfResponse); err != nil {
+		return fmt.Errorf("error decoding workflow response: %w", err)
+	}
+
+	if len(wfResponse.ProcessInstances) == 0 {
+		return errors.New("no process instance returned from workflow")
+	}
+	app.ProcessInstance = &wfResponse.ProcessInstances[0]
+	return nil
+}
+
+func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Application, req model.RequestInfo) error {
+	app := applicationResponse
+	log.Println("Search CallWorkflow")
+	log.Println("🔥🔥🔥 Inside SearchWorkflow - LOG TRIGGERED 🔥🔥🔥")
+	requestPayload := make(map[string]interface{})
+	requestPayload[REQUEST_INFO_KEY] = req
+	payloadBytes, err := json.Marshal(requestPayload)
+	if err != nil {
+		return fmt.Errorf("error marshaling workflow request: %w", err)
+	}
+
+	wfHost := os.Getenv("WORKFLOW_HOST")
+	wfPath := config.GetEnv("WORKFLOW_SEARCH_PATH")
+	if wfHost == "" || wfPath == "" {
+		log.Println("wfHost", wfHost)
+		log.Println("wfPath", wfPath)
+		return errors.New("workflow host or search path is not set in environment variables")
 	}
 
 	url := wfHost + wfPath
