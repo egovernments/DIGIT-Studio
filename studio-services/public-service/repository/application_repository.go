@@ -142,7 +142,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		`
 		_, err := r.db.ExecContext(ctx, applicantQuery,
-			applicant.Id,
+			applicantID,
 			applicant.Type,
 			appID,
 			applicant.UserId,
