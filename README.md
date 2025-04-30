@@ -1,4 +1,5 @@
 🏛️ Digit Studio (Solution Framework)
+
 A unified, configurable architecture to streamline service development and UI integration for government and urban governance projects. This framework enables teams to build scalable, reusable, and maintainable digital solutions by consolidating common services, UIs, and configurations.
 
 📌 Overview
@@ -19,9 +20,7 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
 🛠️ A centralized management console for easier administration and control
 
 🧱 Repository Structure
-bash
-Copy
-Edit
+
 digit-studio/
 ├── design/
 │   ├── design.md             # Architecture & Design Overview
@@ -52,12 +51,10 @@ cd DIGIT-Studio
 Use docs/service-config.yaml as a reference to plug in your own services or UI variations.
 
 🧩 Use Cases
+
 Unified master data management
-
 Configurable form-based workflows
-
 Service-level customization without redeployment
-
 Scalable support for new departments and use cases
 
 🛠️ Version 1 Capabilities
@@ -76,7 +73,7 @@ Current Version Features:
 | SMS and Its Integration              |🚫 **Not Started**                         |
 | Checklist Integration                | 🚫 **Not Started**           |
 | Edit Application and Resubmit        | 🚫 **Not Started**             |
-| Other Misc. (e.g., Tenant Configuration) | ✅ **Completed**                        |
+| Other Misc. (e.g., Tenant Configuration) |🔄 **In Progress – Not Deployed**                 |
 
 All Status for references
 ✅ **Completed**                           
