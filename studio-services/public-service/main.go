@@ -25,13 +25,15 @@ func main() {
 	// Initialize repositories
 	publicRepo := repository.NewPublicRepository(dbConn)
 	appRepo := repository.NewApplicationRepository(dbConn, publicRepo)
-
+	restRepo := repository.NewRestCallRepository()
 	// Initialize services
-	appSvc := service.NewApplicationService(appRepo)
-	serviceSvc := service.NewPublicService(publicRepo)
 
+	indvidualsvc := service.NewIndividualService(restRepo)
+	enrichSvc := service.NewEnrichmentService(indvidualsvc)
+	appSvc := service.NewApplicationService(appRepo, enrichSvc)
+	serviceSvc := service.NewPublicService(publicRepo)
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator())
+	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(), indvidualsvc)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router
