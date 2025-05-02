@@ -1,5 +1,5 @@
-github.com/Priyansuvaish/digit_client v0.0.0-20250423075614-b09d7b5d8d91 h1:vCIRPftBtBpCQe8QZBmOqOBHOiQ39pP+IiZrbPHuekE=
-github.com/Priyansuvaish/digit_client v0.0.0-20250423075614-b09d7b5d8d91/go.mod h1:6fWVLdeR+sjWrGMx8JKd2WHlkAcaoPvtj4mPI7r88ZA=
+github.com/Priyansuvaish/digit_client v0.0.0-20250502085052-d5952aba2b79 h1:7t/6ynQDdqrUPS03cCq8MN/OGk//X0S34A3sBKcYwbY=
+github.com/Priyansuvaish/digit_client v0.0.0-20250502085052-d5952aba2b79/go.mod h1:gE/4uirziymrvq9kdS4AgJpR6N7Tx7uW7Cz9b6vw6FM=
 github.com/Priyansuvaish/digit_client v0.0.0-20250425051418-fc875050d549 h1:oUUXBXEYYRnssA+VoDMSskNk9wOeI9uCuPwIcPJTQng=
 github.com/Priyansuvaish/digit_client v0.0.0-20250425051418-fc875050d549/go.mod h1:6fWVLdeR+sjWrGMx8JKd2WHlkAcaoPvtj4mPI7r88ZA=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -23,6 +23,8 @@ github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/shopspring/decimal v1.4.0 h1:bxl37RwXBklmTi0C79JfXCEBD1cqqHt0bbgBAGFp81k=
+github.com/shopspring/decimal v1.4.0/go.mod h1:gawqmDU56v4yIKSwfBSFip1HdCCXN8/+DMd9qYNcwME=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=

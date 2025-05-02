@@ -6,14 +6,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/lib/pq"
 	"log"
 	"math/big"
+	"os"
 	"public-service/model"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Priyansuvaish/digit_client/models"
+	"github.com/Priyansuvaish/digit_client/services"
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type ApplicationRepository struct {
@@ -527,16 +531,95 @@ func (r *ApplicationRepository) Update(ctx context.Context, req model.Applicatio
 }
 
 func (r *ApplicationRepository) generateApplicationNumber(ctx context.Context, tenantId, module, businessService string) (applicationNumber string, err error) {
-	var nextVal int64
 
-	// Get next value from the sequence
-	query := "SELECT nextval('application_number_sequence')"
-	err = r.db.QueryRowContext(ctx, query).Scan(&nextVal)
+	masterdeatils, err := models.MasterDetailBuilder().WithName(os.Getenv("mdms.sevices.name")).Build()
+	moduledetails := models.ModuleDetailBuilder().WithModuleName(os.Getenv("mdms.service.modulename")).WithMasterDetails([]models.MasterDetail{*masterdeatils})
+	MdmsCriteria := models.MdmsCriteriaBuilder().WithTenantId(tenantId).WithModuleDetails([]models.ModuleDetail{*moduledetails})
+	mdmsserice := services.NewMDMSService(nil)
+	search, err := mdmsserice.Search(MdmsCriteria, nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to get next sequence value: %w", err)
+		return "", fmt.Errorf("search error: %w", err)
 	}
 
-	// Format application number
-	applicationNumber = fmt.Sprintf("APL-%s-%s-%s-%02d", strings.ToUpper(tenantId), strings.ToUpper(module), strings.ToUpper(businessService), nextVal)
-	return applicationNumber, nil
+	idFormatMap, ok := search.(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("failed to assert search to map[string]interface{}")
+	}
+
+	idFormatList, ok := idFormatMap["IdFormat"].([]interface{})
+	if !ok {
+		return "", fmt.Errorf("failed to assert IdFormat to []interface{}")
+	}
+
+	envIdName := os.Getenv("mdms.sevices.Idname")
+	var format string
+	found := false
+
+	for _, item := range idFormatList {
+		idFormatItem, ok := item.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		idname, ok := idFormatItem["idname"].(string)
+		if !ok {
+			continue
+		}
+		if idname == envIdName {
+			fmt, ok := idFormatItem["format"].(string)
+			if !ok {
+				log.Printf("failed to extract format as string from idFormatItem")
+				return "", nil
+			}
+			format = fmt
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return "", fmt.Errorf("idname %s not found in IdFormat", envIdName)
+	}
+
+	idrequest, err := models.IdRequestBuilder().
+		WithTenantID(tenantId).
+		WithIdName(envIdName).
+		WithFormat(format).
+		Build()
+	if err != nil {
+		return "", err
+	}
+
+	idservice := services.NewIDRequestService(nil)
+	idgen, err := idservice.Generate_id([]*models.IDRequest{idrequest}, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate ID: %w", err)
+	}
+	idresponse, ok := idgen.(map[string]interface{})["idResponses"].([]interface{})
+	if !ok {
+		log.Println("Failed to assert idResponses as []interface{}")
+		return
+	}
+	var applicationnumber string
+	if len(idresponse) > 0 {
+		// Access first element
+		applicationnumber, ok = idresponse[0].(map[string]interface{})["id"].(string)
+		if !ok {
+			log.Println("Failed to assert first ConstructionSubType as map[string]interface{}")
+			return "", nil
+		}
+	}
+	// Use idrequest as needed
+
+	// var nextVal int64
+
+	// // Get next value from the sequence
+	// query := "SELECT nextval('application_number_sequence')"
+	// err = r.db.QueryRowContext(ctx, query).Scan(&nextVal)
+	// if err != nil {
+	// 	return "", fmt.Errorf("failed to get next sequence value: %w", err)
+	// }
+
+	// // Format application number
+	// applicationNumber = fmt.Sprintf("APL-%s-%s-%s-%02d", strings.ToUpper(tenantId), strings.ToUpper(module), strings.ToUpper(businessService), nextVal)
+	return applicationnumber, nil
 }
