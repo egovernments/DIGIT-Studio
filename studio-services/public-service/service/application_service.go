@@ -37,5 +37,5 @@ func (s *ApplicationService) SearchApplication(ctx context.Context, criteria mod
 }
 
 func (s *ApplicationService) UpdateApplication(ctx context.Context, req model.ApplicationRequest, serviceCode string, applicationId string) (model.ApplicationResponse, error) {
-	return s.repo.Update(ctx, req, serviceCode, applicationId)
+	return s.repo.UpdateUsingKafka(ctx, req, serviceCode, applicationId)
 }

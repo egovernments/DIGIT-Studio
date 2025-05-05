@@ -809,3 +809,63 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 		Application: req.Application,
 	}, nil
 }
+
+func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.ApplicationRequest, serviceCode string, applicationId string) (model.ApplicationResponse, error) {
+	nowMillis := time.Now().UnixMilli()
+
+	// Validate that the application exists
+	searchCriteria := model.SearchCriteria{
+		TenantId:    req.Application.TenantId,
+		ServiceCode: serviceCode,
+		Ids:         []string{applicationId},
+	}
+	existingService, _ := r.Search(ctx, searchCriteria)
+	if len(existingService.Application) == 0 {
+		return model.ApplicationResponse{}, errors.New("Service with given serviceCode and applicationId not present in the application.")
+	}
+
+	// Ensure UserInfo is present
+	if req.RequestInfo.UserInfo == nil {
+		req.RequestInfo.UserInfo = &model.User{}
+	}
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
+	}
+
+	// Enrich request with audit details
+	req.Application.AuditDetails.LastModifiedBy = req.RequestInfo.UserInfo.Uuid
+	req.Application.AuditDetails.LastModifiedTime = nowMillis
+
+	// Marshal request into JSON
+	kafkaPayload, err := json.Marshal(req)
+	if err != nil {
+		return model.ApplicationResponse{}, fmt.Errorf("failed to marshal application request for Kafka: %w", err)
+	}
+
+	// Publish to Kafka topic
+	if r.kafkaProducer != nil {
+		messageBytes, err := json.Marshal(kafkaPayload)
+		log.Println("request", string(messageBytes))
+		if err != nil {
+			log.Printf("failed to marshal kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+		err = r.kafkaProducer.Push(ctx, config.GetEnv("UPDATE_PUBLIC_SERVICE_APPLICATION_TOPIC"), messageBytes)
+		if err != nil {
+			log.Printf("failed to push kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+	} else {
+		return model.ApplicationResponse{}, errors.New("Kafka producer is not initialized")
+	}
+
+	// Return the enriched response
+	return model.ApplicationResponse{
+		ResponseInfo: model.ResponseInfo{
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
+		},
+		Application: req.Application,
+	}, nil
+}
