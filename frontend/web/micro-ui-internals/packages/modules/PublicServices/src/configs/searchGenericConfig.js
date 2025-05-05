@@ -1,22 +1,19 @@
-import React from "react";
 
-export const searchConfig = {
+export const searchGenericConfig = {
     headerLabel: "Search",
     type: "search",
     apiDetails: {
-        apiDetails: {
-            serviceName: `/egov-mdms-service/v2/_search`,
+            serviceName: `/public-service/v1/application`,
             requestParam: {},
             requestBody: {
-              MdmsCriteria: {},
+                SearchCriteria: {},
             },
             minParametersForSearchForm: 0,
             masterName: "commonUiConfig",
-            moduleName: "SearchMDMSConfig",
-            tableFormJsonPath: "requestBody.MdmsCriteria",
-            filterFormJsonPath: "requestBody.MdmsCriteria.custom",
-            searchFormJsonPath: "requestBody.MdmsCriteria.custom",
-          },
+            moduleName: "searchGenericConfig",
+            tableFormJsonPath: "requestBody.SearchCriteria",
+            filterFormJsonPath: "requestBody.SearchCriteria.custom",
+            searchFormJsonPath: "requestBody.SearchCriteria.custom",
     },
     sections: {
         search: {
@@ -35,14 +32,14 @@ export const searchConfig = {
                         isMandatory: false,
                         type: "text",
                         disable: false,
-                        populators: { name: "application", error: "Error!" },
+                        populators: { name: "applicationNumber", error: "Error!" },
                     },
                     {
                         inline: true,
                         label: "Status",
                         isMandatory: false,
                         type: "text",
-                        disable: false,
+                        disable: true,
                         populators: { name: "status", error: "Error!" },
                     },
                     {
@@ -51,7 +48,7 @@ export const searchConfig = {
                         isMandatory: false,
                         description: "",
                         type: "date",
-                        disable: false,
+                        disable: true,
                         populators: { name: "todate", error: "Error!" },
                     },
                     {
@@ -60,26 +57,22 @@ export const searchConfig = {
                         isMandatory: false,
                         description: "",
                         type: "date",
-                        disable: false,
+                        disable: true,
                         populators: { name: "fromdate", error: "Error!" },
                     },
                     {
                         label: "Business Service",
                         isMandatory: true,
-                        key: "service",
+                        key: "businessService",
                         type: "dropdown",
                         disable: false,
                         preProcess : {
-                            updateDependent : ["populators.options.code","populators.options.name"]
+                            updateDependent : ["populators.options"]
                         },
                         populators: {
-                            name: "service",
+                            name: "businessService",
                             optionsKey:"name",
                             options:[
-                                {
-                                    code:"",
-                                    name:""
-                                }
                             ]
                         }
                     },
@@ -92,29 +85,26 @@ export const searchConfig = {
             uiConfig: {
                 columns: [
                     {
-                        label: "Application",
-                        jsonPath: "",
+                        label: "Application Number",
+                        jsonPath: "applicationNumber",
+                        additionalCustomization: true,
                     },
                     {
                         label: "Status",
-                        jsonPath: "",
+                        jsonPath: "workflowStatus",
                     },
                     {
-                        label: "To Date",
-                        jsonPath: "",
+                        label: "businessService",
+                        jsonPath: "businessService",
                     },
                     {
-                        label: "From Date",
-                        jsonPath: "", 
-                    },
-                    {
-                        label: "Business Service",
-                        jsonPath: "",
+                        label: "serviceCode",
+                        jsonPath: "serviceCode", 
                     }
                 ],
                 tableProps: {
-                    showTableDescription: "This is the search table description",
-                    showTableTitle: "Search table title",
+                    //showTableDescription: "This is the search table description",
+                    //showTableTitle: "Search table title",
                     tableClassName: "custom-classname-resultsdatatable"
                 },
                 actionProps: {
@@ -132,7 +122,7 @@ export const searchConfig = {
                     ],
                 },
                 enableColumnSort: true,
-                resultsJsonPath: "mdms",
+                resultsJsonPath: "Application",
                 defaultSortAsc: true,
             },
             children: {},

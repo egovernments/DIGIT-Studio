@@ -53,7 +53,7 @@ const App = ({ path, stateCode, userType, tenants }) => {
         </React.Fragment>
         <PrivateRoute path={`${path}/:module/:service/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/:module/:service/response`} component={() => <Response />} />
-        <PrivateRoute path={`${path}/tl/Search`} component={() => <SearchTL />} />
+        <PrivateRoute path={`${path}/:module/Search`} component={() => <SearchTL />} />
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
       </AppContainer>

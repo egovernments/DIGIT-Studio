@@ -26,7 +26,7 @@ export const serviceConfig = {
                   "name": "licenseType",
                   "label": "License Type ",
                   "defaultValue" : "PERMANENT",
-                  "prefix": "LICENSETYPE",
+                  // "prefix": "LICENSETYPE",
                   "type": "string",
                   "format": "radioordropdown",
                   "required": false,
