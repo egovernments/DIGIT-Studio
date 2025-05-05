@@ -844,13 +844,12 @@ func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.
 
 	// Publish to Kafka topic
 	if r.kafkaProducer != nil {
-		messageBytes, err := json.Marshal(kafkaPayload)
-		log.Println("request", string(messageBytes))
+		log.Println("request", string(kafkaPayload))
 		if err != nil {
 			log.Printf("failed to marshal kafka message: %v", err)
 			return model.ApplicationResponse{}, err
 		}
-		err = r.kafkaProducer.Push(ctx, config.GetEnv("UPDATE_PUBLIC_SERVICE_APPLICATION_TOPIC"), messageBytes)
+		err = r.kafkaProducer.Push(ctx, config.GetEnv("UPDATE_PUBLIC_SERVICE_APPLICATION_TOPIC"), kafkaPayload)
 		if err != nil {
 			log.Printf("failed to push kafka message: %v", err)
 			return model.ApplicationResponse{}, err
