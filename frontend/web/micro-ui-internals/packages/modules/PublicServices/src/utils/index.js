@@ -322,6 +322,11 @@ import { UICustomizations } from "../configs/UICustomizations";
     });
   };
   
+
+  export const getServicesOptions = (services,module) => {
+    const options = services?.filter((ob) => ob?.module === module && ob?.status === "ACTIVE").map((ob) =>  {return { code: ob?.businessService, name: ob?.businessService, serviceCode: ob?.serviceCode }});
+    return options;
+  }
   
   
   
