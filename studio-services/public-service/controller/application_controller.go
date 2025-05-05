@@ -91,7 +91,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		log.Printf("Workflow integration failed: %v", err)
 		// Optional: return HTTP error or log only
 	}
-
+	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }

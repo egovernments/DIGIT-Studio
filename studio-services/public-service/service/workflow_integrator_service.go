@@ -103,6 +103,7 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 		return errors.New("no process instance returned from workflow")
 	}
 	app.ProcessInstance = &wfResponse.ProcessInstances
+	applicationResponse.Application.ProcessInstance = &wfResponse.ProcessInstances
 	return nil
 }
 
@@ -127,6 +128,8 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 	}
 
 	url := wfHost + wfPath
+	url = fmt.Sprintf("%s%s?tenantId=%s&businessIds=%s", app.TenantId, app.ApplicationNumber)
+	log.Println("URL:", url)
 	resp, err := wi.HttpClient.Post(url, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return fmt.Errorf("failed to call workflow: %w", err)
@@ -148,5 +151,6 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 		return errors.New("no process instance returned from workflow")
 	}
 	app.ProcessInstance = &wfResponse.ProcessInstances
+	applicationResponse.ProcessInstance = &wfResponse.ProcessInstances
 	return nil
 }
