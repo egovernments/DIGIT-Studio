@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"log"
-	"math/big"
 	"public-service/config"
 	producer "public-service/kafka"
 	"public-service/model"
@@ -188,8 +187,8 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 			AuditDetails: model.AuditDetails{
 				CreatedBy:        createdBy,
 				LastModifiedBy:   createdBy,
-				CreatedTime:      *big.NewInt(nowMillis),
-				LastModifiedTime: *big.NewInt(nowMillis),
+				CreatedTime:      nowMillis,
+				LastModifiedTime: nowMillis,
 			},
 		},
 	}, nil
@@ -341,8 +340,8 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 				AuditDetails: model.AuditDetails{
 					CreatedBy:        createdBy,
 					LastModifiedBy:   lastModifiedBy,
-					CreatedTime:      *big.NewInt(createdAt.UnixMilli()),
-					LastModifiedTime: *big.NewInt(updatedAt.UnixMilli()),
+					CreatedTime:      time.Now().UnixMilli(),
+					LastModifiedTime: time.Now().UnixMilli(),
 				},
 			}
 
@@ -519,7 +518,7 @@ func (r *ApplicationRepository) Update(ctx context.Context, req model.Applicatio
 		}
 	}
 	req.Application.AuditDetails.LastModifiedBy = modifiedBy
-	req.Application.AuditDetails.LastModifiedTime = *big.NewInt(nowMillis)
+	req.Application.AuditDetails.LastModifiedTime = time.Now().UnixMilli()
 	return model.ApplicationResponse{
 		ResponseInfo: model.ResponseInfo{
 			ApiId:    req.RequestInfo.ApiId,
@@ -686,8 +685,8 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 				AuditDetails: model.AuditDetails{
 					CreatedBy:        createdBy,
 					LastModifiedBy:   lastModifiedBy,
-					CreatedTime:      *big.NewInt(createdAt.UnixMilli()),
-					LastModifiedTime: *big.NewInt(updatedAt.UnixMilli()),
+					CreatedTime:      time.Now().UnixMilli(),
+					LastModifiedTime: time.Now().UnixMilli(),
 				},
 			}
 
@@ -774,12 +773,14 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 
 	// Audit info
 	nowMillis := time.Now().UnixMilli()
+	log.Println(nowMillis)
 	req.Application.AuditDetails = model.AuditDetails{
 		CreatedBy:        createdBy,
 		LastModifiedBy:   createdBy,
-		CreatedTime:      *big.NewInt(nowMillis),
-		LastModifiedTime: *big.NewInt(nowMillis),
+		CreatedTime:      nowMillis,
+		LastModifiedTime: nowMillis,
 	}
+	log.Println(req.Application.AuditDetails)
 
 	// Marshal and push to Kafka
 	if r.kafkaProducer != nil {
