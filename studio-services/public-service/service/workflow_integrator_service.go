@@ -113,13 +113,14 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 	log.Println("🔥🔥🔥 Inside SearchWorkflow - LOG TRIGGERED 🔥🔥🔥")
 	requestPayload := make(map[string]interface{})
 	requestPayload[REQUEST_INFO_KEY] = req
+
 	payloadBytes, err := json.Marshal(requestPayload)
 	if err != nil {
 		return fmt.Errorf("error marshaling workflow request: %w", err)
 	}
 
-	wfHost := os.Getenv("WORKFLOW_HOST")
 	config.LoadEnv()
+	wfHost := config.GetEnv("WORKFLOW_HOST")
 	wfPath := config.GetEnv("WORKFLOW_SEARCH_PATH")
 	if wfHost == "" || wfPath == "" {
 		log.Println("wfHost", wfHost)
@@ -127,9 +128,9 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 		return errors.New("workflow host or search path is not set in environment variables")
 	}
 
-	url := wfHost + wfPath
-	url = fmt.Sprintf("%s%s?tenantId=%s&businessIds=%s", app.TenantId, app.ApplicationNumber)
+	url := fmt.Sprintf("%s%s?tenantId=%s&businessIds=%s", wfHost, wfPath, app.TenantId, app.ApplicationNumber)
 	log.Println("URL:", url)
+
 	resp, err := wi.HttpClient.Post(url, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return fmt.Errorf("failed to call workflow: %w", err)
@@ -150,7 +151,6 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 	if len(wfResponse.ProcessInstances) == 0 {
 		return errors.New("no process instance returned from workflow")
 	}
-	app.ProcessInstance = &wfResponse.ProcessInstances
 	applicationResponse.ProcessInstance = &wfResponse.ProcessInstances
 	return nil
 }
