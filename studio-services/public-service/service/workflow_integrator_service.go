@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	_ "github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"public-service/config"
-
 	"public-service/model"
 )
 
@@ -118,6 +118,7 @@ func (wi *WorkflowIntegrator) SearchWorkflow(applicationResponse *model.Applicat
 	}
 
 	wfHost := os.Getenv("WORKFLOW_HOST")
+	config.LoadEnv()
 	wfPath := config.GetEnv("WORKFLOW_SEARCH_PATH")
 	if wfHost == "" || wfPath == "" {
 		log.Println("wfHost", wfHost)

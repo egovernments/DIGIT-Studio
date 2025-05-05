@@ -20,6 +20,7 @@ func main() {
 
 	// Init DB always, migrations optional
 	dbConn := repository.InitDB()
+	config.LoadEnv()
 
 	if os.Getenv("FLYWAY_ENABLED") == "true" {
 		db.RunMigrations()
