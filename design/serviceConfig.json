@@ -349,10 +349,15 @@
           "maxFilesAllowed": 1
         }
       ],
-      "idgen": {
+      "idgen":[ {
+        "type":"application"
         "format": "tl.application.number",
         "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
-      },
+      },{
+        "type":"bill"
+        "format": "tl.application.number",
+        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+      }],
       "localization": {
         "modules": [
           "digit-tradelicence"
@@ -456,7 +461,7 @@
             "fromDate": 1522540800000,
             "toDate": 1554076799000,
             "periodCycle": "ANNUAL",
-            "service": "TL",
+            "service": "NewTL",
             "code": "TLAN2018",
             "financialYear": "2018-19"
           }
@@ -464,7 +469,7 @@
         "taxHead": [
           {
             "category": "TAX",
-            "service": "TL",
+            "service": "NewTL",
             "name": "tl tax",
             "code": "TL_TAX",
             "isDebit": false,
@@ -474,7 +479,7 @@
           },
           {
             "category": "TAX",
-            "service": "TL",
+            "service": "NewTL",
             "name": "tl roundoff",
             "code": "TL_ROUNDOFF",
             "isDebit": false,
@@ -484,7 +489,7 @@
           },
           {
             "category": "TAX",
-            "service": "TL",
+            "service": "NewTL",
             "name": "tl adhoc rebate",
             "code": "TL_ADHOC_REBATE",
             "isDebit": true,
@@ -494,7 +499,7 @@
           },
           {
             "category": "TAX",
-            "service": "TL",
+            "service": "NewTL",
             "name": "tl adhoc penalty",
             "code": "TL_ADHOC_PENALTY",
             "isDebit": false,
