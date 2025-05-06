@@ -62,18 +62,24 @@ The first version of Digit Studio provides end-to-end capabilities for core serv
 
 Current Version Features:
 
-| Feature                              | Status                                     |
-|--------------------------------------|--------------------------------------------|
-| Apply                                | 🟡 **In Progress – Positive Flow Handled & Deployed**                |
-| Inbox                                |🔄 **In Progress – Not Deployed**                   |
-| Search                               |🔄 **In Progress – Not Deployed**                  |
-| View and Workflow Transition         | 🟡 **In Progress – Positive Flow Handled & Deployed** |
-| Bill and Payment                     | 🚫 **Not Started** |
-| PDF and Its Integration              | 🚫 **Not Started**                       |
-| SMS and Its Integration              |🚫 **Not Started**                         |
-| Checklist Integration                | 🚫 **Not Started**           |
-| Edit Application and Resubmit        | 🚫 **Not Started**             |
-| Other Misc. (e.g., Tenant Configuration) |🔄 **In Progress – Not Deployed**                 |
+| **Feature**                           | **Current Status**                                        | **Version** |
+| ------------------------------------- | --------------------------------------------------------- | ----------- |
+| **Apply**                             | 🟡 *In Progress – Positive flow implemented and deployed* |    v1       |
+| **View & Workflow Transition**        | 🟡 *In Progress – Positive flow implemented and deployed* |    v1       |
+| **Inbox**                             | 🔄 *In Progress – Pending deployment*                     |    v1       |
+| **Search**                            | 🔄 *In Progress – Pending deployment*                     |    v1       |
+| **Other Misc. (e.g., Tenant Config)** | 🔄 *In Progress – Pending deployment*                     |    v1       |
+| **Applicant – Individual Support**    | 🚫 *Not started*                                          |    v1       |
+| **Applicant – Organization Support**  | 🚫 *Not started*                                          |    v2       |
+| **Bill & Payment**                    | 🚫 *Not started*                                          |    v1       |
+| **PDF Generation & Integration**      | 🚫 *Not started*                                          |    v1       |
+| **SMS Integration**                   | 🚫 *Not started*                                          |    v1       |
+| **Checklist Integration**             | 🚫 *Not started*                                          |    v1       |
+| **Edit & Resubmit Application**       | 🚫 *Not started*                                          |    v2       |
+| **User Type Enablement**              | 🚫 *Not started*                                          |    v2       |
+| **Service Initialization**            | 🚫 *Not started*                                          |    v2       |
+| **Console**                           | 🚫 *Not started*                                          |    v3       |
+
 
 All Status for references
 ✅ **Completed**                           
