@@ -20,20 +20,24 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
 🛠️ A centralized management console for easier administration and control
 
 🧱 Repository Structure
-
+```
 digit-studio/
-├── design/
-│   ├── design.md             # Architecture & Design Overview
-│   ├── serviceConfig.json    # Example of a Configurable Service
-│   └── generic-service.yaml  # Service Specifications
-├── frontend/
-│   ├── common-ui/            # Shared services and utilities
-│   └── console-ui/           # Admin & control center
-├── backend/
-│   ├── generic-service/      # Shared services and utilities
-│   ├── public-service/       # Dynamic UI components
-│   └── transformer/          # Admin & control center
-├── README.md
+├── design/                         # System design and configuration specs
+│   ├── design.md                   # Architecture & design overview
+│   ├── serviceConfig.json          # Example of a configurable service
+│   └── generic-service.yaml        # Service specifications
+│
+├── frontend/                       # Frontend-related modules
+│   ├── common-ui/                  # Shared UI components and utilities
+│   └── console-ui/                 # Admin & control center UI
+│
+├── backend/                        # Backend service modules
+│   ├── generic-service/            # Common backend utilities and logic
+│   ├── public-service/             # Backend powering dynamic UI components
+│   └── transformer/                # Admin & control processing layer
+│
+└── README.md                       # Project overview and documentation
+```
 
 📌 Documentation
 
