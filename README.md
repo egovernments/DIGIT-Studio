@@ -102,6 +102,111 @@ Status Legend:
 🔒 **In Progress – Blocked**   
 🚫 **Not Started**
 
+
+
+## 🧩 Key Features
+
+### ✅ Configuration via Service Designer *(Planned via UI, Manual in Alpha)*
+
+Administrators define and manage the service using configurations for:
+
+- 📄 Application forms and field validations  
+- 📎 Required documents  
+- 💸 Fee calculation rules  
+- 🧑‍💼 Role-based access control and workflow steps  
+- 🔔 Notification triggers (SMS, Email)  
+
+> ℹ️ In the alpha release, these configurations are authored manually in JSON format.
+
+---
+
+### 👥 Citizen Interaction through Dynamic UI
+
+Citizens or business users access the service through a **dynamic UI**, rendered based on configuration:
+
+- 📝 Fill and submit application forms  
+- 📎 Upload required documents  
+- 💳 Make secure online payments  
+- 🌐 Multilingual and mobile responsive interface  
+
+---
+
+### 🏛️ Employee Processing via Workflow
+
+Municipal staff access the same platform to:
+
+- 🔍 Review and verify applications  
+- 🗂️ Approve or reject requests  
+- 🧭 Follow configured role-based workflows  
+- ❓ Raise clarifications with pre-defined reasons  
+
+Workflow orchestration is managed via the **Workflow Core Service** with automatic task assignments.
+
+---
+
+### ⚙️ Backend Orchestration via Service Runtime
+
+The **Service Runtime** handles:
+
+- ✅ Input validation (schema + custom validators)  
+- 🔁 Workflow transitions and audit logging  
+- 💸 Billing and payment integration  
+- 📎 File uploads and notifications  
+- 📜 PDF certificate generation  
+
+All backend services are composed through DIGIT’s modular and reusable service components.
+
+---
+
+### 📊 Monitoring & Analytics
+
+- Metrics such as application status, turnaround times, and usage patterns are captured via **Service Analytics**.  
+- Visualization is supported through the **Kibana Dashboard** for monitoring and operational insights.
+
+---
+
+## 🚀 Alpha Release Highlights
+
+The **Alpha version** delivers a functional runtime and service configuration model with the following focus:
+
+### 🎯 Included Components
+
+- **Service Runtime**  
+  - Executes services using JSON configurations  
+  - Handles dynamic form rendering, workflow, billing, and notifications  
+- **Core Integrations**  
+  - Workflow, Billing, FileStore, Notification, Localization, MDMS  
+  - ElasticSearch-based Service Analytics  
+
+### 🧾 Manual Configuration Setup
+
+- Services are configured via JSON files following a structured schema  
+- Includes: forms, validations, workflow steps, roles, fees, etc.  
+- Versioned **Service Registry** is used to store and serve configurations  
+
+---
+
+## ⚠️ Known Limitations
+
+| Area | Limitation |
+|------|------------|
+| **Standard UI Flow** | Only supports Apply → Workflow → Approvals |
+| **Validation** | Only basic schema validations supported; complex logic requires custom APIs |
+| **Billing Logic** | Must be implemented separately; not configurable |
+| **UI Schema** | No field-level dynamic behaviors or custom UI schemas |
+| **Form Structure** | Only supports one level of nesting; complex tables not supported |
+| **Search** | JSON-based storage limits advanced querying |
+| **Workflow** | No support for parallel workflows |
+| **Service Designer** | Visual UI not available in Alpha |
+| **Service Initializer** | May require manual prefill; automation to be added later |
+| **Import/Export** | Not supported for service configs or data |
+| **Registry Integration** | External registry sync not supported |
+| **Applicant Type** | Only Individual applicants supported; organizations not supported yet |
+
+---
+
+
+
 🔭 Roadmap: Future Enhancements
   In future versions, we aim to address:
   
