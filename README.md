@@ -148,7 +148,7 @@ Different users interact with the system through a unified DIGIT UI, personalize
 ---
 
 ## 🧱 Repository Structure
-  ```
+  ```text
   digit-studio/
   ├── design/                         # System design and configuration specs
   │   ├── design.md                   # Architecture & design overview
