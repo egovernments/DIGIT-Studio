@@ -36,7 +36,7 @@ export const generateFormConfig = (config,module,service) => {
               options: [
                 {
                   code: field.defaultValue,
-                  name: `TRADELICENSE_${field.prefix}_${field.defaultValue}`,
+                  name: `TRADELICENSE_${field?.name.toUpperCase()}_${field.defaultValue}`,
                 },
               ]
               }

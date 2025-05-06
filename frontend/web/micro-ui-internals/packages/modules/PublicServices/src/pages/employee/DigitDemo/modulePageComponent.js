@@ -50,6 +50,9 @@ console.log(detailsConfig);
         </Link>
             ))
             }
+            <Link className="link" to={`/${window.contextPath}/employee/publicservices/${product.module}/Search`}>
+              Search
+            </Link>
           </Card>
         ))}
       </div>

@@ -6,41 +6,41 @@ export const InboxConfig = (module) => {
     return ({
         headerLabel: "Inbox",
         type: "inbox",
-        apiDetails: {
-            serviceName: `/egov-mdms-service/v2/_search`,
-            requestParam: {},
-            requestBody: {
-                MdmsCriteria: {},
-            },
-            minParametersForSearchForm: 0,
-            masterName: "commonUiConfig",
-            moduleName: "SearchMDMSConfig",
-            tableFormJsonPath: "requestBody.MdmsCriteria",
-            filterFormJsonPath: "requestBody.MdmsCriteria.custom",
-            searchFormJsonPath: "requestBody.MdmsCriteria.custom",
-        },
         // apiDetails: {
-        //     serviceName: "/inbox-v2/v2/_search",
+        //     serviceName: `/egov-mdms-service/v2/_search`,
         //     requestParam: {},
         //     requestBody: {
-        //         inbox: {
-        //             processSearchCriteria: {
-        //                 businessService: [
-        //                     "PGR"
-        //                 ],
-        //                 moduleName: "RAINMAKER-PGR"
-        //             },
-        //             moduleSearchCriteria: {}
-        //         }
+        //         MdmsCriteria: {},
         //     },
         //     minParametersForSearchForm: 0,
-        //     minParametersForFilterForm: 0,
         //     masterName: "commonUiConfig",
-        //     moduleName: "PGRInboxConfig",
-        //     tableFormJsonPath: "requestBody.inbox",
-        //     filterFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
-        //     searchFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
+        //     moduleName: "SearchMDMSConfig",
+        //     tableFormJsonPath: "requestBody.MdmsCriteria",
+        //     filterFormJsonPath: "requestBody.MdmsCriteria.custom",
+        //     searchFormJsonPath: "requestBody.MdmsCriteria.custom",
         // },
+        apiDetails: {
+            serviceName: "/inbox-v2/v2/_search",
+            requestParam: {},
+            requestBody: {
+                inbox: {
+                    processSearchCriteria: {
+                        businessService: [
+                            "PGR"
+                        ],
+                        moduleName: "RAINMAKER-PGR"
+                    },
+                    moduleSearchCriteria: {}
+                }
+            },
+            minParametersForSearchForm: 0,
+            minParametersForFilterForm: 0,
+            masterName: "commonUiConfig",
+            moduleName: "PGRInboxConfig",
+            tableFormJsonPath: "requestBody.inbox",
+            filterFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
+            searchFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
+        },
         // apiDetails: {
         //     serviceName: "/mdms-v2/v2/_search",
         //     requestParam: {},

@@ -7,8 +7,8 @@ import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
 import Response from "./Response";
 import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
 import ModulePageComponent from "./DigitDemo/modulePageComponent";
-import SearchService from "./DigitDemo/searchService";
 import InboxService from "./DigitDemo/InboxService";
+import SearchTL from "./DigitDemo/searchTL";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -43,8 +43,11 @@ const App = ({ path, stateCode, userType, tenants }) => {
         </React.Fragment>
         <PrivateRoute path={`${path}/:module/:service/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/:module/:service/response`} component={() => <Response />} />
-        <PrivateRoute path={`${path}/:module/Search`} component={() => <SearchService />} />
+
         <PrivateRoute path={`${path}/:module/Inbox`} component={() => <InboxService />} />
+
+        <PrivateRoute path={`${path}/:module/Search`} component={() => <SearchTL />} />
+
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
       </AppContainer>

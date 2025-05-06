@@ -63,14 +63,24 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
   
 
-  export const transformToApplicationPayload = (formData,configMap, service, tenantId) => {
-   let currentConfig = configMap?.ServiceConfiguration?.filter((ob) => ob?.service === service)[0];
-
-   let serviceDetails = getServiceDetails(formData);
-
+  export const transformToApplicationPayload = (formData, configMap, service, tenantId) => {
+    let currentConfig = configMap?.ServiceConfiguration?.find(ob => ob?.service === service);
+  
+    let serviceDetails = getServiceDetails(formData);
+  
+    const applicants = formData.applicantDetails?.filter(Boolean)?.map((applicant, index) => ({
+      type: "CITIZEN",
+      name: applicant?.OwnerName,
+      userId: (index + 2).toString(),//remove field in future // Example: generate userId dynamically or use real IDs
+      mobileNumber: Number(applicant?.mobileNumber),
+      emailId: applicant?.email || `user${index + 1}@example.com`, // fallback or use actual
+      prefix: "91", // or dynamically detect
+      active: true,
+    })) || [];
+  
     let requestBody = {
       Application: {
-        tenantId: "dev",
+        tenantId: tenantId,
         module: currentConfig?.module,
         businessService: currentConfig?.service,
         status: "INACTIVE",
@@ -79,26 +89,8 @@ import { UICustomizations } from "../configs/UICustomizations";
         workflowStatus: "applied",
         serviceDetails: {
           ...serviceDetails
-          // tradeName: formData.tradeName,
-          // licenseType: formData.licenseType?.code,
-          // tradeStructureType: formData.tradeStructureType?.code,
-          // tradeStructureSubType: formData.tradeStructureSubType?.code,
-          // tradeCommencementDate: formData.tradeCommencementDate,
-          // tradeUnits: formData?.tradeUnits,
-          //accessories: formData?.accessories?.filter(Boolean), // remove nulls
-          //financialYear: formData.financialYear
         },
-        applicants: [
-          {
-            type: "CITIZEN",
-            name: formData.applicantDetails?.[0]?.OwnerName,
-            userId: "2", // You can replace this dynamically
-            mobileNumber: Number(formData.applicantDetails?.[0]?.mobileNumber),
-            emailId: "john@gmail.com", // Optional or dynamic
-            prefix: "91", // or dynamically detect
-            active: true,
-          }
-        ],
+        applicants,
         address: {
           tenantId: tenantId,
           latitude: 0,
@@ -114,7 +106,7 @@ import { UICustomizations } from "../configs/UICustomizations";
           boundarycode: `dev.${formData.tradeAddress?.city?.code?.toLowerCase() || "city"}`,
         },
         additionalDetails: {
-          ref1: "val1" // static or populate based on need
+          ref1: "val1"
         },
         Workflow: {
           action: "APPLY",
@@ -123,41 +115,39 @@ import { UICustomizations } from "../configs/UICustomizations";
         }
       }
     };
-    return requestBody;
-  }
   
+    return requestBody;
+  };
 
 
 
   export const generateViewConfigFromResponse = (application, t) => {
-    // const getTranslatedValue = (prefix, value) => {
-    //   if (!value) return "NA";
-    //   return t ? t(`${prefix}_${value}`) : value;
-    // };
-
+    console.log(application, "applicationnn");
+  
     const extractSectionValues = (data, prefix) => {
       const shouldTranslate = (value) => {
         if (typeof value !== "string") return false;
         const cleaned = value.replace(/-/g, "_");
-        const hasOnlyNumbersOrDate = /^[\d_\-]+$/.test(value); // matches 2025-04-16, 2025_04_16, etc.
-    
+        const hasOnlyNumbersOrDate = /^[\d_\-]+$/.test(value);
         return (
           cleaned.includes("_") &&
-          !hasOnlyNumbersOrDate &&  // don't translate if it's numbers/dates
-          /^[A-Z_]+$/.test(cleaned)  // must be UPPERCASE and underscore
+          !hasOnlyNumbersOrDate &&
+          /^[A-Z_]+$/.test(cleaned)
         );
       };
-    
+  
       const formatField = (key, value) => {
         const isTranslate = shouldTranslate(value);
         const cleanedValue = typeof value === "string" ? value.replace(/-/g, "_") : value;
         return {
-          key: t(`${application?.module.toUpperCase()}_${application?.businessService.toUpperCase()}_${key.toUpperCase()}`),
-          value: isTranslate ? t(`COMMON_${key.toUpperCase()}_${cleanedValue}`) : (value || "NA"),
+          key: t
+            ? t(`${application?.module.toUpperCase()}_${application?.businessService.toUpperCase()}_${key.toUpperCase()}`)
+            : key,
+          value: isTranslate ? (t ? t(`COMMON_${key.toUpperCase()}_${cleanedValue}`) : cleanedValue) : (value || "NA"),
           isTranslate,
         };
       };
-    
+  
       if (Array.isArray(data)) {
         return data.flatMap((item, index) => {
           const itemFields = Object.keys(item || {})
@@ -166,15 +156,15 @@ import { UICustomizations } from "../configs/UICustomizations";
               return key.toLowerCase() !== "id" && value !== undefined && value !== null && value !== "";
             })
             .map((key) => formatField(key, item[key]));
-    
+  
           if (itemFields.length > 0) {
             return [
               {
-                key: `Item ${index + 1}`,
+                key: `Applicant ${index + 1}`, // <-- Label only, no value
                 value: "",
                 isTranslate: false,
               },
-              ...itemFields
+              ...itemFields,
             ];
           }
           return [];
@@ -188,13 +178,10 @@ import { UICustomizations } from "../configs/UICustomizations";
           .map((key) => formatField(key, data[key]));
       }
     };
-    
-    
-    
   
     const serviceDetails = application.serviceDetails || {};
     const addressDetails = application.address || {};
-    const applicantDetails = application.applicants?.[0] || {};
+    const applicants = application.applicants || [];
   
     const cards = [];
   
@@ -203,10 +190,7 @@ import { UICustomizations } from "../configs/UICustomizations";
       const serviceSections = Object.keys(serviceDetails)
         .map((serviceKey) => {
           const data = serviceDetails[serviceKey];
-          const values = extractSectionValues(
-            data,
-            `${serviceKey.toUpperCase()}`
-          );
+          const values = extractSectionValues(data, `${serviceKey.toUpperCase()}`);
           if (values.length > 0) {
             const headerKey = `${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}_${serviceKey.toUpperCase()}`;
             return {
@@ -243,54 +227,51 @@ import { UICustomizations } from "../configs/UICustomizations";
       });
     }
   
-    // Applicant Details card
-    const applicantValues = extractSectionValues(applicantDetails, "APPLICANT");
-    if (applicantValues.length > 0) {
-      const headerKey = "APPLICANT_DETAILS";
+    // Applicant Details card (single header, multiple applicants with labels)
+    if (Array.isArray(applicants) && applicants.length > 0) {
+      const applicantValues = extractSectionValues(applicants, "APPLICANT");
       cards.push({
         sections: [
           {
-            head: headerKey,
+            head: "APPLICANT_DETAILS",
             type: "DATA",
-            sectionHeader: { value: headerKey, inlineStyles: {} },
+            sectionHeader: { value: "APPLICANT DETAILS", inlineStyles: {} },
             values: applicantValues,
           },
         ],
       });
     }
   
-    cards.push(
-      {
-        navigationKey: "card1",
-        sections: [
-          {
-            type: "WFHISTORY",
-            businessService: "NewTL",
-            applicationNo: "APL-DEV-TL-NEWTL-28",
-            tenantId: "dev",
-            timelineStatusPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}`,
-            breakLineRequired: false,
-            config : {
-              select: (data) => {
-                return {...data, timeline: data?.timeline.filter((ob) => ob?.performedAction !== "DRAFT")}
-              },
-            }
+    // Workflow History & Actions card
+    cards.push({
+      navigationKey: "card1",
+      sections: [
+        {
+          type: "WFHISTORY",
+          businessService: application.businessService,
+          applicationNo: application.applicationNumber,
+          tenantId: application.tenantId,
+          timelineStatusPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}`,
+          breakLineRequired: false,
+          config: {
+            select: (data) => {
+              return { ...data, timeline: data?.timeline?.filter((ob) => ob?.performedAction !== "DRAFT") };
+            },
           },
-          {
-            type: "WFACTIONS",
-            forcedActionPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}_ACTION`,
-            businessService: "NewTL",
-            applicationNo: "APL-DEV-TL-NEWTL-28",
-            tenantId: "dev",
-            applicationDetails: application,
-            url: "/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04",
-            moduleCode: "TradeLicense",
-            //editApplicationNumber: undefined,
-            //editCallback : getRedirectionCallback
-          },
-        ],
-      }
-    )
+        },
+        // {
+        //   type: "WFACTIONS",
+        //   forcedActionPrefix: `WF_${application?.module?.toUpperCase()}_${application?.businessService?.toUpperCase()}_ACTION`,
+        //   businessService: application.businessService,
+        //   applicationNo: application.applicationNumber,
+        //   tenantId: application.tenantId,
+        //   applicationDetails: application,
+        //   url: `/public-service/v1/application/${application?.serviceCode}`,
+        //   moduleCode: application.module,
+        // },
+      ],
+    });
+  
     const config = {
       cards,
       apiResponse: application,
@@ -304,7 +285,8 @@ import { UICustomizations } from "../configs/UICustomizations";
   
     return config;
   };
-
+  
+  
   export const transformResponseforModulePage = (data) => {
     const moduleData = {}; // Object to store modules and their corresponding business services
   
@@ -340,6 +322,11 @@ import { UICustomizations } from "../configs/UICustomizations";
     });
   };
   
+
+  export const getServicesOptions = (services,module) => {
+    const options = services?.filter((ob) => ob?.module === module && ob?.status === "ACTIVE").map((ob) =>  {return { code: ob?.businessService, name: ob?.businessService, serviceCode: ob?.serviceCode }});
+    return options;
+  }
   
   
   
