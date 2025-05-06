@@ -1,10 +1,10 @@
-🏛️ Digit Studio (Solution Framework)
+# 🏛️ Digit Studio (Solution Framework)
 
   A unified, configurable architecture to streamline service development and UI integration for government and urban governance projects. This framework enables teams to build scalable, reusable, and maintainable digital solutions by consolidating common services, UIs, and configurations.
 
-📌 Overview
+## 📌 Overview
 
-Government digital platforms often face challenges such as:
+### Government digital platforms often face challenges such as:
 
   🚧 Inconsistent implementations across similar services
   
@@ -12,7 +12,7 @@ Government digital platforms often face challenges such as:
   
   🔄 Limited reusability of components and features
 
-The Digit Studio (Solution Framework) addresses these challenges by offering:
+### The Digit Studio (Solution Framework) addresses these challenges by offering:
 
   ✅ A shared service layer to standardize logic and reduce redundancy
   
@@ -20,7 +20,7 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
   
   🛠️ A centralized management console for easier administration and control
 
-🧱 Repository Structure
+## 🧱 Repository Structure
   ```
   digit-studio/
   ├── design/                         # System design and configuration specs
@@ -41,7 +41,9 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
   
   ```
 
-📌 Documentation
+---
+
+## 📌 Documentation
 
   - 📐 [Design Document](https://docs.google.com/document/d/13LR7TQMsIg0nD5-Wdl4kj1r3kYjzLyKD0FVzvJkkR3s/edit?tab=t.0#heading=h.gfwh8242orfp)  
 
@@ -49,7 +51,9 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
 
   - ⚙️ [Sample Service Configuration](./design/serviceConfig.json)
 
-🚀 Getting Started
+---
+
+## 🚀 Getting Started
   Clone the repository:
 
   ```bash
@@ -61,7 +65,9 @@ The Digit Studio (Solution Framework) addresses these challenges by offering:
   ```
 Use docs/service-config.yaml as a reference to plug in your own services or UI variations.
 
-🧩 Use Cases
+---
+
+## 🧩 Use Cases
   Unified master data management
   
   Configurable form-based workflows
@@ -70,7 +76,9 @@ Use docs/service-config.yaml as a reference to plug in your own services or UI v
   
   Scalable support for new departments and use cases
 
-🛠️ Version 1 Capabilities
+---
+
+## 🛠️ Version 1 Capabilities
   The first version of Digit Studio provides end-to-end capabilities for core service delivery and workflow-based applications, including:
 
 Current Version Features:
@@ -94,7 +102,7 @@ Current Version Features:
 | **Console**                           | 🚫 *Not started*                                          |    v3       |
 
 
-Status Legend:
+### Status Legend:
   
 ✅ **Completed**                           
 🟡 **In Progress – Positive Flow Handled & Deployed**
@@ -102,7 +110,7 @@ Status Legend:
 🔒 **In Progress – Blocked**   
 🚫 **Not Started**
 
-
+---
 
 ## 🧩 Key Features
 
@@ -207,7 +215,7 @@ The **Alpha version** delivers a functional runtime and service configuration mo
 
 
 
-🔭 Roadmap: Future Enhancements
+## 🔭 Roadmap: Future Enhancements
   In future versions, we aim to address:
   
   🧑‍💻 Enhanced Admin Console for better role-based access and control
@@ -220,12 +228,15 @@ The **Alpha version** delivers a functional runtime and service configuration mo
   
   🧠 AI-assisted data suggestions and automation
 
-🤝 Contributing
+---
+
+
+## 🤝 Contributing
   Contributions are welcome! Please refer to the contributing guide for guidelines on submitting issues or pull requests.
 
-📬 Contact
+## 📬 Contact
   For any questions or support, reach out to [jagankumar](https://github.com/jagankumar-egov)
 
-🛡️ License
+## 🛡️ License
   This project is licensed under the MIT License. See the LICENSE file for details.
 
