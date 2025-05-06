@@ -20,9 +20,10 @@ const modulePageComponent = ({}) => {
     method: "GET",
   }
   const {isLoading, data} = Digit.Hooks.useCustomAPIHook(request);
+  console.log(data);
 
   let detailsConfig = data ? transformResponseforModulePage(data?.Services) : [];
-
+console.log(detailsConfig);
   if (isLoading) {
     return <Loader />;
   }
