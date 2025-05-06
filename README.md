@@ -233,7 +233,7 @@ Current Version Features:
   
 ✅ **Completed**                           
 🟡 **In Progress – Positive Flow Handled & Deployed**
-🔄 **In Progress – Not Deployed**  
+🔄 **In Progress – Not Deployed**
 🔒 **In Progress – Blocked**   
 🚫 **Not Started**
 
