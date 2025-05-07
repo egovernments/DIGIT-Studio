@@ -64,7 +64,7 @@ export const UICustomizations = {
         },
         additionalCustomizations: (row, key, column, value, t, searchResult) => {
           switch (key) {
-            case "Application Number":
+            case `${row?.module.toUpperCase()}_APPLICATION_NUMBER`:
               return (
                 <span className="link">
             <Link to={`/${window.contextPath}/employee/publicservices/${row?.module}/${row?.businessService}/ViewScreen?applicationNumber=${row?.applicationNumber}`}>
