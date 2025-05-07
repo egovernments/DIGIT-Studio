@@ -69,3 +69,7 @@
 .input-upload {
   width:300px;
 }
+
+.digit-input-mirror-selector-button {
+  width: 450px !important;
+}    
