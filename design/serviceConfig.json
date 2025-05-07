@@ -350,11 +350,11 @@
         }
       ],
       "idgen":[ {
-        "type":"application"
+        "type":"application",
         "format": "tl.application.number",
         "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
       },{
-        "type":"bill"
+        "type":"bill",
         "format": "tl.application.number",
         "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
       }],
@@ -442,7 +442,8 @@
           ]
         }
       ],
-      "bill": {
+      "bill":
+        {"BusinessService" : {
         "businessService": "NewTL",
         "code": "NewTL",
         "collectionModesNotAllowed": [
@@ -455,7 +456,8 @@
         "minAmountPayable": 100,
         "isAdvanceAllowed": false,
         "demandUpdateTime": 86400000,
-        "isVoucherCreationEnabled": true,
+        "isVoucherCreationEnabled": true
+        }, 
         "taxPeriod": [
           {
             "fromDate": 1522540800000,
