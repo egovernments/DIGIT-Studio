@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-npm install --save @egovernments/digit-ui-css
+npm install --save @egovernments/digit-ui-components-css
 ```
 
 ## Limitation
@@ -24,7 +24,7 @@ frontend/micro-ui/web/package.json
 ```
 
 ```json
-"@egovernments/digit-ui-css":"^1.5.0",
+"@egovernments/digit-ui-components-css":"0.0.2",
 ```
 
 then navigate to App.js
@@ -36,22 +36,55 @@ frontend/micro-ui/web/public/index.html
 ```jsx
 /** add this import **/
 
-  <link rel="stylesheet" href="https://unpkg.com/@egovernments/digit-ui-css@1.5.22/dist/index.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@egovernments/digit-ui-components-css@0.0.2/dist/index.css" />
 
 ```
-### Changelog
+## Changelog
 
-```bash
-1.0.0-microlan Base version
+### Summary for Version [0.0.2] - 2024-06-03
 
-```
-## Contributors
+#### New Changes
 
-[jagankumar-egov] [nipunarora-eGov] 
+- Added Error Message Component.
+- Added Info Button Component.
+- Added Panels Component.
+- Added Popup Component with two variants: `default` and `alert`.
+- Added RemoveableTag Component.
+- Added Stepper Component.
+- Added TextBlock Component.
+- Added Timeline Component.
+- Added Uploader Component with three variants: `UploadFile`, `UploadPopup`, and `UploadImage`.
+- Added PanelCard Molecule.
 
-### Published from DIGIT Frontend 
-DIGIT Frontend Repo (https://github.com/egovernments/Digit-Frontend/tree/develop)
+#### Enhancements
+
+- Updated Button Component Styles.
+- Updated Dropdown Component Styles and added SelectAll Option.
+- Updated InfoCard Component Styles.
+- Added Animation for Toast.
+- Added new prop `type` for Toast, replacing the separate props for `info`, `warning`, and `error`.
+- Updated Typography with lineHeight.
+- Updated Color Typography.
+
+For a detailed changelog, see the [CHANGELOG.md](./CHANGELOG.md) file.
+
+
+## Published from DIGIT-UI-LIBRARIES
+
+DIGIT-UI-LIBRARIES Repo (https://github.com/egovernments/DIGIT-UI-LIBRARIES/tree/master)
+
+# Contributors
+
+[nabeelmd-egov] [bhavya-eGov] [nipunarora-eGov] [swathi-egov] [jagankumar-egov] [Tulika-eGov] [Ramkrishna-egov]
+
+# Reference 
+
+Storybook (https://unified-dev.digit.org/storybook/)
+
+Documentation (https://core.digit.org/guides/developer-guide/ui-developer-guide/digit-ui/ui-components-standardisation/digit-ui-components0.2.0)
 
 ## License
 
 MIT © [jagankumar-egov](https://github.com/jagankumar-egov)
+
+![Logo](https://s3.ap-south-1.amazonaws.com/works-dev-asset/mseva-white-logo.png)
