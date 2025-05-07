@@ -38,13 +38,14 @@ func main() {
 	appRepo := repository.NewApplicationRepository(dbConn, publicRepo, kafkaProducer)
 	restRepo := repository.NewRestCallRepository()
 	// Initialize services
-
-	indvidualsvc := service.NewIndividualService(restRepo)
-	enrichSvc := service.NewEnrichmentService(indvidualsvc)
+	demandSvc := service.NewDemandService(restRepo)
+	individualSvc := service.NewIndividualService(restRepo)
+	mdmsSvc := service.NewMDMSService(restRepo)
+	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(), indvidualsvc)
+	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(), individualSvc, enrichSvc)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router

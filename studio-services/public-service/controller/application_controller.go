@@ -19,10 +19,11 @@ type ApplicationController struct {
 	service            *service.ApplicationService
 	workflowIntegrator *service.WorkflowIntegrator
 	individualService  *service.IndividualService
+	enrichmentService  *service.EnrichmentService
 }
 
-func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService) *ApplicationController {
-	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService}
+func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService) *ApplicationController {
+	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService}
 }
 
 func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +77,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
 		}
 	}
-
+	c.enrichmentService.EnrichApplicationsWithDemand(req)
 	ctx := context.Background()
 	log.Println("inside CreateApplicationHandler")
 	res, err := c.service.CreateApplication(ctx, req, serviceCode)
@@ -194,6 +195,9 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 		req.Application.Id = parsedID
 	}
 	ctx := context.Background()
+	if req.Application.Workflow.Action == "PAY" {
+
+	}
 	res, err := c.service.UpdateApplication(ctx, req, serviceCode, applicationId)
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
