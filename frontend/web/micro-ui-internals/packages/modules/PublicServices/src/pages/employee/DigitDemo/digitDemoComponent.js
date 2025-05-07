@@ -46,7 +46,7 @@ const DigitDemoComponent = () => {
   const onSubmit = async (data) => {
     const sectionName = currentFormConfig.name || `section_${currentStep}`;
   
-    const updatedFormData = currentFormConfig?.type === "multiChildForm" ? { ...formData, ...data } : { ...formData, [sectionName]: data };
+    const updatedFormData = currentFormConfig?.type === "multiChildForm" || currentFormConfig?.type === "documents" ? { ...formData, ...data } : { ...formData, [sectionName]: data }; 
     setFormData(updatedFormData);
 
     const isLastStep = currentStep === rawConfig.length;
@@ -96,7 +96,7 @@ const DigitDemoComponent = () => {
 
   const onStepperClick = (stepIndex) => {
     const clickedStepIndex = stepIndex + 1; // because currentStep is 1-based
-    const clickedHead = rawConfig[stepIndex].head;
+    const clickedHead = rawConfig[stepIndex].name;
     if (Object.keys(formData).includes(clickedHead)) {
       setCurrentStep(clickedStepIndex);
     }

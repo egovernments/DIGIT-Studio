@@ -1,47 +1,47 @@
 import { AddressFields } from "./templateConfig";
 import { ApplicantFields } from "./templateConfig";
-export const generateFormConfig = (config,module,service) => {
+import { documentFields } from "./templateConfig";
+
+export const generateFormConfig = (config, module, service) => {
   const serviceFields = config?.ServiceConfiguration?.[0]?.fields || [];
+
+  const sortByOrderNumber = (fields = []) =>
+    [...fields].sort((a, b) => (a.orderNumber || 999) - (b.orderNumber || 999));
 
   const createField = (field) => {
     return {
       type: field.format || field.type,
-      label : `${module}_${service}_${field.name.toUpperCase()}`,
+      label: `${module}_${service}_${field.name.toUpperCase()}`,
       populators: {
         name: field.name,
         optionsKey: "name",
         error: field?.validation?.message || "field is required",
         required: !!field.required,
         validation: field.validation,
-        required: field.required,
         disable: field.disable,
         defaultValue: field.defaultValue,
         prefix: field.prefix,
         reference: field.reference,
         dependencies: field.dependencies,
-        ...(
-          field?.schema
-            ? {
-                mdmsConfig: {
-                  masterName: field.schema.split(".")[1] || "Master",
-                  moduleName: field.schema.split(".")[0] || "common-masters",
-                  localePrefix: `COMMON_${field.name.toUpperCase()}`,
-                }
-              }
-            : {}
-        ),
-        ...(
-          field?.defaultValue
-            ? {
+        ...(field?.schema
+          ? {
+              mdmsConfig: {
+                masterName: field.schema.split(".")[1] || "Master",
+                moduleName: field.schema.split(".")[0] || "common-masters",
+                localePrefix: `COMMON_${field.name.toUpperCase()}`,
+              },
+            }
+          : {}),
+        ...(field?.defaultValue
+          ? {
               options: [
                 {
                   code: field.defaultValue,
                   name: `TRADELICENSE_${field?.name.toUpperCase()}_${field.defaultValue}`,
                 },
-              ]
-              }
-            : {}
-        ),
+              ],
+            }
+          : {}),
       },
     };
   };
@@ -50,7 +50,7 @@ export const generateFormConfig = (config,module,service) => {
     return {
       head: `${module}_${service}_${objectField.name.toUpperCase()}`,
       name: objectField.name,
-      body: objectField.properties.map((subField) => createField(subField)),
+      body: sortByOrderNumber(objectField.properties).map((subField) => createField(subField)),
       type: "childform",
       step: 1,
     };
@@ -61,15 +61,23 @@ export const generateFormConfig = (config,module,service) => {
       head: `${module}_${service}_${arrayField.name.toUpperCase()}`,
       name: arrayField.name,
       type: "multiChildForm",
-      body: arrayField.items.properties.map((subField) => createField(subField)),
-      step:2
+      body: sortByOrderNumber(arrayField.items.properties).map((subField) => createField(subField)),
+      step: 2,
+    };
+  };
+
+  const getDocumentFields = (documentField) => {
+    return {
+      head: `${module}_${service}_${documentField.head.toUpperCase()}`,
+      "type": "documents",
+      body: documentField?.body,
     };
   };
 
   const basicFields = [];
   const stepForms = [];
 
-  serviceFields.forEach((field) => {
+  sortByOrderNumber(serviceFields).forEach((field) => {
     if (field.type === "object") {
       stepForms.push(createChildForm(field));
     } else if (field.type === "array") {
@@ -79,9 +87,19 @@ export const generateFormConfig = (config,module,service) => {
     }
   });
 
-  
-  const addressFieldsStep = AddressFields[0]?.type === "object" ? createChildForm(AddressFields[0]) : createMultiChildForm(AddressFields[0]);
-  const applicantFieldsStep = ApplicantFields[0].type === "array"? createMultiChildForm(ApplicantFields[0]) : createChildForm(ApplicantFields[0]);
+  const addressFieldsStep =
+    config?.ServiceConfiguration?.[0]?.boundary && AddressFields?.[0]
+      ? AddressFields[0].type === "object"
+        ? createChildForm(AddressFields[0])
+        : createMultiChildForm(AddressFields[0])
+      : {};
+
+  const applicantFieldsStep =
+    config?.ServiceConfiguration?.[0]?.applicant && ApplicantFields?.[0]
+      ? ApplicantFields[0].type === "array"
+        ? createMultiChildForm(ApplicantFields[0])
+        : createChildForm(ApplicantFields[0])
+      : {};
 
   const steps = [];
 
@@ -92,10 +110,11 @@ export const generateFormConfig = (config,module,service) => {
       type: "form",
     });
   }
-  //need to add condition here for address
-   
 
-  return [...steps, ...stepForms, addressFieldsStep, applicantFieldsStep];
+  const documentform =
+    config?.ServiceConfiguration?.[0]?.documents && documentFields?.[0]
+      ? getDocumentFields(documentFields[0])
+      : {};
 
+  return [...steps, ...stepForms, applicantFieldsStep, addressFieldsStep, documentform];
 };
-

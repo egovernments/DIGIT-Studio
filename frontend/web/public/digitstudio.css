@@ -65,3 +65,7 @@
     font-weight: bold;
     width: 100%;
   }
+
+.input-upload {
+  width:300px;
+}

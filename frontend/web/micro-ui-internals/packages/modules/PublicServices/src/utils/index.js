@@ -15,7 +15,7 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
 
   const getServiceDetails = (formData) => {
-    const { address, applicantDetails, ...validSections } = formData;
+    const { address, applicantDetails, uploadedDocs, ...validSections } = formData;
   
     const flattenValues = (obj) => {
       const flat = {};
@@ -71,7 +71,7 @@ import { UICustomizations } from "../configs/UICustomizations";
     const applicants = formData.applicantDetails?.filter(Boolean)?.map((applicant, index) => ({
       type: "CITIZEN",
       name: applicant?.OwnerName,
-      userId: (index + 2).toString(),//remove field in future // Example: generate userId dynamically or use real IDs
+      //userId: (index + 2).toString(),//remove field in future // Example: generate userId dynamically or use real IDs
       mobileNumber: Number(applicant?.mobileNumber),
       emailId: applicant?.email || `user${index + 1}@example.com`, // fallback or use actual
       prefix: "91", // or dynamically detect
@@ -106,7 +106,8 @@ import { UICustomizations } from "../configs/UICustomizations";
           boundarycode: `dev.${formData.tradeAddress?.city?.code?.toLowerCase() || "city"}`,
         },
         additionalDetails: {
-          ref1: "val1"
+          ref1: "val1",
+          documents : formData?.uploadedDocs
         },
         Workflow: {
           action: "APPLY",
@@ -237,6 +238,46 @@ import { UICustomizations } from "../configs/UICustomizations";
             type: "DATA",
             sectionHeader: { value: "APPLICANT DETAILS", inlineStyles: {} },
             values: applicantValues,
+          },
+        ],
+      });
+    }
+    //documents enablement
+    const rawDocuments = application?.additionalDetails?.documents || {};
+    const flattenedDocuments = [];
+
+    Object.entries(rawDocuments).forEach(([docType, docEntries]) => {
+      docEntries.forEach((entry) => {
+        const [fileName, fileObj] = entry || [];
+        const fileStoreId = fileObj?.fileStoreId?.fileStoreId;
+
+        if (fileStoreId) {
+          flattenedDocuments.push({
+            title: docType || "NA",
+            documentType: docType || "NA",
+            documentUid: fileName || "NA",
+            fileStoreId: fileStoreId,
+          });
+        }
+      });
+    });
+
+    if (flattenedDocuments.length > 0) {
+      cards.push({
+        navigationKey: "card-documents",
+        sections: [
+          {
+            type: "DOCUMENTS",
+            documents: [
+              {
+                title: `${application?.module.toUpperCase()}_${application?.businessService.toUpperCase()}_DOCUMENTS`, // or any module-specific label
+                BS: application.module || "Module",
+                values: flattenedDocuments,
+              },
+            ],
+            inlineStyles: {
+              // marginTop: "1rem",
+            },
           },
         ],
       });
