@@ -12,7 +12,7 @@ module.exports = {
     colors: {
       primary: {
         light: "#F18F5E",
-        main: "#C84C0E",
+        main: "#F47738",
         dark: "#C8602B",
       },
       secondary: "#22394D",
@@ -109,32 +109,11 @@ module.exports = {
         "text-color-disabled": "#B1B4B6",
         background: "#EEEEEE",
         paper: "#FFFFFF",
+        "paper-secondary": "#FAFAFA",
         divider: "#D6D5D4",
         "header-sidenav": "#0B4B66",
         "input-border": "#505A5F",
-        "primary-orange": "#F47738",
-        "primary-bluegray": "#0B4B66",
-        "primary-orangebg": "#FEEFE7",
-
-        "primary-1": "#C84C0E",
-        "primary-bg": "#FBEEE8",
-        "primary-2": "#0B4B66",
-        "text-primary": "#363636",
-        "text-secondary": "#787878",
-        "text-disabled": "#C5C5C5",
-        "alert-error": "#B91900",
-        "alert-errorbg": "#FFF5F4",
-        "alert-success": "#00703C",
-        "alert-successbg": "#F1FFF8",
-        "alert-warning": "#9E5F00",
-        "alert-warning-bg": "#FFF9F0",
-        "alert-info": "#0057BD",
-        "alert-infobg": "#DEEFFF",
-        "generic-background": "#EEEEEE",
-        "generic-divider": "#D6D5D4",
-        "generic-inputborder": "#505A5F",
-        "paper-primary": "#FFFFFF",
-        "paper-secondary": "#FAFAFA",
+        "primary-bg": "#FEEFE7",
       },
       alert: {
         error: "#D4351C",
@@ -176,8 +155,6 @@ module.exports = {
         },
         "heading-xs": {
           mobile: "0.75rem",
-          tablet:"0.875rem",
-          desktop:"0.875rem"
         },
         "caption-l": {
           mobile: "1.5rem",
@@ -214,25 +191,10 @@ module.exports = {
           tablet: "1rem",
           desktop: "1rem",
         },
-        "link-l": {
+        link: {
           mobile: "1rem",
-          tablet: "1.25rem",
-          desktop: "1.25rem",
-        },
-        "link-s": {
-          mobile: "0.875rem",
           tablet: "1rem",
           desktop: "1rem",
-        },
-        "link-xs": {
-          mobile: "0.75rem",
-          tablet: "0.875rem",
-          desktop: "0.875rem",
-        },
-        button: {
-          large: "1.25rem",
-          medium: "1rem",
-          small: "0.875rem",
         },
       },
       fontFamily: {
@@ -252,51 +214,15 @@ module.exports = {
         bold: 700,
       },
       lineHeight: {
-        "line-height-body-l": {
-          mobile: "1.5rem",
-          tablet: "1.75rem",
-          desktop: "1.75rem",
-        },
-        "line-height-body-s": {
-          mobile: "1.0938rem",
-          tablet: "1.5rem",
-          desktop: "1.5rem",
-        },
-        "line-height-body-xs": {
-          mobile: "1.125rem",
-          tablet: "1.5rem",
-          desktop: "1.5rem",
-        },
+        "line-height-body-l": { mobile: "1.5rem", tablet: "1.75rem", desktop: "1.75rem" },
+        "line-height-body-s": { mobile: "1.0938rem", tablet: "1.5rem", desktop: "1.5rem" },
+        "line-height-body-xs": { mobile: "1.125rem", tablet: "1.5rem", desktop: "1.5rem" },
         normal: "normal",
-
-        lineheight1: "1.14rem",
-        lineheight2: "1.37rem",
       },
       screens: {
         mobile: "400px",
         tablet: "768px",
         desktop: "1024px",
-      },
-      spacers:{
-        spacer0:"0rem",
-        spacer1:"0.25rem",
-        spacer2:"0.5rem",
-        spacer3:"0.75rem",
-        spacer4:"1rem",
-        spacer5:"1.25rem",
-        spacer6:"1.5rem",
-        spacer7:"1.75rem",
-        spacer8:"2rem",
-        spacer9:"2.25rem",
-        spacer10:"2.5rem",
-        spacer11:"2.75rem",
-        spacer12:"3rem",
-        spacer13:"3.5rem"
-      },
-      divider: {
-        dividerS: "0.063rem solid #D6D5D4",
-        dividerM: "0.125rem solid #D6D5D4",
-        dividerL: "0.25rem solid #D6D5D4",
       },
     },
   },
