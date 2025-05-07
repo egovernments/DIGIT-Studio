@@ -20,13 +20,9 @@ const SampleBreadCrumbs = ({ location }) => {
       show: true,
     },
     {
-      content: t(location.pathname.split("/").pop()),
+      content: t(location.pathname.split("/").pop().toUpperCase()),
       show: true,
-    },
-    {
-      content: t(location.pathname.split("/").pop()),
-      show: true,
-    },
+    }
   ];
   return <BreadCrumb crumbs={crumbs} />;
 };
@@ -34,16 +30,6 @@ const SampleBreadCrumbs = ({ location }) => {
 
 const App = ({ path, stateCode, userType, tenants }) => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
-  
-  const request = {
-    url : "/public-service/v1/service",
-    headers: {
-      "X-Tenant-Id" : tenantId
-    },
-    method: "GET",
-  }
-  const {isLoading, data} = Digit.Hooks.useCustomAPIHook(request);
-  console.log("dataa",data);
 
   return (
     <Switch>

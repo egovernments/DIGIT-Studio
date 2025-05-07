@@ -98,8 +98,6 @@ const WorkflowPopup = ({ applicationDetails,...props}) => {
     }, [assigneeOptions])
     
     const _submit = (data) => {
-        //here call an UICustomizaton fn to update the payload for update call(businessService based)
-        console.log(applicationDetails, data, action, businessService,"dataaaa");
         //const updatePayload = Digit?.Customizations?.["commonUiConfig"]?.updatePayload(applicationDetails, data, action, businessService)
         const customupdatePayload = updatePayload(applicationDetails, data, action, businessService);
         //calling submitAction 

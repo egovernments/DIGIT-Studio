@@ -523,7 +523,7 @@ const configModal = (
                             validation:{
                                 maxLength:{
                                     value:1024,
-                                    message:t("WORKS_COMMENT_LENGTH_EXCEEDED_1024")
+                                    message:t("COMMON_COMMENT_LENGTH_EXCEEDED_1024")
                                 }
                             }
                         },
@@ -536,10 +536,10 @@ const configModal = (
                             allowedMaxSizeInMB: 5,
                             maxFilesAllowed: 1,
                             allowedFileTypes:configMap?.[businessService]?.default?.upload?.allowedFileTypes,
-                            hintText:t("WORKS_DOC_UPLOAD_HINT"),
+                            hintText:t("COMMON_DOC_UPLOAD_HINT"),
                             showHintBelow:true,
                             customClass: "upload-margin-bottom",
-                            errorMessage: t("WORKS_FILE_UPLOAD_CUSTOM_ERROR_MSG"),
+                            errorMessage: t("COMMON_FILE_UPLOAD_CUSTOM_ERROR_MSG"),
                             hideInForm:!fetchIsShow("upload")
                         }
                     }

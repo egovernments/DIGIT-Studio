@@ -6,6 +6,7 @@ import { serviceConfigPGR } from "../../../configs/serviceConfigurationPGR";
 import { serviceConfig } from "../../../configs/serviceConfiguration";
 import { generateFormConfig } from "../../../utils/generateFormConfigFromSchemaUtil";
 import { transformToApplicationPayload } from "../../../utils";
+import { Loader } from "@egovernments/digit-ui-react-components";
 
 const DigitDemoComponent = () => {
   const { t } = useTranslation();
@@ -18,13 +19,33 @@ const DigitDemoComponent = () => {
   const [formData, setFormData] = useState({});
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const queryStrings = Digit.Hooks.useQueryParams();
-  
-  const configMap = {
-    pgr: serviceConfigPGR,
-    TradeLicense: serviceConfig
-  };
 
-  const rawConfig = generateFormConfig(configMap[module], module.toUpperCase(),service?.toUpperCase());
+  const requestCriteria = {
+    url: "/egov-mdms-service/v2/_search",
+    body: {
+      MdmsCriteria: {
+        tenantId: tenantId,
+        schemaCode: "Studio.ServiceConfiguration"
+      },
+    },
+    //changeQueryName: "sorOverhead"
+  };
+  const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(requestCriteria);
+
+  let config = data?.mdms?.filter((item) => item?.uniqueIdentifier.toLowerCase() === `${module}.${service}`.toLowerCase())[0];
+  let Updatedconfig = {
+    ServiceConfiguration : [config?.data],
+    tenantId: tenantId,
+    module: module,
+  }
+
+  // const configMap = {
+  //   pgr: serviceConfigPGR,
+  //   TradeLicense: serviceConfig
+  // };
+  // console.log(configMap[module],"configMap")
+
+  const rawConfig = generateFormConfig(Updatedconfig, module.toUpperCase(),service?.toUpperCase());
   const steps = rawConfig.map((config) => config.head || config.label || "Untitled Section");
 
   const currentFormConfig = rawConfig[currentStep - 1];
@@ -61,7 +82,7 @@ const DigitDemoComponent = () => {
           params: {},
           headers: { "x-tenant-id": tenantId },
           method: "POST",
-          body: transformToApplicationPayload(updatedFormData,configMap[module],service,tenantId),
+          body: transformToApplicationPayload(updatedFormData,Updatedconfig,service,tenantId),
           config: {
             enable: true,
           },
@@ -75,7 +96,7 @@ const DigitDemoComponent = () => {
                 message: "Application Created Successfully",
                 showID: true,
                 applicationNumber: data?.Application?.applicationNumber,
-                redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?id=${data?.Application?.id}`,
+                redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?applicationNumber=${data?.Application?.applicationNumber}`,
               },
             });
           },
@@ -106,6 +127,13 @@ const DigitDemoComponent = () => {
     setShowToast(false);
   };
 
+
+  if (moduleListLoading) {
+    return <Loader />;
+  }
+
+  console.log(formData[currentFormConfig?.name || `section_${currentStep}`],"mmmmmmm")
+  console.log(formData,"formdata");
   return (
     <React.Fragment>
       <Stepper
@@ -121,9 +149,9 @@ const DigitDemoComponent = () => {
         text={" "}
         config={[{
           ...currentFormConfig,
-          body: currentFormConfig.body.filter((a) => !a.hideInEmployee),
+          body: currentFormConfig?.body?.filter((a) => !a.hideInEmployee),
         }]}
-        defaultValues={formData[currentFormConfig.head] || {}}
+        defaultValues={{...formData[currentFormConfig?.name || `section_${currentStep}`] || {}}}
         onSubmit={onSubmit}
         fieldStyle={{ marginRight: 0 }}
       />

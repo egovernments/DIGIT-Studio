@@ -1,5 +1,5 @@
 export const serviceConfig = {
-    "tenantId": "pg",
+    "tenantId": "dev",
     "moduleName": "CommonService",
     "ServiceConfiguration": [
       {

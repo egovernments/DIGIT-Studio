@@ -22,7 +22,7 @@ const DigitDemoViewComponent = () => {
     },
     method: "GET",
     params: {
-      "ids": queryStrings?.id,
+      "applicationNumber": queryStrings?.applicationNumber,
     }
   }
   const {isLoading, data} = Digit.Hooks.useCustomAPIHook(request);

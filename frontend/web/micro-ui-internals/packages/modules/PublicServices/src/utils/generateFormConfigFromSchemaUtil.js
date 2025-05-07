@@ -28,7 +28,7 @@ export const generateFormConfig = (config, module, service) => {
               mdmsConfig: {
                 masterName: field.schema.split(".")[1] || "Master",
                 moduleName: field.schema.split(".")[0] || "common-masters",
-                localePrefix: `COMMON_${field.name.toUpperCase()}`,
+                localePrefix: `${field?.schema.replaceAll(".","_").toUpperCase()}_${field.name.toUpperCase()}`,
               },
             }
           : {}),
@@ -61,6 +61,7 @@ export const generateFormConfig = (config, module, service) => {
       head: `${module}_${service}_${arrayField.name.toUpperCase()}`,
       name: arrayField.name,
       type: "multiChildForm",
+      prefix: `${module}_${service}`,
       body: sortByOrderNumber(arrayField.items.properties).map((subField) => createField(subField)),
       step: 2,
     };

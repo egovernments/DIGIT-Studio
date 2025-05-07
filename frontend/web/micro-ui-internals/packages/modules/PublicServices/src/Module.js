@@ -22,7 +22,6 @@ export const PublicServicesModule = ({ stateCode, userType, tenants }) => {
     method: "GET",
   }
   const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(request);
-  console.log(data,"dattttaaa");
   
   // Define the modules that this component depends on
   let moduleList = [...new Set(data?.Services?.map((ob) => ob?.module))];
