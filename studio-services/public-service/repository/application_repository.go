@@ -9,7 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"log"
-	"math/big"
+	"public-service/config"
+	producer "public-service/kafka"
 	"public-service/model"
 	"strconv"
 	"strings"
@@ -17,12 +18,13 @@ import (
 )
 
 type ApplicationRepository struct {
-	db         *sql.DB
-	publicRepo *PublicRepository
+	db            *sql.DB
+	publicRepo    *PublicRepository
+	kafkaProducer *producer.PublicServiceProducer
 }
 
-func NewApplicationRepository(db *sql.DB, publicRepo *PublicRepository) *ApplicationRepository {
-	return &ApplicationRepository{db: db, publicRepo: publicRepo}
+func NewApplicationRepository(db *sql.DB, publicRepo *PublicRepository, kafkaProducer *producer.PublicServiceProducer) *ApplicationRepository {
+	return &ApplicationRepository{db: db, publicRepo: publicRepo, kafkaProducer: kafkaProducer}
 }
 
 // Create Application
@@ -134,6 +136,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 
 	// Insert Applicants
 	for i, applicant := range req.Application.Applicants {
+
 		applicantID := uuid.New()
 		applicantQuery := `
 			INSERT INTO applicant (
@@ -184,8 +187,8 @@ func (r *ApplicationRepository) Create(ctx context.Context, req model.Applicatio
 			AuditDetails: model.AuditDetails{
 				CreatedBy:        createdBy,
 				LastModifiedBy:   createdBy,
-				CreatedTime:      *big.NewInt(nowMillis),
-				LastModifiedTime: *big.NewInt(nowMillis),
+				CreatedTime:      nowMillis,
+				LastModifiedTime: nowMillis,
 			},
 		},
 	}, nil
@@ -245,9 +248,9 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 		args = append(args, criteria.BusinessService)
 		argPos++
 	}
-	if criteria.ApplicationNo != "" {
+	if criteria.ApplicationNumber != "" {
 		conditions = append(conditions, fmt.Sprintf("a.application_number = $%d", argPos))
-		args = append(args, criteria.ApplicationNo)
+		args = append(args, criteria.ApplicationNumber)
 		argPos++
 	}
 	if criteria.Status != "" {
@@ -337,8 +340,8 @@ func (r *ApplicationRepository) Search(ctx context.Context, criteria model.Searc
 				AuditDetails: model.AuditDetails{
 					CreatedBy:        createdBy,
 					LastModifiedBy:   lastModifiedBy,
-					CreatedTime:      *big.NewInt(createdAt.UnixMilli()),
-					LastModifiedTime: *big.NewInt(updatedAt.UnixMilli()),
+					CreatedTime:      time.Now().UnixMilli(),
+					LastModifiedTime: time.Now().UnixMilli(),
 				},
 			}
 
@@ -515,7 +518,7 @@ func (r *ApplicationRepository) Update(ctx context.Context, req model.Applicatio
 		}
 	}
 	req.Application.AuditDetails.LastModifiedBy = modifiedBy
-	req.Application.AuditDetails.LastModifiedTime = *big.NewInt(nowMillis)
+	req.Application.AuditDetails.LastModifiedTime = time.Now().UnixMilli()
 	return model.ApplicationResponse{
 		ResponseInfo: model.ResponseInfo{
 			ApiId:    req.RequestInfo.ApiId,
@@ -539,4 +542,329 @@ func (r *ApplicationRepository) generateApplicationNumber(ctx context.Context, t
 	// Format application number
 	applicationNumber = fmt.Sprintf("APL-%s-%s-%s-%02d", strings.ToUpper(tenantId), strings.ToUpper(module), strings.ToUpper(businessService), nextVal)
 	return applicationNumber, nil
+}
+
+func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criteria model.SearchCriteria) (model.SearchResponse, error) {
+	var queryBuilder strings.Builder
+	var args []interface{}
+	var conditions []string
+	argPos := 1
+
+	// Check if service exists
+	searchServiceCriteria := model.SearchCriteria{
+		TenantId:    criteria.TenantId,
+		ServiceCode: criteria.ServiceCode,
+	}
+	existingService, _ := r.publicRepo.SearchService(ctx, searchServiceCriteria)
+	if len(existingService.Services) == 0 {
+		return model.SearchResponse{}, errors.New("Service with given serviceCode not present in the application. Please create the service.")
+	}
+
+	queryBuilder.WriteString(`
+		SELECT 
+			a.id, a.tenant_id, a.module, a.business_service, a.status, a.channel, a.application_number,
+			a.workflow_status, a.service_code, a.service_details, a.additional_details, a.address, a.workflow,
+			a.createdby, a.last_modifiedby, a.created_at, a.updated_at,
+			r.id, r.reference_type, r.module, r.tenant_id, r.reference_no, r.active,
+			ap.id, ap.type, ap.user_id, ap.active
+		FROM application a
+		LEFT JOIN reference r ON a.id = r.application_id
+		LEFT JOIN applicant ap ON a.id = ap.application_id
+	`)
+
+	if criteria.TenantId != "" {
+		conditions = append(conditions, fmt.Sprintf("a.tenant_id = $%d", argPos))
+		args = append(args, criteria.TenantId)
+		argPos++
+	}
+	if criteria.ServiceCode != "" {
+		conditions = append(conditions, fmt.Sprintf("a.service_code = $%d", argPos))
+		args = append(args, criteria.ServiceCode)
+		argPos++
+	}
+	if len(criteria.Ids) > 0 {
+		conditions = append(conditions, fmt.Sprintf("a.id = ANY($%d)", argPos))
+		args = append(args, pq.Array(criteria.Ids))
+		argPos++
+	}
+	if criteria.Module != "" {
+		conditions = append(conditions, fmt.Sprintf("a.module = $%d", argPos))
+		args = append(args, criteria.Module)
+		argPos++
+	}
+	if criteria.BusinessService != "" {
+		conditions = append(conditions, fmt.Sprintf("a.business_service = $%d", argPos))
+		args = append(args, criteria.BusinessService)
+		argPos++
+	}
+	if criteria.ApplicationNumber != "" {
+		conditions = append(conditions, fmt.Sprintf("a.application_number = $%d", argPos))
+		args = append(args, criteria.ApplicationNumber)
+		argPos++
+	}
+	if criteria.Status != "" {
+		conditions = append(conditions, fmt.Sprintf("a.status = $%d", argPos))
+		args = append(args, criteria.Status)
+		argPos++
+	}
+	if len(conditions) > 0 {
+		queryBuilder.WriteString(" WHERE ")
+		queryBuilder.WriteString(strings.Join(conditions, " AND "))
+	}
+
+	log.Println("query in search:", queryBuilder.String())
+	rows, err := r.db.QueryContext(ctx, queryBuilder.String(), args...)
+	if err != nil {
+		return model.SearchResponse{}, err
+	}
+	defer rows.Close()
+
+	var applications []model.Application
+	appMap := make(map[uuid.UUID]*model.Application)
+
+	for rows.Next() {
+		var (
+			appId                                                                                              uuid.UUID
+			tenantId, module, businessService, status, channel, applicationNumber, workflowStatus, serviceCode string
+			serviceDetailsJSON, additionalDetailsJSON, addressJSON, workflowJSON                               []byte
+			createdBy, lastModifiedBy                                                                          uuid.UUID
+			createdAt, updatedAt                                                                               time.Time
+
+			refId, refType, refModule, refTenantId, refNo sql.NullString
+			refActive                                     sql.NullBool
+
+			applicantId, applicantType, applicantUserId sql.NullString
+			applicantActive                             sql.NullBool
+		)
+
+		err := rows.Scan(
+			&appId,
+			&tenantId,
+			&module,
+			&businessService,
+			&status,
+			&channel,
+			&applicationNumber,
+			&workflowStatus,
+			&serviceCode,
+			&serviceDetailsJSON,
+			&additionalDetailsJSON,
+			&addressJSON,
+			&workflowJSON,
+			&createdBy,
+			&lastModifiedBy,
+			&createdAt,
+			&updatedAt,
+			&refId,
+			&refType,
+			&refModule,
+			&refTenantId,
+			&refNo,
+			&refActive,
+			&applicantId,
+			&applicantType,
+			&applicantUserId,
+			&applicantActive,
+		)
+		if err != nil {
+			return model.SearchResponse{}, err
+		}
+
+		app, exists := appMap[appId]
+		if !exists {
+			app = &model.Application{
+				Id:                appId,
+				TenantId:          tenantId,
+				Module:            module,
+				BusinessService:   businessService,
+				Status:            model.Status(status),
+				Channel:           channel,
+				ApplicationNumber: applicationNumber,
+				WorkflowStatus:    workflowStatus,
+				ServiceCode:       serviceCode,
+				AuditDetails: model.AuditDetails{
+					CreatedBy:        createdBy,
+					LastModifiedBy:   lastModifiedBy,
+					CreatedTime:      time.Now().UnixMilli(),
+					LastModifiedTime: time.Now().UnixMilli(),
+				},
+			}
+
+			_ = json.Unmarshal(serviceDetailsJSON, &app.ServiceDetails)
+			_ = json.Unmarshal(additionalDetailsJSON, &app.AdditionalDetails)
+			_ = json.Unmarshal(addressJSON, &app.Address)
+			_ = json.Unmarshal(workflowJSON, &app.Workflow)
+
+			appMap[appId] = app
+		}
+
+		if refId.Valid {
+			ref := model.Reference{
+				Id:            uuid.MustParse(refId.String),
+				ReferenceType: refType.String,
+				Module:        refModule.String,
+				TenantId:      refTenantId.String,
+				ReferenceNo:   refNo.String,
+				Active:        refActive.Bool,
+			}
+			app.Reference = append(app.Reference, ref)
+		}
+
+		if applicantId.Valid {
+			applicant := model.Applicant{
+				Id:     uuid.MustParse(applicantId.String),
+				Type:   applicantType.String,
+				UserId: applicantUserId.String,
+				Active: applicantActive.Bool,
+			}
+			app.Applicants = append(app.Applicants, applicant)
+		}
+	}
+
+	for _, app := range appMap {
+		applications = append(applications, *app)
+	}
+
+	return model.SearchResponse{
+		Application: applications,
+		ResponseInfo: model.ResponseInfo{
+			Status: "successful",
+		},
+	}, nil
+}
+
+func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.ApplicationRequest, serviceCode string) (model.ApplicationResponse, error) {
+	searchServiceCriteria := model.SearchCriteria{
+		TenantId:    req.Application.TenantId,
+		ServiceCode: serviceCode,
+	}
+	existingService, _ := r.publicRepo.SearchService(ctx, searchServiceCriteria)
+	if len(existingService.Services) == 0 {
+		return model.ApplicationResponse{}, errors.New("Service with given serviceCode not present in the application. Please create service.")
+	}
+
+	_ = time.Now()
+	if req.RequestInfo.UserInfo == nil {
+		req.RequestInfo.UserInfo = &model.User{}
+	}
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
+	}
+	createdBy := req.RequestInfo.UserInfo.Uuid
+	appID := uuid.New()
+
+	req.RequestInfo.UserInfo.Uuid = createdBy
+	req.Application.Id = appID
+	req.Application.Address.Id = uuid.New()
+	req.Application.Workflow.Id = uuid.New()
+
+	// Generate application number
+	req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
+
+	// Generate IDs for references
+	for i := range req.Application.Reference {
+		req.Application.Reference[i].Id = uuid.New()
+	}
+
+	// Generate IDs for applicants
+	for i := range req.Application.Applicants {
+		req.Application.Applicants[i].Id = uuid.New()
+	}
+
+	// Audit info
+	nowMillis := time.Now().UnixMilli()
+	log.Println(nowMillis)
+	req.Application.AuditDetails = model.AuditDetails{
+		CreatedBy:        createdBy,
+		LastModifiedBy:   createdBy,
+		CreatedTime:      nowMillis,
+		LastModifiedTime: nowMillis,
+	}
+	log.Println(req.Application.AuditDetails)
+
+	// Marshal and push to Kafka
+	if r.kafkaProducer != nil {
+		messageBytes, err := json.Marshal(req)
+		log.Println("request", string(messageBytes))
+		if err != nil {
+			log.Printf("failed to marshal kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+		err = r.kafkaProducer.Push(ctx, config.GetEnv("SAVE_PUBLIC_SERVICE_APPLICATION_TOPIC"), messageBytes)
+		if err != nil {
+			log.Printf("failed to push kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+	} else {
+		return model.ApplicationResponse{}, errors.New("Kafka producer is not initialized")
+	}
+
+	// Return enriched response
+	return model.ApplicationResponse{
+		ResponseInfo: model.ResponseInfo{
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
+		},
+		Application: req.Application,
+	}, nil
+}
+
+func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.ApplicationRequest, serviceCode string, applicationId string) (model.ApplicationResponse, error) {
+	nowMillis := time.Now().UnixMilli()
+
+	// Validate that the application exists
+	searchCriteria := model.SearchCriteria{
+		TenantId:    req.Application.TenantId,
+		ServiceCode: serviceCode,
+		Ids:         []string{applicationId},
+	}
+	existingService, _ := r.Search(ctx, searchCriteria)
+	if len(existingService.Application) == 0 {
+		return model.ApplicationResponse{}, errors.New("Service with given serviceCode and applicationId not present in the application.")
+	}
+
+	// Ensure UserInfo is present
+	if req.RequestInfo.UserInfo == nil {
+		req.RequestInfo.UserInfo = &model.User{}
+	}
+	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
+		req.RequestInfo.UserInfo.Uuid = uuid.New()
+	}
+
+	// Enrich request with audit details
+	req.Application.AuditDetails.LastModifiedBy = req.RequestInfo.UserInfo.Uuid
+	req.Application.AuditDetails.LastModifiedTime = nowMillis
+
+	// Marshal request into JSON
+	kafkaPayload, err := json.Marshal(req)
+	if err != nil {
+		return model.ApplicationResponse{}, fmt.Errorf("failed to marshal application request for Kafka: %w", err)
+	}
+
+	// Publish to Kafka topic
+	if r.kafkaProducer != nil {
+		log.Println("request", string(kafkaPayload))
+		if err != nil {
+			log.Printf("failed to marshal kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+		err = r.kafkaProducer.Push(ctx, config.GetEnv("UPDATE_PUBLIC_SERVICE_APPLICATION_TOPIC"), kafkaPayload)
+		if err != nil {
+			log.Printf("failed to push kafka message: %v", err)
+			return model.ApplicationResponse{}, err
+		}
+	} else {
+		return model.ApplicationResponse{}, errors.New("Kafka producer is not initialized")
+	}
+
+	// Return the enriched response
+	return model.ApplicationResponse{
+		ResponseInfo: model.ResponseInfo{
+			ApiId:    req.RequestInfo.ApiId,
+			Ver:      req.RequestInfo.Ver,
+			UserInfo: *req.RequestInfo.UserInfo,
+		},
+		Application: req.Application,
+	}, nil
 }

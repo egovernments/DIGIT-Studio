@@ -7,7 +7,7 @@ type User struct {
 	UserName     string      `json:"userName"`
 	Name         string      `json:"name"`
 	MobileNumber string      `json:"mobileNumber"`
-	EmailId      interface{} `json:"emailId"`
+	EmailId      string      `json:"emailId"`
 	Locale       interface{} `json:"locale"`
 	Type         string      `json:"type"`
 	Roles        []struct {

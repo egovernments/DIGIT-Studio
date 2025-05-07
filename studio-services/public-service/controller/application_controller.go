@@ -11,16 +11,19 @@ import (
 	"public-service/model"
 	"public-service/service"
 	"public-service/utils"
+	"strconv"
 	"strings"
 )
 
 type ApplicationController struct {
 	service            *service.ApplicationService
 	workflowIntegrator *service.WorkflowIntegrator
+	individualService  *service.IndividualService
+	enrichmentService  *service.EnrichmentService
 }
 
-func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator) *ApplicationController {
-	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator}
+func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService) *ApplicationController {
+	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService}
 }
 
 func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +37,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	var req model.ApplicationRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload: "+err.Error())
 		return
 	}
 
@@ -51,6 +54,30 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		req.Application.ServiceCode = serviceCode
 	}
 
+	for i, applicant := range req.Application.Applicants {
+		criteria := map[string]interface{}{
+			"mobileNumber": strconv.FormatInt(applicant.MobileNumber, 10),
+			"tenantId":     req.Application.TenantId,
+		}
+
+		// Check if individual exists
+		resp := c.individualService.GetIndividual(req.RequestInfo, criteria)
+
+		if len(resp.Individual) == 0 {
+			// If not found, create individual
+			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
+			if createdResp.Individual.IndividualId != "" {
+				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
+			} else {
+				utils.WriteErrorResponse(w, http.StatusInternalServerError, "Failed to create individual")
+				return
+			}
+		} else {
+			// Individual exists, update applicant UserId
+			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
+		}
+	}
+	c.enrichmentService.EnrichApplicationsWithDemand(req)
 	ctx := context.Background()
 	log.Println("inside CreateApplicationHandler")
 	res, err := c.service.CreateApplication(ctx, req, serviceCode)
@@ -65,7 +92,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		log.Printf("Workflow integration failed: %v", err)
 		// Optional: return HTTP error or log only
 	}
-
+	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
@@ -95,6 +122,7 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 	module := r.URL.Query().Get("module")
 	businessService := r.URL.Query().Get("businessService")
 	status := r.URL.Query().Get("status")
+	applicationNumber := r.URL.Query().Get("applicationNumber")
 	if businessService != "" {
 		criteria.SearchCriteria.BusinessService = businessService
 	}
@@ -103,6 +131,9 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 	}
 	if module != "" {
 		criteria.SearchCriteria.Module = module
+	}
+	if applicationNumber != "" {
+		criteria.SearchCriteria.ApplicationNumber = applicationNumber
 	}
 	if idsParam := r.URL.Query().Get("ids"); idsParam != "" {
 		criteria.SearchCriteria.Ids = strings.Split(idsParam, ",")
@@ -113,6 +144,13 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+	for i := range res.Application {
+		err = c.workflowIntegrator.SearchWorkflow(&res.Application[i], criteria.RequestInfo)
+		if err != nil {
+			log.Printf("Workflow integration failed for application %s: %v", res.Application[i].Id, err)
+			// Optional: handle error per item or break early
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
@@ -137,7 +175,7 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		log.Printf("Update Service error: %v", err)
-		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload")
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Invalid request payload: "+err.Error())
 		return
 	}
 
@@ -157,6 +195,9 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 		req.Application.Id = parsedID
 	}
 	ctx := context.Background()
+	if req.Application.Workflow.Action == "PAY" {
+
+	}
 	res, err := c.service.UpdateApplication(ctx, req, serviceCode, applicationId)
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

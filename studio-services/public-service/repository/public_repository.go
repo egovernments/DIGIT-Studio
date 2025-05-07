@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"log"
-	"math/big"
 	"public-service/model"
 	"strings"
 	"time"
@@ -99,8 +98,8 @@ func (r PublicRepository) CreateService(ctx context.Context, req model.ServiceRe
 				AuditDetails: model.AuditDetails{
 					CreatedBy:        createdBy,
 					LastModifiedBy:   createdBy,
-					CreatedTime:      *big.NewInt(nowMillis),
-					LastModifiedTime: *big.NewInt(nowMillis),
+					CreatedTime:      nowMillis,
+					LastModifiedTime: nowMillis,
 				},
 			},
 		},
@@ -205,8 +204,8 @@ func (r PublicRepository) SearchService(ctx context.Context, criteria model.Sear
 			AuditDetails: model.AuditDetails{
 				CreatedBy:        createdBy,
 				LastModifiedBy:   lastModifiedBy,
-				CreatedTime:      *big.NewInt(createdAt.UnixMilli()),
-				LastModifiedTime: *big.NewInt(updatedAt.UnixMilli()),
+				CreatedTime:      createdAt.UnixMilli(),
+				LastModifiedTime: updatedAt.UnixMilli(),
 			},
 		}
 
@@ -294,7 +293,7 @@ func (r *PublicRepository) UpdateService(ctx context.Context, req model.ServiceR
 	}
 	req.Service.AuditDetails = model.AuditDetails{
 		LastModifiedBy:   modifiedBy,
-		LastModifiedTime: *big.NewInt(nowMillis),
+		LastModifiedTime: nowMillis,
 	}
 
 	return model.ServiceResponse{
