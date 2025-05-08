@@ -14,18 +14,12 @@ const MultiChildFormWrapper = ({ config, control, formData, setValue, getValues,
   };
 
   return (
-    <div style={{ marginBottom: "24px" }}>
+    <div>
       {instances.map((inst, idx) => (
         <div
           key={inst.id}
           style={{
-            border: "1px solid #ccc",
-            borderRadius: "12px",
-            padding: "20px",
-            marginBottom: "24px",
-            backgroundColor: "#f9f9f9",
             position: "relative",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
           }}
         >
           {/* Cross (X) icon */}
@@ -50,7 +44,7 @@ const MultiChildFormWrapper = ({ config, control, formData, setValue, getValues,
           {config.body.map((field, i) => {
             const fieldName = `${config.name}.${idx}.${field.populators.name}`;
             return (
-              <div style={{marginBottom:"1rem"}}>
+              <div style={{marginBottom:"0.75rem"}}>
               <FieldController
                 key={`${fieldName}_${i}`}
                 type={field.type}
@@ -71,9 +65,9 @@ const MultiChildFormWrapper = ({ config, control, formData, setValue, getValues,
       ))}
 
       {/* Add button aligned right */}
-      <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
+      {/* <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
         <Button type="button" variation="secondary" label={`${config?.prefix}_ADD`} onButtonClick={addInstance} />
-      </div>
+      </div> */}
     </div>
   );
 };

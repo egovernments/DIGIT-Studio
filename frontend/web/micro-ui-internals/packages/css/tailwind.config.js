@@ -12,7 +12,7 @@ module.exports = {
     colors: {
       primary: {
         light: "#F18F5E",
-        main: "#C84C0E",
+        main: "#006769",
         dark: "#C8602B",
       },
       secondary: "#22394D",
@@ -116,13 +116,13 @@ module.exports = {
         "primary-bluegray": "#0B4B66",
         "primary-orangebg": "#FEEFE7",
 
-        "primary-1": "#C84C0E",
+        "primary-1": "#006769",
         "primary-bg": "#FBEEE8",
         "primary-2": "#0B4B66",
         "text-primary": "#363636",
         "text-secondary": "#787878",
         "text-disabled": "#C5C5C5",
-        "alert-error": "#B91900",
+        "alert-error": "#D4D4D4",
         "alert-errorbg": "#FFF5F4",
         "alert-success": "#00703C",
         "alert-successbg": "#F1FFF8",
@@ -132,7 +132,7 @@ module.exports = {
         "alert-infobg": "#DEEFFF",
         "generic-background": "#EEEEEE",
         "generic-divider": "#D6D5D4",
-        "generic-inputborder": "#505A5F",
+        "generic-inputborder": "#D4D4D4",
         "paper-primary": "#FFFFFF",
         "paper-secondary": "#FAFAFA",
       },

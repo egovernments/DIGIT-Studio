@@ -118,5 +118,7 @@ export const generateFormConfig = (config, module, service) => {
       ? getDocumentFields(documentFields[0])
       : {};
 
-  return [...steps, ...stepForms, applicantFieldsStep, addressFieldsStep, documentform];
+  return [...steps, ...stepForms
+    // , applicantFieldsStep, addressFieldsStep, documentform
+  ];
 };
