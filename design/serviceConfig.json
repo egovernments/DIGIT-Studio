@@ -390,6 +390,62 @@
           "TODO": "will fill later"
         }
       },
+      "inbox": {
+        "module": "public-service",
+        "index": "public-service-index",
+        "allowedSearchCriteria": [
+          {
+            "name": "tenantId",
+            "path": "Data.tenantId.keyword",
+            "isMandatory": true,
+            "operator": "EQUAL"
+          },
+          {
+            "name": "status",
+            "path": "Data.workflowStatus",
+            "isMandatory": false
+          },
+          {
+            "name": "applicationNumber",
+            "path": "Data.applicationNumber.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "module",
+            "path": "Data.module.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "businessService",
+            "path": "Data.businessService.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "locality",
+            "path": "Data.address.locality.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "assignee",
+            "path": "Data.currentProcessInstance.assignes.uuid.keyword",
+            "isMandatory": false
+          }
+        ],
+        "sortBy": {
+          "path": "Data.auditDetails.createdTime",
+          "defaultOrder": "DESC"
+        },
+        "sourceFilterPathList": [
+          "Data.businessService",
+          "Data.applicationNumber",
+          "Data.currentProcessInstance",
+          "Data.auditDetails",
+          "Data.additionalDetails",
+          "Data.module",
+          "Data.locality",
+          "Data.status"
+        ]
+      },
       "access": {
         "roles": [
           "TL_CREATOR"
