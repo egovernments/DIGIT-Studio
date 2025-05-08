@@ -393,8 +393,15 @@ export const FormComposer = (props) => {
       ) : (
         <Card style={getCardStyles()} noCardStyle={props.noCardStyle} className={props.cardClassName}>
           {props?.config?.map((section, index, array) => {
-            return !section.navLink && <>{renderFormFields(props, section, index, array)}</>;
+            return !section.navLink && <>{renderFormFields(props, section, index, array)}
+            </>;
           })}
+          {!props.submitInForm && props.label && (
+        <Footer className={"footer-in-form"}>
+          <SubmitBar label={t(props.label)} className="digit-formcomposer-submitbar" submit="submit" disabled={isDisabled} />
+          {props.onSkip && props.showSkip && <ActionLinks style={props?.skipStyle} label={t(`CS_SKIP_CONTINUE`)} onClick={props.onSkip} />}
+        </Footer>
+      )}
         </Card>
       )}
       {props?.showFormInNav && props.horizontalNavConfig && (
@@ -427,12 +434,12 @@ export const FormComposer = (props) => {
           )}
         </HorizontalNav>
       )}
-      {!props.submitInForm && props.label && (
+      {/* {!props.submitInForm && props.label && (
         <Footer>
           <SubmitBar label={t(props.label)} className="digit-formcomposer-submitbar" submit="submit" disabled={isDisabled} />
           {props.onSkip && props.showSkip && <ActionLinks style={props?.skipStyle} label={t(`CS_SKIP_CONTINUE`)} onClick={props.onSkip} />}
         </Footer>
-      )}
+      )} */}
       {showErrorToast && <Toast type={"error"} label={t("ES_COMMON_PLEASE_ENTER_ALL_MANDATORY_FIELDS")} isDleteBtn={true} onClose={closeToast} />}
       {customToast && <Toast type={customToast?.type} label={t(customToast?.label)} isDleteBtn={true} onClose={closeToast} />}
     </form>

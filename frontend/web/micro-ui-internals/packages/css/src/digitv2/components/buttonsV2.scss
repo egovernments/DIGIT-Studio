@@ -346,7 +346,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     @apply h-5;
-    margin-top: 0.125rem;
   }
 
   &.disabled {
@@ -368,6 +367,15 @@
     h2 {
       font-weight: theme(digitv2.fontWeight.bold);
     }
+  }
+}
+
+.digit-formcomposer-submitbar{
+  padding: 8px 24px !important;
+  border-radius: theme(digitv2.spacers.spacer3) !important;
+
+  h2{
+  font-size: theme(digitv2.fontSize.heading-s.desktop) !important;
   }
 }
 
