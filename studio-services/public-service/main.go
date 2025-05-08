@@ -42,11 +42,12 @@ func main() {
 	individualSvc := service.NewIndividualService(restRepo)
 	mdmsSvc := service.NewMDMSService(restRepo)
 	mdmsv2sSvc := service.NewMDMSV2Service(restRepo)
-	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc)
+	idgenSvc := service.NewIdGenService(restRepo)
+	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc, idgenSvc)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(), individualSvc, enrichSvc)
+	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc), individualSvc, enrichSvc)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router

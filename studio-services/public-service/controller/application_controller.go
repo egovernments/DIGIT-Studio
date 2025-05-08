@@ -53,7 +53,8 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	if req.Application.ServiceCode == "" {
 		req.Application.ServiceCode = serviceCode
 	}
-
+	req = c.enrichmentService.EnrichApplicationsWithIdGen(req)
+	log.Println(req)
 	for i, applicant := range req.Application.Applicants {
 		criteria := map[string]interface{}{
 			"mobileNumber": strconv.FormatInt(applicant.MobileNumber, 10),
@@ -78,19 +79,18 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		}
 	}
 	c.enrichmentService.EnrichApplicationsWithDemand(req)
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
+	}
 	ctx := context.Background()
 	log.Println("inside CreateApplicationHandler")
 	res, err := c.service.CreateApplication(ctx, req, serviceCode)
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
-	}
-
-	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&res, req)
-	if err != nil {
-		log.Printf("Workflow integration failed: %v", err)
-		// Optional: return HTTP error or log only
 	}
 	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
@@ -195,22 +195,19 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 		req.Application.Id = parsedID
 	}
 	ctx := context.Background()
-	if req.Application.Workflow.Action == "PAY" {
-
+	c.enrichmentService.EnrichApplicationsWithDemand(req)
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
 	}
 	res, err := c.service.UpdateApplication(ctx, req, serviceCode, applicationId)
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&res, req)
-	if err != nil {
-		log.Printf("Workflow integration failed: %v", err)
-		// Optional: return HTTP error or log only
-	}
-
+	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }

@@ -759,8 +759,9 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 	req.Application.Workflow.Id = uuid.New()
 
 	// Generate application number
-	req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
-
+	if req.Application.ApplicationNumber == "" {
+		req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
+	}
 	// Generate IDs for references
 	for i := range req.Application.Reference {
 		req.Application.Reference[i].Id = uuid.New()

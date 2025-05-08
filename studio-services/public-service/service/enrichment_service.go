@@ -17,10 +17,11 @@ type EnrichmentService struct {
 	DemandService     *DemandService
 	MDMSService       *MDMSService
 	MDMSV2Service     *MDMSV2Service
+	IdGenService      *IdGenService
 }
 
-func NewEnrichmentService(individualService *IndividualService, demandService *DemandService, mdmsService *MDMSService, mdmsServiceV2 *MDMSV2Service) *EnrichmentService {
-	return &EnrichmentService{individualService: individualService, DemandService: demandService, MDMSService: mdmsService, MDMSV2Service: mdmsServiceV2}
+func NewEnrichmentService(individualService *IndividualService, demandService *DemandService, mdmsService *MDMSService, mdmsServiceV2 *MDMSV2Service, idGenService *IdGenService) *EnrichmentService {
+	return &EnrichmentService{individualService: individualService, DemandService: demandService, MDMSService: mdmsService, MDMSV2Service: mdmsServiceV2, IdGenService: idGenService}
 }
 
 func (s *EnrichmentService) EnrichApplicationsWithIndividuals(apps []model.Application, criteria model.SearchCriteria) []model.Application {
@@ -316,7 +317,72 @@ func logJSON(message string, data interface{}) {
 	}
 }
 
-func logError(message string, err error, context interface{}) {
-	ctxJSON, _ := json.Marshal(context)
-	log.Printf(`{"error": "%s", "details": "%v", "context": %s}`, message, err, ctxJSON)
+func (s *EnrichmentService) EnrichApplicationsWithIdGen(apps model.ApplicationRequest) model.ApplicationRequest {
+	schemaCode := os.Getenv("SERVICE_MODULE_NAME") + "." + os.Getenv("SERVICE_MASTER_NAME")
+	mdmsData, _ := s.MDMSV2Service.SearchMDMS(
+		apps.Application.TenantId,
+		schemaCode,
+		apps.Application.BusinessService,
+		apps.Application.Module,
+		apps.RequestInfo,
+	)
+
+	mdmsList, ok := mdmsData["mdms"].([]interface{})
+	if !ok || len(mdmsList) == 0 {
+		log.Println("MDMS data missing or invalid")
+		return apps
+	}
+
+	var format string
+	var name string
+	firstEntry, ok := mdmsList[0].(map[string]interface{})
+	if !ok {
+		log.Println("Invalid MDMS format: first entry is not a map")
+		return apps
+	}
+
+	data, ok := firstEntry["data"].(map[string]interface{})
+	if !ok {
+		log.Println("Invalid MDMS format: missing or invalid 'data'")
+		return apps
+	}
+
+	idGens, ok := data["idgen"].([]interface{})
+	if !ok || len(idGens) == 0 {
+		log.Println("No 'idgen' section in MDMS data")
+	}
+
+	for _, item := range idGens {
+		idGen, ok := item.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if idGenType, _ := idGen["Type"].(string); idGenType == "application" {
+			format, _ = idGen["format"].(string)
+			name, _ = idGen["name"].(string)
+			break
+		}
+	}
+
+	// Validate if name and format were found
+	if name == "" || format == "" {
+		log.Println("IDGen config not found for application type")
+		name = "public-service.application.id"
+		format = "APL-[cy:yyyy-MM-dd]-[SEQ_PUBLIC_APPLICATION]"
+
+	}
+	name = "public-service.application.id"
+	format = "APL-[cy:yyyy-MM-dd]-[SEQ_PUBLIC_APPLICATION]"
+
+	// Count should be at least 1
+	ids, err := s.IdGenService.GetId(apps.RequestInfo, apps.Application.TenantId, name, format, 1)
+	if err != nil {
+		log.Printf("Error getting ID from IDGenService: %v", err)
+		return apps
+	}
+	if len(ids) > 0 {
+		apps.Application.ApplicationNumber = ids[0]
+	}
+
+	return apps
 }
