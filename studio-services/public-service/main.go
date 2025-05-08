@@ -41,7 +41,8 @@ func main() {
 	demandSvc := service.NewDemandService(restRepo)
 	individualSvc := service.NewIndividualService(restRepo)
 	mdmsSvc := service.NewMDMSService(restRepo)
-	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc)
+	mdmsv2sSvc := service.NewMDMSV2Service(restRepo)
+	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)
 	// Initialize controllers
