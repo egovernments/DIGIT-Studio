@@ -20,4 +20,5 @@ type Application struct {
 	Workflow          WorkFlow               `json:"workflow"`
 	AuditDetails      AuditDetails           `json:"auditDetails"`
 	ProcessInstance   *[]ProcessInstance     `json:"processInstance"`
+	Documents         []Document             `json:"documents"`
 }

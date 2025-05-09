@@ -53,6 +53,7 @@ func (wi *WorkflowIntegrator) CallWorkflow(req *model.ApplicationRequest) error 
 	mdmsList, ok := mdmsData["mdms"].([]interface{})
 	if !ok || len(mdmsList) == 0 {
 		log.Println("MDMS data missing or invalid")
+		return nil
 	}
 	log.Println("mdmsData:", mdmsData)
 	firstEntry, _ := mdmsList[0].(map[string]interface{})

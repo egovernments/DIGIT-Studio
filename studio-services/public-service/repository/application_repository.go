@@ -566,12 +566,16 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 			a.workflow_status, a.service_code, a.service_details, a.additional_details, a.address, a.workflow,
 			a.createdby, a.last_modifiedby, a.created_at, a.updated_at,
 			r.id, r.reference_type, r.module, r.tenant_id, r.reference_no, r.active,
-			ap.id, ap.type, ap.user_id, ap.active
+			ap.id, ap.type, ap.user_id, ap.active,
+			ad.id, ad.document_type, ad.file_store_id, ad.document_uid, ad.additional_details,
+			ad.createdby, ad.last_modifiedby, ad.created_at, ad.updated_at
 		FROM application a
 		LEFT JOIN reference r ON a.id = r.application_id
 		LEFT JOIN applicant ap ON a.id = ap.application_id
+		LEFT JOIN application_document ad ON ad.application_number = a.application_number
 	`)
 
+	// Dynamic filters
 	if criteria.TenantId != "" {
 		conditions = append(conditions, fmt.Sprintf("a.tenant_id = $%d", argPos))
 		args = append(args, criteria.TenantId)
@@ -635,36 +639,23 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 
 			applicantId, applicantType, applicantUserId sql.NullString
 			applicantActive                             sql.NullBool
+
+			// document
+			docId                           uuid.UUID
+			docType, fileStoreId, docUid    sql.NullString
+			docAdditionalDetailsJSON        []byte
+			docCreatedBy, docLastModifiedBy uuid.UUID
+			docCreatedAt, docUpdatedAt      sql.NullTime
 		)
 
 		err := rows.Scan(
-			&appId,
-			&tenantId,
-			&module,
-			&businessService,
-			&status,
-			&channel,
-			&applicationNumber,
-			&workflowStatus,
-			&serviceCode,
-			&serviceDetailsJSON,
-			&additionalDetailsJSON,
-			&addressJSON,
-			&workflowJSON,
-			&createdBy,
-			&lastModifiedBy,
-			&createdAt,
-			&updatedAt,
-			&refId,
-			&refType,
-			&refModule,
-			&refTenantId,
-			&refNo,
-			&refActive,
-			&applicantId,
-			&applicantType,
-			&applicantUserId,
-			&applicantActive,
+			&appId, &tenantId, &module, &businessService, &status, &channel, &applicationNumber,
+			&workflowStatus, &serviceCode, &serviceDetailsJSON, &additionalDetailsJSON, &addressJSON, &workflowJSON,
+			&createdBy, &lastModifiedBy, &createdAt, &updatedAt,
+			&refId, &refType, &refModule, &refTenantId, &refNo, &refActive,
+			&applicantId, &applicantType, &applicantUserId, &applicantActive,
+			&docId, &docType, &fileStoreId, &docUid, &docAdditionalDetailsJSON,
+			&docCreatedBy, &docLastModifiedBy, &docCreatedAt, &docUpdatedAt,
 		)
 		if err != nil {
 			return model.SearchResponse{}, err
@@ -685,8 +676,8 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 				AuditDetails: model.AuditDetails{
 					CreatedBy:        createdBy,
 					LastModifiedBy:   lastModifiedBy,
-					CreatedTime:      time.Now().UnixMilli(),
-					LastModifiedTime: time.Now().UnixMilli(),
+					CreatedTime:      createdAt.UnixMilli(),
+					LastModifiedTime: updatedAt.UnixMilli(),
 				},
 			}
 
@@ -719,6 +710,28 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 			}
 			app.Applicants = append(app.Applicants, applicant)
 		}
+
+		// Document
+		if docId != uuid.Nil {
+			doc := model.Document{
+				ID:           docId.String(),
+				DocumentType: docType.String,
+				FileStoreID:  fileStoreId.String,
+				DocumentUID:  docUid.String,
+				AuditDetails: model.AuditDetails{
+					CreatedBy:      docCreatedBy,
+					LastModifiedBy: docLastModifiedBy,
+				},
+			}
+			if docCreatedAt.Valid {
+				doc.AuditDetails.CreatedTime = docCreatedAt.Time.UnixMilli()
+			}
+			if docUpdatedAt.Valid {
+				doc.AuditDetails.LastModifiedTime = docUpdatedAt.Time.UnixMilli()
+			}
+			_ = json.Unmarshal(docAdditionalDetailsJSON, &doc.AdditionalDetails)
+			app.Documents = append(app.Documents, doc)
+		}
 	}
 
 	for _, app := range appMap {
@@ -743,7 +756,6 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 		return model.ApplicationResponse{}, errors.New("Service with given serviceCode not present in the application. Please create service.")
 	}
 
-	_ = time.Now()
 	if req.RequestInfo.UserInfo == nil {
 		req.RequestInfo.UserInfo = &model.User{}
 	}
@@ -758,10 +770,6 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 	req.Application.Address.Id = uuid.New()
 	req.Application.Workflow.Id = uuid.New()
 
-	// Generate application number
-	if req.Application.ApplicationNumber == "" {
-		req.Application.ApplicationNumber, _ = r.generateApplicationNumber(ctx, req.Application.TenantId, req.Application.Module, req.Application.BusinessService)
-	}
 	// Generate IDs for references
 	for i := range req.Application.Reference {
 		req.Application.Reference[i].Id = uuid.New()
@@ -772,25 +780,35 @@ func (r *ApplicationRepository) CreateUsingKafka(ctx context.Context, req model.
 		req.Application.Applicants[i].Id = uuid.New()
 	}
 
-	// Audit info
+	// Set audit info
 	nowMillis := time.Now().UnixMilli()
-	log.Println(nowMillis)
 	req.Application.AuditDetails = model.AuditDetails{
 		CreatedBy:        createdBy,
 		LastModifiedBy:   createdBy,
 		CreatedTime:      nowMillis,
 		LastModifiedTime: nowMillis,
 	}
-	log.Println(req.Application.AuditDetails)
+
+	// Enrich documents with ID and audit info
+	for i := range req.Application.Documents {
+		req.Application.Documents[i].ID = uuid.New().String()
+		req.Application.Documents[i].AuditDetails = model.AuditDetails{
+			CreatedBy:        createdBy,
+			LastModifiedBy:   createdBy,
+			CreatedTime:      nowMillis,
+			LastModifiedTime: nowMillis,
+		}
+	}
 
 	// Marshal and push to Kafka
 	if r.kafkaProducer != nil {
 		messageBytes, err := json.Marshal(req)
-		log.Println("request", string(messageBytes))
 		if err != nil {
 			log.Printf("failed to marshal kafka message: %v", err)
 			return model.ApplicationResponse{}, err
 		}
+		log.Println("Kafka message payload:", string(messageBytes))
+
 		err = r.kafkaProducer.Push(ctx, config.GetEnv("SAVE_PUBLIC_SERVICE_APPLICATION_TOPIC"), messageBytes)
 		if err != nil {
 			log.Printf("failed to push kafka message: %v", err)
@@ -832,10 +850,22 @@ func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.
 	if req.RequestInfo.UserInfo.Uuid == uuid.Nil {
 		req.RequestInfo.UserInfo.Uuid = uuid.New()
 	}
+	modifiedBy := req.RequestInfo.UserInfo.Uuid
 
-	// Enrich request with audit details
-	req.Application.AuditDetails.LastModifiedBy = req.RequestInfo.UserInfo.Uuid
+	// Enrich application with audit info
+	req.Application.AuditDetails.LastModifiedBy = modifiedBy
 	req.Application.AuditDetails.LastModifiedTime = nowMillis
+
+	// Enrich documents with ID and audit info
+	for i := range req.Application.Documents {
+		if req.Application.Documents[i].ID == "" {
+			req.Application.Documents[i].ID = uuid.New().String()
+		}
+		req.Application.Documents[i].AuditDetails = model.AuditDetails{
+			LastModifiedBy:   modifiedBy,
+			LastModifiedTime: nowMillis,
+		}
+	}
 
 	// Marshal request into JSON
 	kafkaPayload, err := json.Marshal(req)
@@ -846,10 +876,6 @@ func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.
 	// Publish to Kafka topic
 	if r.kafkaProducer != nil {
 		log.Println("request", string(kafkaPayload))
-		if err != nil {
-			log.Printf("failed to marshal kafka message: %v", err)
-			return model.ApplicationResponse{}, err
-		}
 		err = r.kafkaProducer.Push(ctx, config.GetEnv("UPDATE_PUBLIC_SERVICE_APPLICATION_TOPIC"), kafkaPayload)
 		if err != nil {
 			log.Printf("failed to push kafka message: %v", err)

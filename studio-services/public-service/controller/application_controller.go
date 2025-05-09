@@ -145,13 +145,14 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	for i := range res.Application {
+	//TODO: enrich ProcessInstance as request nfo not there its throwing error
+	/*for i := range res.Application {
 		err = c.workflowIntegrator.SearchWorkflow(&res.Application[i], criteria.RequestInfo)
 		if err != nil {
 			log.Printf("Workflow integration failed for application %s: %v", res.Application[i].Id, err)
 			// Optional: handle error per item or break early
 		}
-	}
+	}*/
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
