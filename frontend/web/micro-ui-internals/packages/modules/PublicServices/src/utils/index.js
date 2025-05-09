@@ -15,7 +15,8 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
 
   const getServiceDetails = (formData) => {
-    const { address, applicantDetails, uploadedDocs, ...validSections } = formData;
+    const { address, applicantDetails, uploadedDocs,uploaded, ...validSections } = formData;
+    console.log(validSections, "validSections");
   
     const flattenValues = (obj) => {
       const flat = {};
@@ -58,7 +59,7 @@ import { UICustomizations } from "../configs/UICustomizations";
         serviceDetails[sectionKey] = sectionVal;
       }
     }
-  
+    console.log(serviceDetails,"service-details");
     return serviceDetails;
   };
   
