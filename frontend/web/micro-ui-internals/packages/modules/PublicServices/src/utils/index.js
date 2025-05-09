@@ -15,9 +15,13 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
 
   const getServiceDetails = (formData) => {
-    const { address, applicantDetails, uploadedDocs,uploaded, ...validSections } = formData;
-    console.log(validSections, "validSections");
-  
+    const excludedKeys = ["address", "applicantDetails", "uploadedDocs", "uploaded"];
+    const validSections = Object.keys(formData).reduce((acc, key) => {
+      if (!excludedKeys.includes(key)) {
+        acc[key] = formData[key];
+      }
+      return acc;
+    }, {});
     const flattenValues = (obj) => {
       const flat = {};
       for (const [key, val] of Object.entries(obj)) {
