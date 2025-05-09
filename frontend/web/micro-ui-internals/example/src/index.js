@@ -25,6 +25,7 @@ const enabledModules = [
   "Microplanning",
   "Sample",
   "PublicServices",
+  "core",
   //added to check fsm
   // "FSM"
 ];

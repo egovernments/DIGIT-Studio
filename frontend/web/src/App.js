@@ -14,6 +14,7 @@ const enabledModules = [
   "Workbench",
   "HCMWORKBENCH",
   "PublicServices",
+  "core",
 
 ];
 
