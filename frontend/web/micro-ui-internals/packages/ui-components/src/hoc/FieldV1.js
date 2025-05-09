@@ -350,6 +350,8 @@ const FieldV1 = ({
             customClass={config?.customClass}
             customErrorMsg={config?.error}
             localePrefix={config?.localePrefix}
+            action={populators?.action}
+            flow={populators?.flow}
             variant={
               variant
                 ? variant

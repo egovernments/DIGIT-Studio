@@ -190,22 +190,42 @@ const FieldComposer = ({
         );
       case "multiupload":
         return (
-          <MultiUploadWrapper
-            t={t}
-            module="works"
-            tenantId={Digit.ULBService.getCurrentTenantId()}
-            // getFormState={getFileStoreData}              // TODO: need to discuss and should be add later
-            showHintBelow={populators?.showHintBelow ? true : false}
-            setuploadedstate={value || []}
-            allowedFileTypesRegex={populators.allowedFileTypes}
-            allowedMaxSizeInMB={populators.allowedMaxSizeInMB}
-            hintText={populators.hintText}
-            maxFilesAllowed={populators.maxFilesAllowed}
-            extraStyleName={{ padding: "0.5rem" }}
-            customClass={populators?.customClass}
-            customErrorMsg={populators?.errorMessage}
-            containerStyles={{ ...populators?.containerStyles }}
-            variant={variant ? variant : errors?.[populators.name] ? "digit-field-error" : ""}
+          <Controller
+            name={`${populators.name}`}
+            control={control}
+            rules={{ required: false }}
+            render={({ onChange, ref, value = [] }) => {
+              function getFileStoreData(filesData) {
+                const numberOfFiles = filesData.length;
+                let finalDocumentData = [];
+                if (numberOfFiles > 0) {
+                  filesData.forEach((value) => {
+                    finalDocumentData.push({
+                      fileName: value?.[0],
+                      fileStoreId: value?.[1]?.fileStoreId?.fileStoreId,
+                      documentType: value?.[1]?.file?.type,
+                    });
+                  });
+                }
+                onChange(numberOfFiles > 0 ? filesData : []);
+              }
+              return (
+                <MultiUploadWrapper
+                  t={t}
+                  module="works"
+                  tenantId={Digit.ULBService.getCurrentTenantId()}
+             getFormState={getFileStoreData}
+                  showHintBelow={populators?.showHintBelow ? true : false}
+                  setuploadedstate={value}
+                  allowedFileTypesRegex={populators.allowedFileTypes}
+                  allowedMaxSizeInMB={populators.allowedMaxSizeInMB}
+                  hintText={populators.hintText}
+                  maxFilesAllowed={populators.maxFilesAllowed}
+                  extraStyleName={{ padding: "0.5rem" }}
+                  customClass={populators?.customClass}
+                />
+              );
+            }}
           />
         );
       case "select":
@@ -284,6 +304,8 @@ const FieldComposer = ({
             customErrorMsg={config?.error}
             localePrefix={config?.localePrefix}
             variant={variant ? variant : errors?.[populators.name] ? "digit-field-error" : ""}
+            flow={populators?.flow}
+            action={populators?.action}
           />
         );
       case "form":

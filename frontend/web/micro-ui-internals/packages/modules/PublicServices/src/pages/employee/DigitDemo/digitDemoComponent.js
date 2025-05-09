@@ -14,6 +14,7 @@ const DigitDemoComponent = () => {
   const [showToast, setShowToast] = useState(null);
   const { module } = useParams();
   const { service } = useParams();
+  let serviceCode = `${module.toUpperCase()}_${service.toUpperCase()}`;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
@@ -96,7 +97,7 @@ const DigitDemoComponent = () => {
                 message: "Application Created Successfully",
                 showID: true,
                 applicationNumber: data?.Application?.applicationNumber,
-                redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?applicationNumber=${data?.Application?.applicationNumber}`,
+                redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?applicationNumber=${data?.Application?.applicationNumber}&serviceCode=${schemaCode}`,
               },
             });
           },
@@ -143,8 +144,8 @@ const DigitDemoComponent = () => {
         activeSteps={currentStep}
       />
       <FormComposerV2
-        heading={t(`${module.toUpperCase()}_${service.toUpperCase()}_HEADING`)}
-        label={currentStep === steps.length ? t("Submit") : t("Next")}
+        heading={t(`${serviceCode}_HEADING`)}
+        label={currentStep === steps.length ? t(`${serviceCode}_SUBMIT`) : t(`${serviceCode}_NEXT`)}
         description={" "}
         text={" "}
         config={[{

@@ -18,7 +18,7 @@ const SearchTL = () => {
         updateDependent : [
           {
             key : "businessService",
-            value : [{code:"NewTL", name:"NewTL", serviceCode:"SVC-DEV-TRADELICENSE-NEWTL-04"}]
+            value : [{code:"NewTL", name:"NewTL", serviceCode:"SVC-DEV-TRADELICENSE-NEWTL-04"},{code:"OldTL", name:"OldTL", serviceCode:"SVC-DEV-TRADELICENSE-OLDTL-07"}]
           }
         ]
       }), [

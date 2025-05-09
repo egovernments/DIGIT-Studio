@@ -113,7 +113,8 @@ export const documentFields = [
             "error": "WORKS_REQUIRED_ERR",
             "name": "uploadedDocs",
             "populators": {
-                "name": "uploadedDocs"  
+                "name": "uploaded",
+                "action": "APPLY"  
             },
             "customClass": "input-emp",
             "localePrefix": "TL_DOC"

@@ -28,11 +28,9 @@ const CloseBtn = (props) => {
    
 
 const updatePayload = (applicationDetails, data, action, businessService) => {
-    
-
       const workflow = {
         comments: data.comments,
-        documents: data?.documents?.map((document) => {
+        documents: data?.document ? Object.values(data?.document).flat().map((document) => {
           return {
             documentType: action?.action + " DOC",
             fileName: document?.[1]?.file?.name,
@@ -40,7 +38,7 @@ const updatePayload = (applicationDetails, data, action, businessService) => {
             documentUid: document?.[1]?.fileStoreId?.fileStoreId,
             tenantId: document?.[1]?.fileStoreId?.tenantId,
           };
-        }),
+        }) : [],
         assignees: data?.assignees?.uuid ? [data?.assignees?.uuid] : null,
         action: action.action,
       };
@@ -75,6 +73,29 @@ const WorkflowPopup = ({ applicationDetails,...props}) => {
     
     assigneeOptions = assigneeOptions?.Employees
     assigneeOptions?.map(emp => emp.nameOfEmp = emp?.user?.name || t("ES_COMMON_NA"))
+
+    const requestCriteria = {
+      url: "/egov-mdms-service/v1/_search",
+      body: {
+        MdmsCriteria: {
+          "tenantId": Digit.ULBService.getCurrentTenantId(),
+          "moduleDetails": [
+              {
+                  "moduleName": "DigitStudio",
+                  "masterDetails": [
+                      {
+                          "name": "DocumentConfig2"
+                      }
+                  ]
+              }
+          ]
+      },
+      },
+      changeQueryName: "documentConfig",
+    };
+  
+    const { isLoading, data } = Digit.Hooks.useCustomAPIHook(requestCriteria);
+
     
     useEffect(() => {
       if(businessService==="muster-roll-approval" && action.action==="APPROVE"){
@@ -84,20 +105,21 @@ const WorkflowPopup = ({ applicationDetails,...props}) => {
     
 
     useEffect(() => {
-      if(assigneeOptions?.length >=0){
+      if(assigneeOptions?.length >=0 && data){
       setConfig(
-        configModal(t,action,assigneeOptions,businessService, moduleCode)
+        configModal(t,action,assigneeOptions,businessService, moduleCode, data?.MdmsRes?.DigitStudio?.DocumentConfig2)
       )
       }
       else {
         setConfig(
-            configModal(t, action, undefined, businessService, moduleCode)
+            configModal(t, action, undefined, businessService, moduleCode, data?.MdmsRes?.DigitStudio?.DocumentConfig2)
         )
       }
       
-    }, [assigneeOptions])
+    }, [assigneeOptions, data])
     
     const _submit = (data) => {
+        if(data?.document) Object.values(data?.document).flat();
         //const updatePayload = Digit?.Customizations?.["commonUiConfig"]?.updatePayload(applicationDetails, data, action, businessService)
         const customupdatePayload = updatePayload(applicationDetails, data, action, businessService);
         //calling submitAction 
@@ -109,7 +131,7 @@ const WorkflowPopup = ({ applicationDetails,...props}) => {
         Digit?.Customizations?.["commonUiConfig"]?.enableModalSubmit(businessService,action,setModalSubmit,formData)
     }
 
-    if(isLoadingHrmsSearch) return <Loader />
+    if(isLoadingHrmsSearch || isLoading) return <Loader />
     
     return action && config?.form ? (
         <Modal

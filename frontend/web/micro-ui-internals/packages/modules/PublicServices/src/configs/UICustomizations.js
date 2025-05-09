@@ -67,7 +67,7 @@ export const UICustomizations = {
             case `${row?.module.toUpperCase()}_APPLICATION_NUMBER`:
               return (
                 <span className="link">
-            <Link to={`/${window.contextPath}/employee/publicservices/${row?.module}/${row?.businessService}/ViewScreen?applicationNumber=${row?.applicationNumber}`}>
+            <Link to={`/${window.contextPath}/employee/publicservices/${row?.module}/${row?.businessService}/ViewScreen?applicationNumber=${row?.applicationNumber}&serviceCode=${row?.serviceCode}`}>
             {String(value ? value : t("ES_COMMON_NA"))}
             </Link>
           </span>

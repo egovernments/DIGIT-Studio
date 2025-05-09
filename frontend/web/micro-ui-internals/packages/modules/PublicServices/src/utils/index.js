@@ -110,8 +110,8 @@ import { UICustomizations } from "../configs/UICustomizations";
           documents : formData?.uploadedDocs
         },
         Workflow: {
-          action: "APPLY",
-          comment: "Applied new Application",
+          action: "CREATE",
+          comment: "",
           assignees: []
         }
       }

@@ -10,6 +10,7 @@ import MultiUploadWrapper from "../molecules/MultiUploadWrapper";
 import TextInput from "../atoms/TextInput";
 import { getRegex } from "../utils/uploadFileComposerUtils";
 import { Loader } from "@egovernments/digit-ui-react-components";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 const UploadAndDownloadDocumentHandler = ({
   schemaCode = "DigitStudio.DocumentConfig",
@@ -21,9 +22,13 @@ const UploadAndDownloadDocumentHandler = ({
   errors,
   localePrefix,
   customClass,
+  action="APPLY",
+  flow
 }) => {
   const { t } = useTranslation();
   const tenantId = Digit?.ULBService?.getStateId();
+  const { module, service} = useParams();
+  let moduleName = `${module?.toLowerCase()}.${service?.toLowerCase()}`;
 
   const requestCriteria = {
     url: "/egov-mdms-service/v1/_search",
@@ -35,21 +40,23 @@ const UploadAndDownloadDocumentHandler = ({
                 "moduleName": "DigitStudio",
                 "masterDetails": [
                     {
-                        "name": "DocumentConfig"
+                        "name": "DocumentConfig2"
                     }
                 ]
             }
         ]
     },
     },
-    changeQueryName: schemaCode,
+    changeQueryName: "documentConfig",
   };
 
   const { isLoading, data } = Digit.Hooks.useCustomAPIHook(requestCriteria);
-  if (isLoading) return <Loader />;
-  const docConfig = data?.MdmsRes?.DigitStudio?.DocumentConfig?.[0];
-  if (!docConfig) return null;
 
+let docData = data ? data?.MdmsRes?.DigitStudio?.DocumentConfig2?.filter((ob) => ob?.module.toLowerCase() === moduleName)?.[0]?.actions : [];
+
+const docConfig = docData?.filter((item) => item?.action === "APPLY")?.[0];
+  if (!docConfig && flow !== "WORKFLOW") return null;
+  if(isLoading) return <Loader />;
   return (
     <React.Fragment>
       {/* <HeaderComponent styles={{ fontSize: "24px", marginTop: "40px" }}>
@@ -63,8 +70,46 @@ const UploadAndDownloadDocumentHandler = ({
           className="digit-doc-banner"
         />
       )} */}
-
-      {docConfig?.documents?.map((item, index) => {
+      {flow === "WORKFLOW" && 
+            <Controller
+              name={`${config?.populators?.name}`}
+              control={control}
+              rules={{ required: false }}
+              render={({ onChange, ref, value = [] }) => {
+                function getFileStoreData(filesData) {
+                  const numberOfFiles = filesData.length;
+                  let finalDocumentData = [];
+                  if (numberOfFiles > 0) {
+                    filesData.forEach((value) => {
+                      finalDocumentData.push({
+                        fileName: value?.[0],
+                        fileStoreId: value?.[1]?.fileStoreId?.fileStoreId,
+                        documentType: value?.[1]?.file?.type,
+                      });
+                    });
+                  }
+                  onChange(numberOfFiles > 0 ? filesData : []);
+                }
+                return (
+                  <MultiUploadWrapper
+                    t={t}
+                    module="works"
+                    tenantId={Digit.ULBService.getCurrentTenantId()}
+                    getFormState={getFileStoreData}
+                    showHintBelow={config?.populators?.showHintBelow ? true : false}
+                    setuploadedstate={value}
+                    allowedFileTypesRegex={getRegex(config?.populators?.allowedFileTypes)}
+                    allowedMaxSizeInMB={config?.populators?.maxSizeInMB}
+                    hintText={t(config?.populators?.hintText)}
+                    maxFilesAllowed={config?.populators?.maxFilesAllowed}
+                    extraStyleName={{ padding: "0.5rem" }}
+                    //customClass={populators?.customClass}
+                  />
+                );
+              }}
+            />
+      }
+      {flow !== "WORKFLOW" && docConfig?.documents?.map((item, index) => {
         if (!item?.active) return null;
         return (
           <LabelFieldPair key={index} style={{ alignItems: item?.showTextInput ? "flex-start" : "center" }}>
@@ -155,7 +200,7 @@ const UploadAndDownloadDocumentHandler = ({
                         showHintBelow={Boolean(item?.hintText)}
                         hintText={item?.hintText}
                         allowedFileTypesRegex={getRegex(item?.allowedFileTypes)}
-                        allowedMaxSizeInMB={item?.maxSizeInMB || docConfig?.maxSizeInMB || 5}
+                        allowedMaxSizeInMB={item?.maxSizeInMB || 5}
                         maxFilesAllowed={item?.maxFilesAllowed || 1}
                         customErrorMsg={item?.customErrorMsg}
                         customClass={customClass}
