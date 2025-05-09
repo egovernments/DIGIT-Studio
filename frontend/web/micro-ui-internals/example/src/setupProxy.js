@@ -56,6 +56,7 @@ module.exports = function (app) {
     "/egov-url-shortening/shortener",
     "/inbox/v1/_search",
     "/inbox/v2/_search",
+    "/public-service",
     "/tl-services",
     "/tl-calculator",
     "/org-services",
@@ -93,6 +94,7 @@ module.exports = function (app) {
     "/hcm-bff/hcm/_processmicroplan",
     "/health-hrms",
     "/mdms-v2/v1/_search",
+    "/public-service"
   ].forEach((location) => app.use(location, createProxy));
   ["/pb-egov-assets"].forEach((location) => app.use(location, assetsProxy));
   ["/mdms-v2/v2/_create"].forEach((location) => app.use(location, mdmsProxy));

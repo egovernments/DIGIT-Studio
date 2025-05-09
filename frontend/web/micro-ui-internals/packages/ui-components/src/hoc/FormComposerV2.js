@@ -12,6 +12,7 @@ import Footer from "../atoms/Footer";
 import LabelFieldPair from "../atoms/LabelFieldPair";
 import HorizontalNav from "../atoms/HorizontalNav";
 import { SubmitBar, Toast } from "../atoms";
+import MultiChildFormWrapper from "./MultiChildFormWrapper";
 
 // import Fields from "./Fields";    //This is a field selector pickup from formcomposer
 import FieldController from "./FieldController";
@@ -222,7 +223,19 @@ export const FormComposer = (props) => {
     (section, index, array, sectionFormCategory) => (
       <React.Fragment key={index}>
         {section && getCombinedComponent(section)}
-        {section.body.map((field, index) => {
+        {section?.type === "multiChildForm" && (
+          <MultiChildFormWrapper
+            key={`multi-child-${index}`}
+            config={section}
+            control={control}
+            formData={formData}
+            setValue={setValue}
+            getValues={getValues}
+            errors={errors}
+            props={props}
+          />
+        )}
+        {section.type !== "multiChildForm" && section.body.map((field, index) => {
           if (field?.populators?.hideInForm) return null;
           if (props.inline)
             return (
