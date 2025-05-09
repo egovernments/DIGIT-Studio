@@ -1,5 +1,5 @@
 
-export const searchConfig = {
+export const searchGenericConfig = {
     headerLabel: "Search",
     type: "search",
     apiDetails: {

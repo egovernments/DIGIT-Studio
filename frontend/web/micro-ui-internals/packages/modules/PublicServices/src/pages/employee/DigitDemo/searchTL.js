@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
-import { searchConfig } from "../../../configs/searchGenericConfig";
+import { searchGenericConfig } from "../../../configs/searchGenericConfig";
 import { InboxSearchComposer } from "@egovernments/digit-ui-components";
 import { Loader } from "@egovernments/digit-ui-react-components";
 
 const SearchTL = () => {
     const { t } = useTranslation();
     const { module } = useParams();
-    const configs = searchConfig;
+    const configs = searchGenericConfig;
     const tenantId = Digit.ULBService.getCurrentTenantId();
 
     const onSubmit = (data) => {
