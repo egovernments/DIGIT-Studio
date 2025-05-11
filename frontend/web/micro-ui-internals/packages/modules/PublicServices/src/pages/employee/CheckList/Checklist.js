@@ -34,14 +34,9 @@ const CheckList = () => {
                 defaultValues={state.formData}
                 onFormValueChange={(setValue, formData) => {
                     console.log(formData, "formdata");
-                    if (JSON.stringify(formData) !== JSON.stringify(state.formData)) {
-                        console.log("asf");
-                        dispatch({
-                            type: 'UPDATE_FORM',
-                            payload: formData
-                        });
+                    CheckListConfig(formData);
                     }
-                }}
+                }
                 onSubmit={onSubmit}
                 //fieldStyle={{ marginRight: 2 }}
             />

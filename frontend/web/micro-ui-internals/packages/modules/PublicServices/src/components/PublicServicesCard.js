@@ -26,20 +26,12 @@ const PublicServicesCard = () => {
         link: `/${window?.contextPath}/employee/publicservices/pgr/Newpgr/Apply`,
       },
       {
-        label: t("Services Search (TL)"),
-        link: `/${window?.contextPath}/employee/publicservices/tl/Search`,
+        label: t("Services Search"),
+        link: `/${window?.contextPath}/employee/publicservices/NewTL/Search`,
       },
       {
-        label: t("Services Search (PGR)"),
-        link: `/${window?.contextPath}/employee/publicservices/pgr/Search`,
-      },
-      {
-        label: t("Services Inbox Search (TL)"),
+        label: t(" Inbox Search"),
         link: `/${window?.contextPath}/employee/publicservices/tl/Inbox`,
-      },
-      {
-        label: t("Services Inbox Search (PGR)"),
-        link: `/${window?.contextPath}/employee/publicservices/pgr/Inbox`,
       },
     ],
   };

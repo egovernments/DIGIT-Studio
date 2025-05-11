@@ -170,3 +170,18 @@ export const transformHRMSCreateData = (data)=>{
     }
 
 }
+
+export const transformViewApplication = (id, accid) => {
+    let requestBody = {
+        "ServiceCriteria": {
+            "clientId": "",
+            "serviceDefId": id,
+            "accountId": accid,
+            "tenantId": "dev",
+            "rowVersion": 1,
+            "isDeleted": false
+        },
+        "apiOperation": "CREATE",
+    }
+    return requestBody;
+}

@@ -15,6 +15,7 @@ import { ApiDropdown, CustomDropdown, LocationDropdownWrapper, MultiUploadWrappe
 import UploadFileComposer from "./UploadFileComposer";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
+import UploadAndDownloadDocumentHandler from "./UploadAndDownloadDocumentHandler";
 
 // const FieldComposer = (type, populators, isMandatory, disable = false, component, config, sectionFormCategory, formData, selectedFormCategory) => {
 const FieldComposer = ({
@@ -256,6 +257,22 @@ const FieldComposer = ({
       case "documentUpload":
         return (
           <UploadFileComposer
+            module={config?.module}
+            config={config}
+            // Controller={Controller}        // TODO: NEED TO DISCUSS ON THIS
+            register={controllerProps?.register}
+            formData={formData}
+            errors={errors}
+            control={controllerProps?.control}
+            customClass={config?.customClass}
+            customErrorMsg={config?.error}
+            localePrefix={config?.localePrefix}
+            variant={variant ? variant : errors?.[populators.name] ? "digit-field-error" : ""}
+          />
+        );
+        case "documentUploadAndDownload":
+        return (
+          <UploadAndDownloadDocumentHandler
             module={config?.module}
             config={config}
             // Controller={Controller}        // TODO: NEED TO DISCUSS ON THIS

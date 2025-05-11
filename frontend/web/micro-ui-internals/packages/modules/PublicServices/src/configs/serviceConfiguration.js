@@ -1,5 +1,5 @@
 export const serviceConfig = {
-    "tenantId": "pg",
+    "tenantId": "dev",
     "moduleName": "CommonService",
     "ServiceConfiguration": [
       {
@@ -20,7 +20,8 @@ export const serviceConfig = {
                   //"prefix": "FINANCIALYEAR",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "egf-master.FinancialYear2" 
+                  "schema": "egf-master.FinancialYear2", 
+                  "orderNumber": 1
                 },
                 {
                   "name": "licenseType",
@@ -30,6 +31,7 @@ export const serviceConfig = {
                   "type": "string",
                   "format": "radioordropdown",
                   "required": false,
+                  "orderNumber": 2
                 },
                 {
                   "name": "tradeName",
@@ -43,7 +45,7 @@ export const serviceConfig = {
                     "message": "Only letters and numbers allowed"
                   },
                   "required": false,
-                  "orderNumber": 1
+                  "orderNumber": 3
                 },
                 {
                   "name": "tradeStructureType",
@@ -52,7 +54,8 @@ export const serviceConfig = {
                   "format": "radioordropdown",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "Tradelicence.StructureType" 
+                  "schema": "Tradelicence.StructureType",
+                  "orderNumber": 4
                 },
                 {
                   "name": "tradeStructureSubType",
@@ -67,7 +70,8 @@ export const serviceConfig = {
                     "tradeStructureType"
                   ],
                   "required": false,
-                  "schema": "Tradelicence.StructureSubType"
+                  "schema": "Tradelicence.StructureSubType",
+                  "orderNumber": 5
                 },
                 {
                   "name": "tradeCommencementDate",
@@ -75,6 +79,7 @@ export const serviceConfig = {
                   "type": "date",
                   "format": "date",
                   "required": false,
+                  "orderNumber": 6
                 }
               ]
           },
@@ -90,7 +95,8 @@ export const serviceConfig = {
                   "format": "radioordropdown",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "Tradelicence.TradeCategory"
+                  "schema": "Tradelicence.TradeCategory",
+                  "orderNumber": 1
                 },
                 {
                   "name": "tradeType",
@@ -99,7 +105,8 @@ export const serviceConfig = {
                   "format": "radioordropdown",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "Tradelicence.TradeType"
+                  "schema": "Tradelicence.TradeType",
+                  "orderNumber": 2
                 },
                 {
                   "name": "tradeSubType",
@@ -108,7 +115,8 @@ export const serviceConfig = {
                   "format": "radioordropdown",
                   "reference": "mdms",
                   "required": false,
-                  "schema": "Tradelicence.TradeSubType"
+                  "schema": "Tradelicence.TradeSubType",
+                  "orderNumber": 3
                 }
               ]
           },
@@ -219,8 +227,9 @@ export const serviceConfig = {
                   "type": "string",
                   "format": "radioordropdown",
                   "reference": "mdms",
-                  "required": true,
-                  "schema": "TradeLicense.AccessoriesCategory"
+                  "required": false,
+                  "schema": "TradeLicense.AccessoriesCategory",
+                  "orderNumber": 1
                 }
                 // {
                 //   "name": "count",

@@ -1,63 +1,36 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
-export const InboxConfig = (module) => {
-    module = module.toUpperCase();
+export const InboxConfig = () => {
+    const { module } = useParams();
+    const prefix = `${module?.toUpperCase()}`;
 
     return ({
-        headerLabel: "Inbox",
+        headerLabel: `${prefix}_INBOX`,
         type: "inbox",
-        // apiDetails: {
-        //     serviceName: `/egov-mdms-service/v2/_search`,
-        //     requestParam: {},
-        //     requestBody: {
-        //         MdmsCriteria: {},
-        //     },
-        //     minParametersForSearchForm: 0,
-        //     masterName: "commonUiConfig",
-        //     moduleName: "SearchMDMSConfig",
-        //     tableFormJsonPath: "requestBody.MdmsCriteria",
-        //     filterFormJsonPath: "requestBody.MdmsCriteria.custom",
-        //     searchFormJsonPath: "requestBody.MdmsCriteria.custom",
-        // },
         apiDetails: {
-            serviceName: "/inbox-v2/v2/_search",
+      serviceName: "/inbox/v2/_search",
             requestParam: {},
             requestBody: {
                 inbox: {
                     processSearchCriteria: {
-                        businessService: [
-                            "PGR"
-                        ],
-                        moduleName: "RAINMAKER-PGR"
+                        businessService: [],
+                        moduleName: "public-service",
                     },
-                    moduleSearchCriteria: {}
+                    moduleSearchCriteria: {
+                        sortOrder: "ASC",
+                        module: "public-service",
+                    }
                 }
             },
             minParametersForSearchForm: 0,
             minParametersForFilterForm: 0,
             masterName: "commonUiConfig",
-            moduleName: "PGRInboxConfig",
+            moduleName: "InboxGenericConfig",
             tableFormJsonPath: "requestBody.inbox",
             filterFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
             searchFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
-        },
-        // apiDetails: {
-        //     serviceName: "/mdms-v2/v2/_search",
-        //     requestParam: {},
-        //     requestBody: {
-        //         inbox: {
-        //             "SearchCriteria": {
-        //             }
-        //         }
-        //     },
-        //     minParametersForSearchForm: 0,
-        //     minParametersForFilterForm: 0,
-        //     masterName: "commonUiConfig",
-        //     moduleName: "SampleInboxConfig",
-        //     tableFormJsonPath: "requestBody.inbox",
-        //     filterFormJsonPath: "requestBody.inbox.SearchCriteria",
-        //     searchFormJsonPath: "requestBody.inbox.SearchCriteria",
-        // },
+    },
         sections: {
             search: {
                 uiConfig: {
@@ -71,23 +44,23 @@ export const InboxConfig = (module) => {
                     fields: [
                         {
                             inline: true,
-                            label: "Application Number",
+                            label: `${prefix}_APPLICATION_NUMBER`,
                             isMandatory: false,
                             type: "text",
                             disable: false,
                             populators: { name: "application", error: "Error!" },
                         },
                         {
-                            label: "Business Service",
+                            label: `${prefix}_BUSSINESS_SERVICE`,
                             isMandatory: true,
-                            key: "service",
+                            key: "businessService",
                             type: "dropdown",
                             disable: false,
                             preProcess: {
                                 updateDependent: ["populators.options"]
                             },
                             populators: {
-                                name: "service",
+                                name: "businessService",
                                 optionsKey: "code",
                                 options: [
                                 ]
@@ -134,18 +107,18 @@ export const InboxConfig = (module) => {
                                 options: [
                                     {
                                         code: "ASSIGNED_TO_ME",
-                                        name: `${module}_ASSIGNED_TO_ME`,
+                                        name: `${prefix}_ASSIGNED_TO_ME`,
                                     },
                                     {
                                         code: "ASSIGNED_TO_ALL",
-                                        name: `${module}_ASSIGNED_TO_ALL`,
+                                        name: `${prefix}_ASSIGNED_TO_ALL`,
                                     },
                                 ],
                                 optionsKey: "name",
                             },
                         },
                         {
-                            label: "COMMON_WARD",
+                            label: `${prefix}_COMMON_WARD`,
                             type: "locationdropdown",
                             isMandatory: false,
                             disable: false,
@@ -159,7 +132,7 @@ export const InboxConfig = (module) => {
                             }
                         },
                         {
-                            label: "COMMON_WORKFLOW_STATES",
+                            label: `${prefix}_COMMON_WORKFLOW_STATES`,
                             type: "workflowstatesfilter",
                             labelClassName: "checkbox-status-filter-label",
                             isMandatory: false,
@@ -180,19 +153,19 @@ export const InboxConfig = (module) => {
                     columns: [
                         {
                             label: "Application Number",
-                            jsonPath: "",
+                            jsonPath: "applicationNumber",
                         },
                         {
                             label: "Business Service",
-                            jsonPath: "",
+                            jsonPath: "businessService",
                         },
                         {
                             label: "Status",
-                            jsonPath: "",
+                            jsonPath: "statusMap",
                         },
                         {
                             label: "SLA",
-                            jsonPath: "",
+                            jsonPath: "nearingSlaCount",
                         }
                     ],
                     tableProps: {
@@ -215,13 +188,12 @@ export const InboxConfig = (module) => {
                         ],
                     },
                     enableColumnSort: true,
-                    resultsJsonPath: "mdms",
+                    resultsJsonPath: "items",
                     defaultSortAsc: true,
                 },
                 children: {},
                 show: true,
             },
         },
-        // additionalSections: {}, 
     })
 };

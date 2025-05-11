@@ -10,6 +10,7 @@ import { useMutation } from "react-query";
 import { useQuery, useQueryClient } from "react-query";
 
 import { Request } from "./Request";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 export const CustomService = {
   getResponse: ({ url, params, body, plainAccessRequest,useCache=true,userService=true,setTimeParam=true,userDownload=false,auth=true, headers={}, method="POST"}) =>  Request({
@@ -31,6 +32,7 @@ const useWorkflowDetailsWorks = ({ tenantId, id, moduleCode, role = "CITIZEN", s
   const queryClient = useQueryClient();
 
   const staleDataConfig = { staleTime: Infinity };
+  
 
   const { isLoading, error, isError, data } = useQuery(
       ["workFlowDetailsWorks", tenantId, id, moduleCode, role, config],
@@ -63,6 +65,8 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
   const history = useHistory()
   const { estimateNumber, mbNumber, workOrderNumber } = Digit.Hooks.useQueryParams();
   applicationNo = applicationNo ? applicationNo : estimateNumber 
+  const { module } = useParams();
+  const { service } = useParams();
 
   const { mutate } = useUpdateCustom(url)
 
@@ -225,7 +229,7 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
   }
 
   actions?.forEach(action => {
-    action.displayname = `WF_${businessService.toUpperCase()?.replaceAll(/[./-]/g,"_")}_ACTION_${action?.action?.replaceAll(/[./-]/g, "_")}`;
+    action.displayname = `WF_${module.toUpperCase()}_${businessService.toUpperCase()?.replaceAll(/[./-]/g,"_")}_ACTION_${action?.action?.replaceAll(/[./-]/g, "_")}`;
   });
   return (
     <React.Fragment>
@@ -237,7 +241,7 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
               t={t}
               type={workflowDetails?.data?.actionState?.nextActions || workflowDetails?.data?.nextActions ? "actionButton" : "submit"}
               options={actions}
-              label={t("WORKS_ACTIONS")}
+              label={t(`${module.toUpperCase()}_${service.toUpperCase()}_ACTIONS`)}
               variation={"primary"}
               optionsKey={"displayname"}
               isSearchable={false}
@@ -261,7 +265,7 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
               name={actions?.[0]?.action}
               label={t(
                 Digit.Utils.locale.getTransformedLocale(
-                  `${forcedActionPrefix || `WF_${businessService?.toUpperCase()}_ACTION`}_${actions?.[0]?.action}`
+                  `${forcedActionPrefix || `WF_${module.toUpperCase()}_${businessService?.toUpperCase()}_ACTION`}_${actions?.[0]?.action}`
                 )
               )}
               variation={"primary"}

@@ -25,6 +25,7 @@ import { WorkflowStatusFilter } from "../molecules";
 import { DateRangeNew } from "../molecules";
 import { FormComposer } from "./FormComposerV2";
 import isEqual from 'lodash/isEqual';
+import UploadAndDownloadDocumentHandler from "./UploadAndDownloadDocumentHandler";
 
 const FieldV1 = ({
   type = "",
@@ -313,6 +314,30 @@ const FieldV1 = ({
       case "documentUpload":
         return (
           <UploadFileComposer
+            mdmsModuleName={config?.mdmsModuleName}
+            module={config?.module}
+            config={config}
+            Controller={Controller} // TODO: NEED TO DISCUSS ON THIS
+            register={controllerProps?.register}
+            formData={formData}
+            errors={errors}
+            id={fieldId}
+            control={controllerProps?.control}
+            customClass={config?.customClass}
+            customErrorMsg={config?.error}
+            localePrefix={config?.localePrefix}
+            variant={
+              variant
+                ? variant
+                : errors?.[populators?.name]
+                ? "digit-field-error"
+                : ""
+            }
+          />
+        );
+        case "documentUploadAndDownload":
+        return (
+          <UploadAndDownloadDocumentHandler
             mdmsModuleName={config?.mdmsModuleName}
             module={config?.module}
             config={config}

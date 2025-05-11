@@ -1,57 +1,35 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
-import { searchGenericConfig } from "../../../configs/searchGenericConfig";
-import { InboxSearchComposer } from "@egovernments/digit-ui-components";
-import { Loader } from "@egovernments/digit-ui-react-components";
+import { useHistory } from "react-router-dom";
+//import { searchGenericConfig  } from "../../../configs/searchGenericConfig";
+import {useSearchGenericConfig} from "../../../configs/searchGenericConfig";
+import { InboxSearchComposer, Loader } from "@egovernments/digit-ui-components";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 const SearchTL = () => {
     const { t } = useTranslation();
     const { module } = useParams();
-    const configs = searchGenericConfig;
     const tenantId = Digit.ULBService.getCurrentTenantId();
 
-    const onSubmit = (data) => {
-        console.log(data, "Final Submit Data");
-    };
+    const configs = useSearchGenericConfig();
 
-    const request = {
-        url: "/public-service/v1/service",
-        headers: {
-            "X-Tenant-Id": tenantId
-        },
-        method: "GET",
-    }
-    const { isLoading, data } = Digit.Hooks.useCustomAPIHook(request);
-    const services = data?.Services.map(service => service.businessService);
+    const updatedConfig = useMemo(() => Digit.Utils.preProcessMDMSConfigInboxSearch(t, configs, "sections.search.uiConfig.fields", {
+        updateDependent : [
+          {
+            key : "businessService",
+            value : [{code:"NewTL", name:"NewTL", serviceCode:"SVC-DEV-TRADELICENSE-NEWTL-04"},{code:"OldTL", name:"OldTL", serviceCode:"SVC-DEV-TRADELICENSE-OLDTL-07"}]
+          }
+        ]
+      }), [
+        configs
+      ]);
 
-
-    useMemo(() => {
-        Digit.Utils.preProcessMDMSConfigInboxSearch(t, configs, "sections.search.uiConfig.fields", {
-            updateDependent: [
-                {
-                    key: "businessService",
-                    value: services?.map(item => ({
-                        code: item,
-                        name: item,
-                        serviceCode:"SVC-DEV-TRADELICENSE-NEWTL-04"
-                    }))
-                },
-            ]
-        }
-        )
-    }, [services]);
-
-
-    if (isLoading) {
-        return <Loader />;
-    }
-    return (
-        <React.Fragment>
-            <div className="digit-inbox-search-wrapper">
-                <InboxSearchComposer configs={configs}></InboxSearchComposer>
-            </div>
-        </React.Fragment>
+    return(
+    <React.Fragment>
+        <div className="digit-inbox-search-wrapper">
+            <InboxSearchComposer configs={updatedConfig}></InboxSearchComposer>
+        </div>
+    </React.Fragment>
     );
 };
 

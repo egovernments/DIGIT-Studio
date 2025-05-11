@@ -100,3 +100,24 @@ export const ApplicantFields =  [{
       ]
     }
   }]
+
+export const documentFields = [
+  {
+    "head": "documents",
+    "body": [
+        {
+            "type": "documentUploadAndDownload",
+            "withoutLabel": true,
+            "mdmsModuleName": "DigitStudio",
+            "module": "TradeLicense.NewTL",
+            "error": "WORKS_REQUIRED_ERR",
+            "name": "uploadedDocs",
+            "populators": {
+                "name": "uploadedDocs"  
+            },
+            "customClass": "input-emp",
+            "localePrefix": "TL_DOC"
+        }
+    ]
+  }
+]

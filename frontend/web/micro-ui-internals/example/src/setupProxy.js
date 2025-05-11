@@ -50,6 +50,7 @@ module.exports = function (app) {
     "/egov-searcher/bill-genie/waterbills/_get",
     "/egov-searcher/bill-genie/seweragebills/_get",
     "/egov-pdf/download/UC/mcollect-challan",
+    "/health-service-request",
     "/egov-hrms/employees/_count",
     "/tl-services/v1/_create",
     "/tl-services/v1/_search",

@@ -9,8 +9,8 @@ import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
 import ModulePageComponent from "./DigitDemo/modulePageComponent";
 import InboxService from "./DigitDemo/InboxService";
 import SearchTL from "./DigitDemo/searchTL";
-import CheckList from "./CheckList/checklist";
-import ViewApplication from "./CheckList/viewApplication";
+import CheckList from "./CheckList/Checklist";
+import ViewApplication from "./CheckList/ViewApplication";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -22,19 +22,17 @@ const SampleBreadCrumbs = ({ location }) => {
       show: true,
     },
     {
-      content: t(location.pathname.split("/").pop()),
+      content: t(location.pathname.split("/").pop().toUpperCase()),
       show: true,
-    },
-    {
-      content: t(location.pathname.split("/").pop()),
-      show: true,
-    },
+    }
   ];
   return <BreadCrumb crumbs={crumbs} />;
 };
 
 
 const App = ({ path, stateCode, userType, tenants }) => {
+
+  const tenantId = Digit.ULBService.getCurrentTenantId();
 
 
   return (
@@ -52,6 +50,7 @@ const App = ({ path, stateCode, userType, tenants }) => {
 
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
+        
         <PrivateRoute path={`${path}/checklist`} component={() => <CheckList />} />
         <PrivateRoute path={`${path}/viewapp`} component={() => <ViewApplication />} />
       </AppContainer>

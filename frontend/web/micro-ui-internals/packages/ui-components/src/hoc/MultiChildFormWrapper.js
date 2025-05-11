@@ -72,7 +72,7 @@ const MultiChildFormWrapper = ({ config, control, formData, setValue, getValues,
 
       {/* Add button aligned right */}
       <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-        <Button type="button" variation="secondary" label="Add" onButtonClick={addInstance} />
+        <Button type="button" variation="secondary" label={`${config?.prefix}_ADD`} onButtonClick={addInstance} />
       </div>
     </div>
   );
