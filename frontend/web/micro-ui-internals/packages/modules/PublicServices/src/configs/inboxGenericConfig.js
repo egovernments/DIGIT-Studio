@@ -1,15 +1,15 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
 
 export const InboxConfig = () => {
     const { module } = useParams();
     const prefix = `${module?.toUpperCase()}`;
 
     return ({
-        headerLabel: `${prefix}_INBOX`,
+        headerLabel: `${prefix}_INBOX_HEADER`,
         type: "inbox",
         apiDetails: {
-      serviceName: "/inbox/v2/_search",
+            serviceName: "/inbox/v2/_search",
             requestParam: {},
             requestBody: {
                 inbox: {
@@ -30,7 +30,7 @@ export const InboxConfig = () => {
             tableFormJsonPath: "requestBody.inbox",
             filterFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
             searchFormJsonPath: "requestBody.inbox.moduleSearchCriteria",
-    },
+        },
         sections: {
             search: {
                 uiConfig: {
@@ -48,10 +48,10 @@ export const InboxConfig = () => {
                             isMandatory: false,
                             type: "text",
                             disable: false,
-                            populators: { name: "application", error: "Error!" },
+                            populators: { name: "applicationNumber", error: "Error!" },
                         },
                         {
-                            label: `${prefix}_BUSSINESS_SERVICE`,
+                            label: `${prefix}_BUSINESS_SERVICE`,
                             isMandatory: true,
                             key: "businessService",
                             type: "dropdown",
@@ -61,9 +61,8 @@ export const InboxConfig = () => {
                             },
                             populators: {
                                 name: "businessService",
-                                optionsKey: "code",
-                                options: [
-                                ]
+                                optionsKey: "name",
+                                options: []
                             }
                         },
                     ],
@@ -84,7 +83,7 @@ export const InboxConfig = () => {
                 uiConfig: {
                     type: "filter",
                     headerStyle: null,
-                    primaryLabel: "Filter",
+                    primaryLabel: `${prefix}_FILTER`,
                     secondaryLabel: "",
                     minReqFields: 1,
                     defaultValues: {
@@ -92,9 +91,9 @@ export const InboxConfig = () => {
                         ward: [],
                         locality: [],
                         assignee: {
-                            code: "ASSIGNED_TO_ALL",
-                            name: "EST_INBOX_ASSIGNED_TO_ALL",
-                        },
+                            code: `${prefix}_ASSIGNED_TO_ALL`,
+                            name: `${prefix}_ASSIGNED_TO_ALL`,
+                        }
                     },
                     fields: [
                         {
@@ -106,17 +105,43 @@ export const InboxConfig = () => {
                                 name: "assignee",
                                 options: [
                                     {
-                                        code: "ASSIGNED_TO_ME",
+                                        code: `${prefix}_ASSIGNED_TO_ME`,
                                         name: `${prefix}_ASSIGNED_TO_ME`,
                                     },
                                     {
-                                        code: "ASSIGNED_TO_ALL",
+                                        code: `${prefix}_ASSIGNED_TO_ALL`,
                                         name: `${prefix}_ASSIGNED_TO_ALL`,
                                     },
                                 ],
                                 optionsKey: "name",
                             },
                         },
+                        // {
+                        //     key: "boundaryComponent",
+                        //     type: "boundary",
+                        //     inline: true,
+                        //     label: "BoundaryFIlter",
+                        //     disable: false,
+                        //     populators: {
+                        //         name: "boundaryComponent",
+                        //         levelConfig: { lowestLevel: "LOCALITY", highestLevel: "PROVINCE", isSingleSelect: [] },
+                        //         hierarchyType: "NEWTEST00222",
+                        //         noCardStyle: true,
+                        //         preSelected: ["NEWTEST00222_MO", "NEWTEST00222_MO_11_MARYLAND", "NEWTEST00222_MO_11_06_PLEEBO"],                    // "frozenData":
+                        //         // [{
+                        //         //     code: "NEWTEST00222_MO",
+                        //         //     name: "NEWTEST00222_MO"
+                        //         //   },
+                        //         //   {
+                        //         //     code: "NEWTEST00222_MO.NEWTEST00222_MO_11_MARYLAND",
+                        //         //     name: "NEWTEST00222_MO_11_MARYLAND"
+                        //         //   },
+                        //         //   {
+                        //         //     code: "NEWTEST00222_MO.NEWTEST00222_MO_11_MARYLAND.NEWTEST00222_MO_11_06_PLEEBO",
+                        //         //     name: "NEWTEST00222_MO_11_06_PLEEBO"
+                        //         //   }]
+                        //     },
+                        // },
                         {
                             label: `${prefix}_COMMON_WARD`,
                             type: "locationdropdown",
@@ -145,7 +170,7 @@ export const InboxConfig = () => {
                         },
                     ],
                 },
-                label: "ES_COMMON_FILTERS",
+                label: `ES_COMMON_FILTERS`,
                 show: true,
             },
             searchResult: {
@@ -169,8 +194,6 @@ export const InboxConfig = () => {
                         }
                     ],
                     tableProps: {
-                        showTableDescription: "This is the search table description",
-                        showTableTitle: "Search table title",
                         tableClassName: "custom-classname-resultsdatatable"
                     },
                     actionProps: {

@@ -26,12 +26,8 @@ const PublicServicesCard = () => {
         link: `/${window?.contextPath}/employee/publicservices/pgr/Newpgr/Apply`,
       },
       {
-        label: t("Services Search"),
-        link: `/${window?.contextPath}/employee/publicservices/NewTL/Search`,
-      },
-      {
-        label: t(" Inbox Search"),
-        link: `/${window?.contextPath}/employee/publicservices/tl/Inbox`,
+        label: t("CheckList"),
+        link: `/${window?.contextPath}/employee/publicservices/viewapp`,
       },
     ],
   };

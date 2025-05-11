@@ -20,10 +20,9 @@ const modulePageComponent = ({}) => {
     method: "GET",
   }
   const {isLoading, data} = Digit.Hooks.useCustomAPIHook(request);
-  console.log(data);
 
   let detailsConfig = data ? transformResponseforModulePage(data?.Services) : [];
-console.log(detailsConfig);
+
   if (isLoading) {
     return <Loader />;
   }
@@ -52,6 +51,9 @@ console.log(detailsConfig);
             }
             <Link className="link" to={`/${window.contextPath}/employee/publicservices/${product.module}/Search`}>
               Search
+            </Link>
+            <Link className="link" to={`/${window.contextPath}/employee/publicservices/${product.module}/Inbox`}>
+              Inbox
             </Link>
           </Card>
         ))}

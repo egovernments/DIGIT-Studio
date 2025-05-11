@@ -1,79 +1,64 @@
 import React from "react";
 import { Card, TextBlock, Button } from "@egovernments/digit-ui-components";
-import { transformViewApplication } from "../../../utils/createUtils";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import transformViewCheckList from "../../../utils/createUtils.js"
+import CheckListCard from "../../../components/CheckListCard.js";
 
 const ViewApplication = () => {
-    
-    const history = useHistory();
+
     const code = [
         "SMC BHAVYA.TRAINING_SUPERVISION.TEAM_SUPERVISOR",
         "LLIN-mz_april_2025.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR"
     ];
     const accountID = "";
-    const [filledStatus, setFilledStatus] = useState({});
-
-    const style = {
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        margin: "20px"
-    };
+    const [cardItems, setCardItems] = useState([]);
 
     const request = {
-        url: "/health-service-request/service/v1/_search",
+        url: "/health-service-request/service/definition/v1/_search",
         params: {},
         body: {},
         method: "POST",
         headers: {},
         config: {
-            enable: true,
+            enable: false,
         },
     }
     const mutation = Digit.Hooks.useCustomAPIMutationHook(request);
 
-    const isFilled = async (id, accid) => {
-
-        console.log("isfilled");
+    const getcarditems = async (code) => {
         await mutation.mutate(
             {
-                url: '/health-service-request/service/v1/_search',
+                url: "/health-service-request/service/definition/v1/_search",
                 method: "POST",
-                body: transformViewApplication(id, accid),
+                body: transformViewCheckList(code),
                 config: {
-                    enable: true,
+                    enable: false,
                 },
             },
             {
                 onSuccess: (res) => {
-                    console.log(res, "response");
-                    const filled = Array.isArray(res?.services) && res.services.length > 0;
-                    setFilledStatus((prev) => ({ ...prev, [id]: filled }));
+                    console.log(res,"application_response");
+                    setCardItems(res?.ServiceDefinitions);
                 },
                 onError: () => {
-                    setFilledStatus((prev) => ({ ...prev, [id]: false }));
+                    console.log("Error occured");
                 },
             }
         )
     }
 
     useEffect(() => {
-        code.forEach((c) => isFilled(c, accountID));
-    }, [accountID]);
+        getcarditems(code);
+    }, []);
 
     return (
         <React.Fragment>
-            {code.map((item, index) => (
-                <Card type="primary" key={index} style={style}>
-                    <TextBlock body={item} />
-                    {false ? (
-                        <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse` })} />
-                    ) : (
-                        <Button label="Fill Checklist" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/checklist` })} />
-                    )}
-                </Card>
-            ))}
+            {
+                cardItems.map((item, index) => (
+                    <CheckListCard item={item} accid={accountID} />
+                ))
+            }
         </React.Fragment>
     );
 };

@@ -4,13 +4,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Switch } from "react-router-dom";
 import DigitDemoComponent from "./DigitDemo/digitDemoComponent";
+import SearchTL from "./DigitDemo/searchTL";
 import Response from "./Response";
 import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
 import ModulePageComponent from "./DigitDemo/modulePageComponent";
 import InboxService from "./DigitDemo/InboxService";
-import SearchTL from "./DigitDemo/searchTL";
+import ViewApplication from "./CheckList/viewApplication";
 import CheckList from "./CheckList/Checklist";
-import ViewApplication from "./CheckList/ViewApplication";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -31,9 +31,7 @@ const SampleBreadCrumbs = ({ location }) => {
 
 
 const App = ({ path, stateCode, userType, tenants }) => {
-
   const tenantId = Digit.ULBService.getCurrentTenantId();
-
 
   return (
     <Switch>
@@ -43,16 +41,12 @@ const App = ({ path, stateCode, userType, tenants }) => {
         </React.Fragment>
         <PrivateRoute path={`${path}/:module/:service/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/:module/:service/response`} component={() => <Response />} />
-
-        <PrivateRoute path={`${path}/:module/Inbox`} component={() => <InboxService />} />
-
         <PrivateRoute path={`${path}/:module/Search`} component={() => <SearchTL />} />
-
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
-        
-        <PrivateRoute path={`${path}/checklist`} component={() => <CheckList />} />
+        <PrivateRoute path={`${path}/:module/inbox`} component={() => <InboxService />} />
         <PrivateRoute path={`${path}/viewapp`} component={() => <ViewApplication />} />
+        <PrivateRoute path={`${path}/checklist`} component={() => <CheckList />} />
       </AppContainer>
     </Switch>
   );
