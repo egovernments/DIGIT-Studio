@@ -11,7 +11,7 @@ const ViewCheckListCards = () => {
         "SMC BHAVYA.TRAINING_SUPERVISION.TEAM_SUPERVISOR",
         "LLIN-mz_april_2025.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR"
     ];
-    const accountID = "";
+    const accountID = "56756756755";
     const [cardItems, setCardItems] = useState([]);
 
     const request = {
@@ -38,7 +38,6 @@ const ViewCheckListCards = () => {
             },
             {
                 onSuccess: (res) => {
-                    console.log(res,"application_response");
                     setCardItems(res?.ServiceDefinitions);
                 },
                 onError: () => {

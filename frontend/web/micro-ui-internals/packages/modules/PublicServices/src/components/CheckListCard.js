@@ -62,11 +62,7 @@ const CheckListCard = (props) => {
                 <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse` })} />
             ) : (
                 <Button label="Fill Checklist" onClick={() => history.push({
-                    pathname: `/${window.contextPath}/employee/publicservices/checklist`,
-                    state: {
-                        accountid: props.accid,
-                        config: props.item,
-                    },
+                    pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}`,
                 })} />
             )}
         </Card>

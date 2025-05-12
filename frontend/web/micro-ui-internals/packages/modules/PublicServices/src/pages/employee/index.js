@@ -33,7 +33,7 @@ const App = ({ path, stateCode, userType, tenants }) => {
         </React.Fragment>
         <PrivateRoute path={`${path}/:module/Apply`} component={() => <DigitDemoComponent />} />
         <PrivateRoute path={`${path}/viewapp`} component={() => <ViewCheckListCards />} />
-        <PrivateRoute path={`${path}/checklist`} component={() => <CheckList />} />
+        <PrivateRoute path={`${path}/checklist/:accid/:id/:code`} component={() => <CheckList />} />
       </AppContainer>
     </Switch>
   );

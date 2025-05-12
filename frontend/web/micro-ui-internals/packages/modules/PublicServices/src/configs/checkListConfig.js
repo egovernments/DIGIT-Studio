@@ -1,7 +1,7 @@
 import React from "react";
 
-export const CheckListConfig = (response) => {
-
+export const CheckListConfig = (item) => {
+    let response =item[0];
     const createConfig = (field, label, codes, hide) => {
         let type = field.dataType === "SingleValueList" ? "radio" : "text";
         return {
@@ -51,6 +51,8 @@ export const updateCheckListConfig = (config, values) => {
                 item.populators.hideInForm = false;
             }
             if (values[code] && selectedValue !== value && item.populators.hideInForm == false){
+                console.log(item.populators.selectedValue,"select");
+                item.populators.selectedValue="";
                 item.populators.hideInForm = true;
             }
         }
