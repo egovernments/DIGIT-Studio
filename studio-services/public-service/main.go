@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/segmentio/kafka-go"
 	"log"
 	"net/http"
 	"os"
@@ -13,11 +11,20 @@ import (
 	db "public-service/scripts"
 	"public-service/service"
 	"public-service/utils"
+
+	"github.com/Priyansuvaish/digit_client/configdigit"
+	"github.com/gorilla/mux"
+	"github.com/segmentio/kafka-go"
 )
 
 func main() {
 	utils.InitLogger()
 
+	// Initialize the configuration
+	configdigit.GetGlobalConfig().Initialize(
+		"https://unified-dev.digit.org",
+		"",
+	)
 	// Init DB always, migrations optional
 	dbConn := repository.InitDB()
 	config.LoadEnv()
