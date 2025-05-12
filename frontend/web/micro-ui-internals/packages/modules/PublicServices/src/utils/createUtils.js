@@ -171,7 +171,6 @@ export const transformHRMSCreateData = (data)=>{
 
 }
 
-
 export const transformViewApplication = (id, accid) => {
     let requestBody = {
         "ServiceCriteria": {
