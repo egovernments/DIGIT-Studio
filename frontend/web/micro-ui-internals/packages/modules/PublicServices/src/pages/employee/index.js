@@ -9,8 +9,6 @@ import Response from "./Response";
 import DigitDemoViewComponent from "./DigitDemo/digitDemoViewComponent";
 import ModulePageComponent from "./DigitDemo/modulePageComponent";
 import InboxService from "./DigitDemo/InboxService";
-import ViewApplication from "./CheckList/viewApplication";
-import CheckList from "./CheckList/Checklist";
 
 const SampleBreadCrumbs = ({ location }) => {
   const { t } = useTranslation();
@@ -45,8 +43,6 @@ const App = ({ path, stateCode, userType, tenants }) => {
         <PrivateRoute path={`${path}/:module/:service/ViewScreen`} component={() => <DigitDemoViewComponent />} />
         <PrivateRoute path={`${path}/modules`} component={() => <ModulePageComponent />} />
         <PrivateRoute path={`${path}/:module/inbox`} component={() => <InboxService />} />
-        <PrivateRoute path={`${path}/viewapp`} component={() => <ViewApplication />} />
-        <PrivateRoute path={`${path}/checklist`} component={() => <CheckList />} />
       </AppContainer>
     </Switch>
   );
