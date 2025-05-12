@@ -59,11 +59,10 @@ const CheckListCard = (props) => {
         <Card type="primary" style={style}>
             <TextBlock body={props.item.code} />
             {filled ? (
-                <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse` })} />
+                <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse/${props.accid}/${props.item.id}/${props.item.code}` })} />
             ) : (
                 <Button label="Fill Checklist" onClick={() => history.push({
-                    pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}`,
-                })} />
+                    pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}`})} />
             )}
         </Card>
     );

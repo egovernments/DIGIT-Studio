@@ -51,8 +51,6 @@ export const updateCheckListConfig = (config, values) => {
                 item.populators.hideInForm = false;
             }
             if (values[code] && selectedValue !== value && item.populators.hideInForm == false){
-                console.log(item.populators.selectedValue,"select");
-                item.populators.selectedValue="";
                 item.populators.hideInForm = true;
             }
         }
