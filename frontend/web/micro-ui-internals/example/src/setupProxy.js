@@ -70,6 +70,7 @@ module.exports = function (app) {
     "/sw-services",
     "/ws-calculator",
     "/sw-calculator/",
+    "/health-service-request",
     "/egov-searcher",
     "/report",
     "/inbox/v1/dss/_search",
