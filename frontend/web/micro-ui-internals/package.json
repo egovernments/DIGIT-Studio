@@ -7,8 +7,8 @@
     "packages/css",
     "packages/modules/*",
     "packages/ui-components",
+    "packages/react-components",
     "packages/modules/core"
-
   ],
   "author": "JaganKumar <jagan.kumar@egov.org.in>",
   "license": "MIT",
@@ -28,11 +28,13 @@
     "dev:core": "cd packages/modules/core && yarn start",
     "dev:openPayment": "cd packages/modules/open-payment && yarn start",
     "dev:components": "cd packages/ui-components && yarn start",
+    "dev:react-components": "cd packages/react-components && yarn start",
     "build": "run-p build:**",
     "build:publicServices": "cd packages/modules/PublicServices && yarn build",
     "build:core": "cd packages/modules/core && yarn build",
     "build:openPayment": "cd packages/modules/open-payment && yarn build",
     "build:components": "cd packages/ui-components && yarn build",
+    "build:react-components": "cd packages/react-components && yarn build",
     "deploy:jenkins": "./scripts/jenkins.sh",
     "clean": "rm -rf node_modules"
   },
@@ -57,7 +59,7 @@
   "dependencies": {
     "@egovernments/digit-ui-components": "0.2.0-studio.1",
     "@egovernments/digit-ui-module-open-payment": "0.0.5",
-    "@egovernments/digit-ui-react-components": "1.8.19",
+    "@egovernments/digit-ui-react-components": "1.8.50",
     "ajv": "8.12.0",
     "lodash": "4.17.21",
     "microbundle-crl": "^0.13.11",

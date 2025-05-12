@@ -1,0 +1,28 @@
+/* Font imports */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* Font utility classes */
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Font weight utility classes */
+.font-inter-regular {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.font-inter-medium {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.font-inter-semibold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.font-inter-bold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
