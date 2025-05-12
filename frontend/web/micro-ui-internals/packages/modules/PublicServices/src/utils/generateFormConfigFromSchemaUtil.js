@@ -13,6 +13,7 @@ export const generateFormConfig = (config, module, service) => {
       type: field.format || field.type,
       label: `${module}_${service}_${field.name.toUpperCase()}`,
       populators: {
+        ...field?.populators,
         name: field.name,
         optionsKey: "name",
         error: field?.validation?.message || "field is required",
