@@ -838,7 +838,8 @@ func (r *ApplicationRepository) UpdateUsingKafka(ctx context.Context, req model.
 		ServiceCode: serviceCode,
 		Ids:         []string{applicationId},
 	}
-	existingService, _ := r.Search(ctx, searchCriteria)
+
+	existingService, _ := r.SearchWithIndividual(ctx, searchCriteria)
 	if len(existingService.Application) == 0 {
 		return model.ApplicationResponse{}, errors.New("Service with given serviceCode and applicationId not present in the application.")
 	}
