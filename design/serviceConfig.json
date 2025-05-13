@@ -61,6 +61,17 @@
           "schema": "Tradelicence.TradeSubType"
         },
         {
+          "name": "tradeMovable",
+          "label": "tradeMovable",
+          "type": "string",
+          "reference": "enum",
+          "dependencies": [
+            "tradeType"
+          ],
+          "required": true,
+          "values": ["YES", "NO"]
+        },
+        {
           "name": "tradeName",
           "label": "Trade Name ",
           "type": "string",
