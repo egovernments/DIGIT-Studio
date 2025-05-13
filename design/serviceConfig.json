@@ -61,6 +61,17 @@
           "schema": "Tradelicence.TradeSubType"
         },
         {
+          "name": "tradeMovable",
+          "label": "tradeMovable",
+          "type": "string",
+          "reference": "enum",
+          "dependencies": [
+            "tradeType"
+          ],
+          "required": true,
+          "values": ["YES", "NO"]
+        },
+        {
           "name": "tradeName",
           "label": "Trade Name ",
           "type": "string",
@@ -115,167 +126,171 @@
         }
       ],
       "workflow": {
-        "businessService": "NewTL",
-        "details": [
+        "businessService": "Tradelicence.NewTL",
+        "business": "public-services",
+        "businessServiceSla": 5184000000,
+        "states": [
           {
-            "tenantId": "pg",
-            "businessService": "CONTRACT",
-            "business": "contract-service",
-            "businessServiceSla": 604800000,
-            "states": [
+            "sla": null,
+            "state": null,
+            "applicationStatus": null,
+            "docUploadRequired": false,
+            "isStartState": true,
+            "isTerminateState": false,
+            "isStateUpdatable": true,
+            "actions": [
               {
-                "sla": null,
-                "state": null,
-                "applicationStatus": null,
-                "docUploadRequired": false,
-                "isStartState": true,
-                "isTerminateState": false,
-                "isStateUpdatable": true,
-                "actions": [
-                  {
-                    "action": "CREATE",
-                    "nextState": "PENDING_FOR_VERIFICATION",
-                    "roles": [
-                      "WORK_ORDER_CREATOR"
-                    ]
-                  }
+                "action": "CREATE",
+                "nextState": "PENDING_FOR_VERIFICATION",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
                 ]
-              },
-              {
-                "sla": 172800000,
-                "state": "PENDING_FOR_VERIFICATION",
-                "applicationStatus": "INWORKFLOW",
-                "docUploadRequired": false,
-                "isStartState": false,
-                "isTerminateState": false,
-                "isStateUpdatable": true,
-                "actions": [
-                  {
-                    "action": "VERIFY_AND_FORWARD",
-                    "nextState": "PENDING_FOR_APPROVAL",
-                    "roles": [
-                      "WORK_ORDER_VERIFIER"
-                    ]
-                  },
-                  {
-                    "action": "SEND_BACK",
-                    "nextState": "PENDING_FOR_CORRECTION",
-                    "roles": [
-                      "WORK_ORDER_VERIFIER"
-                    ]
-                  }
-                ]
-              },
-              {
-                "sla": 86400000,
-                "state": "PENDING_FOR_APPROVAL",
-                "applicationStatus": "INWORKFLOW",
-                "docUploadRequired": false,
-                "isStartState": false,
-                "isTerminateState": false,
-                "isStateUpdatable": true,
-                "actions": [
-                  {
-                    "action": "APPROVE",
-                    "nextState": "PENDING_FOR_ACCEPTANCE",
-                    "roles": [
-                      "WORK_ORDER_APPROVER"
-                    ]
-                  },
-                  {
-                    "action": "SEND_BACK",
-                    "nextState": "PENDING_FOR_VERIFICATION",
-                    "roles": [
-                      "WORK_ORDER_APPROVER"
-                    ]
-                  },
-                  {
-                    "action": "REJECT",
-                    "nextState": "REJECTED",
-                    "roles": [
-                      "WORK_ORDER_APPROVER"
-                    ]
-                  },
-                  {
-                    "action": "SEND_BACK_TO_ORIGINATOR",
-                    "nextState": "PENDING_FOR_CORRECTION",
-                    "roles": [
-                      "WORK_ORDER_APPROVER"
-                    ]
-                  }
-                ]
-              },
-              {
-                "sla": 604800000,
-                "state": "PENDING_FOR_ACCEPTANCE",
-                "applicationStatus": "INWORKFLOW",
-                "docUploadRequired": false,
-                "isStartState": false,
-                "isTerminateState": false,
-                "isStateUpdatable": true,
-                "actions": [
-                  {
-                    "action": "ACCEPT",
-                    "nextState": "ACCEPTED",
-                    "roles": [
-                      "ORG_ADMIN"
-                    ]
-                  },
-                  {
-                    "action": "DECLINE",
-                    "nextState": "PENDING_FOR_CORRECTION",
-                    "roles": [
-                      "ORG_ADMIN"
-                    ]
-                  }
-                ]
-              },
-              {
-                "sla": 86400000,
-                "state": "PENDING_FOR_CORRECTION",
-                "applicationStatus": "INWORKFLOW",
-                "docUploadRequired": false,
-                "isStartState": true,
-                "isTerminateState": false,
-                "isStateUpdatable": true,
-                "actions": [
-                  {
-                    "action": "EDIT",
-                    "nextState": "PENDING_FOR_VERIFICATION",
-                    "roles": [
-                      "WORK_ORDER_CREATOR"
-                    ]
-                  },
-                  {
-                    "action": "REJECT",
-                    "nextState": "REJECTED",
-                    "roles": [
-                      "WORK_ORDER_CREATOR"
-                    ]
-                  }
-                ]
-              },
-              {
-                "sla": null,
-                "state": "ACCEPTED",
-                "applicationStatus": "ACTIVE",
-                "docUploadRequired": false,
-                "isStartState": false,
-                "isTerminateState": true,
-                "isStateUpdatable": false,
-                "actions": []
-              },
-              {
-                "sla": null,
-                "state": "REJECTED",
-                "applicationStatus": "INACTIVE",
-                "docUploadRequired": false,
-                "isStartState": false,
-                "isTerminateState": true,
-                "isStateUpdatable": false,
-                "actions": []
               }
             ]
+          },
+          {
+            "sla": 172800000,
+            "state": "PENDING_FOR_VERIFICATION",
+            "applicationStatus": "INWORKFLOW",
+            "docUploadRequired": false,
+            "isStartState": false,
+            "isTerminateState": false,
+            "isStateUpdatable": true,
+            "actions": [
+              {
+                "action": "VERIFY_AND_FORWARD",
+                "nextState": "PENDING_FOR_PAYMENT",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              },
+              {
+                "action": "SEND_BACK",
+                "nextState": "PENDING_FOR_CORRECTION",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              }
+            ]
+          },
+          {
+            "sla": 604800000,
+            "state": "PENDING_FOR_PAYMENT",
+            "applicationStatus": "INWORKFLOW",
+            "docUploadRequired": false,
+            "isStartState": false,
+            "isTerminateState": false,
+            "isStateUpdatable": true,
+            "actions": [
+              {
+                "action": "PAY",
+                "nextState": "PENDING_FOR_APPROVAL",
+                "roles": [
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              }
+            ]
+          },
+          {
+            "sla": 86400000,
+            "state": "PENDING_FOR_APPROVAL",
+            "applicationStatus": "INWORKFLOW",
+            "docUploadRequired": false,
+            "isStartState": false,
+            "isTerminateState": false,
+            "isStateUpdatable": true,
+            "actions": [
+              {
+                "action": "APPROVE",
+                "nextState": "APPROVED",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              },
+              {
+                "action": "SEND_BACK",
+                "nextState": "PENDING_FOR_VERIFICATION",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              },
+              {
+                "action": "REJECT",
+                "nextState": "REJECTED",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              },
+              {
+                "action": "SEND_BACK_TO_ORIGINATOR",
+                "nextState": "PENDING_FOR_CORRECTION",
+                "roles": [
+                  "CITIZEN",
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              }
+            ]
+          },
+          {
+            "sla": 86400000,
+            "state": "PENDING_FOR_CORRECTION",
+            "applicationStatus": "INWORKFLOW",
+            "docUploadRequired": false,
+            "isStartState": true,
+            "isTerminateState": false,
+            "isStateUpdatable": true,
+            "actions": [
+              {
+                "action": "EDIT",
+                "nextState": "PENDING_FOR_VERIFICATION",
+                "roles": [
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              },
+              {
+                "action": "REJECT",
+                "nextState": "REJECTED",
+                "roles": [
+                  "ARCHITECT",
+                  "STUDIO_ADMIN"
+                ]
+              }
+            ]
+          },
+          {
+            "sla": null,
+            "state": "APPROVED",
+            "applicationStatus": "ACTIVE",
+            "docUploadRequired": false,
+            "isStartState": false,
+            "isTerminateState": true,
+            "isStateUpdatable": false,
+            "actions": []
+          },
+          {
+            "sla": null,
+            "state": "REJECTED",
+            "applicationStatus": "INACTIVE",
+            "docUploadRequired": false,
+            "isStartState": false,
+            "isTerminateState": true,
+            "isStateUpdatable": false,
+            "actions": []
           }
         ],
         "ACTIVE": [
@@ -349,15 +364,18 @@
           "maxFilesAllowed": 1
         }
       ],
-      "idgen":[ {
-        "type":"application"
-        "format": "tl.application.number",
-        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
-      },{
-        "type":"bill"
-        "format": "tl.application.number",
-        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
-      }],
+      "idgen": [
+        {
+          "type": "application",
+          "format": "tl.application.number",
+          "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+        },
+        {
+          "type": "bill",
+          "format": "tl.application.number",
+          "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+        }
+      ],
       "localization": {
         "modules": [
           "digit-tradelicence"
@@ -382,6 +400,62 @@
         "email": {
           "TODO": "will fill later"
         }
+      },
+      "inbox": {
+        "module": "public-service",
+        "index": "public-service-index",
+        "allowedSearchCriteria": [
+          {
+            "name": "tenantId",
+            "path": "Data.tenantId.keyword",
+            "isMandatory": true,
+            "operator": "EQUAL"
+          },
+          {
+            "name": "status",
+            "path": "Data.workflowStatus",
+            "isMandatory": false
+          },
+          {
+            "name": "applicationNumber",
+            "path": "Data.applicationNumber.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "module",
+            "path": "Data.module.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "businessService",
+            "path": "Data.businessService.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "locality",
+            "path": "Data.address.locality.keyword",
+            "isMandatory": false
+          },
+          {
+            "name": "assignee",
+            "path": "Data.currentProcessInstance.assignes.uuid.keyword",
+            "isMandatory": false
+          }
+        ],
+        "sortBy": {
+          "path": "Data.auditDetails.createdTime",
+          "defaultOrder": "DESC"
+        },
+        "sourceFilterPathList": [
+          "Data.businessService",
+          "Data.applicationNumber",
+          "Data.currentProcessInstance",
+          "Data.auditDetails",
+          "Data.additionalDetails",
+          "Data.module",
+          "Data.locality",
+          "Data.status"
+        ]
       },
       "access": {
         "roles": [
