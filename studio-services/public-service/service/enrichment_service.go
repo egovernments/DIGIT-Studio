@@ -271,7 +271,44 @@ func (s *EnrichmentService) EnrichApplicationsWithDemand(apps model.ApplicationR
 		if businessService == "" {
 			businessService = apps.Application.BusinessService // fallback
 		}
+		var payerUser model.User // Replace with your actual User struct type
+		if len(apps.Application.Applicants) > 0 {
+			individualId := apps.Application.Applicants[0].UserId // Assuming this exists
 
+			// Fetch individual/user details using the ID
+			criteria := map[string]interface{}{
+				"uuid":     individualId,
+				"tenantId": apps.Application.TenantId,
+			}
+			indResp := s.individualService.GetIndividual(model.RequestInfo{}, criteria)
+			if jsonBytes, err := json.MarshalIndent(indResp, "", "  "); err == nil {
+				log.Printf("Indiviual response:\n%s\n", string(jsonBytes))
+			} else {
+				log.Printf("Indiviual response (raw): %+v\n", indResp)
+			}
+
+			if len(indResp.Individual) > 0 {
+				// Map individual data to User (Payer)
+				individual := indResp.Individual[0]
+
+				parsedUUID, err := uuid.Parse(individual.UserUuid)
+				if err != nil {
+					log.Printf("Invalid UUID format for UserUuid: %v", err)
+					return apps
+				}
+				payerUser = model.User{
+					Uuid:         parsedUUID,
+					UserName:     individual.UserDetails.UserName,
+					Name:         individual.Name.GivenName,
+					MobileNumber: individual.MobileNumber,
+					EmailId:      individual.Email,
+					TenantId:     individual.TenantId,
+					Type:         individual.UserDetails.Type,
+				}
+			}
+		} else {
+			log.Println("No applicants found to assign as payer")
+		}
 		demandDetail := demand.DemandDetail{
 			ID:                uuid.NewString(),
 			TaxHeadMasterCode: taxHeadCode,
@@ -284,10 +321,10 @@ func (s *EnrichmentService) EnrichApplicationsWithDemand(apps model.ApplicationR
 		d := demand.Demand{
 			ID:              uuid.NewString(),
 			TenantID:        apps.Application.TenantId,
-			ConsumerCode:    "APL-03993",
+			ConsumerCode:    apps.Application.ApplicationNumber,
 			ConsumerType:    apps.Application.Module,
-			BusinessService: apps.Application.BusinessService,
-			Payer:           apps.RequestInfo.UserInfo,
+			BusinessService: businessService,
+			Payer:           &payerUser,
 			TaxPeriodFrom:   taxPeriodFrom,
 			TaxPeriodTo:     taxPeriodTo,
 			DemandDetails:   []demand.DemandDetail{demandDetail},

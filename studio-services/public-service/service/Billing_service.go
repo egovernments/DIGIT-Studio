@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"public-service/config"
@@ -27,7 +28,12 @@ func (r *DemandService) SaveDemand(requestInfo model.RequestInfo, demands []dema
 		RequestInfo: requestInfo,
 		Demands:     demands,
 	}
-
+	// Pretty-print the request as JSON
+	if jsonBytes, err := json.MarshalIndent(demandRequest, "", "  "); err == nil {
+		log.Printf("Demand Request JSON:\n%s", string(jsonBytes))
+	} else {
+		log.Printf("Failed to marshal demandRequest: %v", err)
+	}
 	log.Printf("Creating demand for consumer code: %s", demandRequest.Demands[0].ConsumerCode)
 
 	//responseBytes, err := r.ServiceRequestRepo.FetchResult(url, demandRequest)
