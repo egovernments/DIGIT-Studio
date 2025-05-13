@@ -35,7 +35,7 @@ func (l *LocalizationService) GetLocalizationMessage(requestInfo model.RequestIn
 	}
 
 	// Build URL
-	url := fmt.Sprintf("%s%s%s?locale=%s&tenantId=%s&module=mgramseva-common&codes=%s",
+	url := fmt.Sprintf("%s%s%s?locale=%s&tenantId=%s&module=digit-studio&codes=%s",
 		os.Getenv("LOCALIZATION_SERVICE_HOST"),
 		os.Getenv("LOCALIZATION_CONTEXT_PATH"),
 		os.Getenv("LOCALIZATION_SEARCH_ENDPOINT"),
