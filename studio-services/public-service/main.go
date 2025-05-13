@@ -43,11 +43,14 @@ func main() {
 	mdmsSvc := service.NewMDMSService(restRepo)
 	mdmsv2sSvc := service.NewMDMSV2Service(restRepo)
 	idgenSvc := service.NewIdGenService(restRepo)
-	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc, idgenSvc)
+	localizationService := service.NewLocalizationService(restRepo)
+	smsService := service.NewSMSService(restRepo, localizationService, kafkaProducer)
+	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc, idgenSvc, smsService)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)
+
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc), individualSvc, enrichSvc)
+	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc), individualSvc, enrichSvc, smsService)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router

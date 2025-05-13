@@ -20,10 +20,11 @@ type ApplicationController struct {
 	workflowIntegrator *service.WorkflowIntegrator
 	individualService  *service.IndividualService
 	enrichmentService  *service.EnrichmentService
+	smsService         *service.SMSService
 }
 
-func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService) *ApplicationController {
-	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService}
+func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService, smsService *service.SMSService) *ApplicationController {
+	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService, smsService: smsService}
 }
 
 func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +92,10 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+	_, err2 := c.smsService.SendSMS(req, req.Application.TenantId, "DIGIT_STUDIO_APPLY_NEW_CONNECTION", req.Application.Applicants)
+	if err2 != nil {
+		log.Printf("error sending sms ")
 	}
 	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")

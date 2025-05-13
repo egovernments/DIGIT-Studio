@@ -18,9 +18,10 @@ type EnrichmentService struct {
 	MDMSService       *MDMSService
 	MDMSV2Service     *MDMSV2Service
 	IdGenService      *IdGenService
+	SMSService        *SMSService
 }
 
-func NewEnrichmentService(individualService *IndividualService, demandService *DemandService, mdmsService *MDMSService, mdmsServiceV2 *MDMSV2Service, idGenService *IdGenService) *EnrichmentService {
+func NewEnrichmentService(individualService *IndividualService, demandService *DemandService, mdmsService *MDMSService, mdmsServiceV2 *MDMSV2Service, idGenService *IdGenService, smsService *SMSService) *EnrichmentService {
 	return &EnrichmentService{individualService: individualService, DemandService: demandService, MDMSService: mdmsService, MDMSV2Service: mdmsServiceV2, IdGenService: idGenService}
 }
 
@@ -338,6 +339,11 @@ func (s *EnrichmentService) EnrichApplicationsWithDemand(apps model.ApplicationR
 			log.Printf("Failed to save demand: %v", err)
 		} else {
 			logJSON("Saved Demands Response", createdDemands)
+			_, err2 := s.SMSService.SendSMS(apps, apps.Application.TenantId, "DIGIT_STUDIO_DEMAND_CREATED", apps.Application.Applicants)
+			if err2 != nil {
+				log.Printf("Failed to send SMS: %v", err2)
+			}
+
 		}
 
 		// Optional: attach the demand to the application if needed

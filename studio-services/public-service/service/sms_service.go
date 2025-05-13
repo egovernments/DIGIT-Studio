@@ -10,15 +10,17 @@ import (
 	"public-service/model"
 	"public-service/model/sms"
 	"public-service/repository"
+	"strconv"
+	"strings"
 )
 
 type SMSService struct {
 	restCallRepo        repository.RestCallRepository
-	localizationService LocalizationService
+	localizationService *LocalizationService
 	kafkaProducer       *producer.PublicServiceProducer
 }
 
-func NewSMSService(repo repository.RestCallRepository, localizationService LocalizationService, kafkaProducer *producer.PublicServiceProducer) *SMSService {
+func NewSMSService(repo repository.RestCallRepository, localizationService *LocalizationService, kafkaProducer *producer.PublicServiceProducer) *SMSService {
 	return &SMSService{
 		restCallRepo:        repo,
 		localizationService: localizationService,
@@ -26,44 +28,53 @@ func NewSMSService(repo repository.RestCallRepository, localizationService Local
 	}
 }
 
-func (s *SMSService) SendSMS(requestInfo model.RequestInfo, tenantId string, templateCode string, owner model.User) (map[string]interface{}, error) {
+func (s *SMSService) SendSMS(application model.ApplicationRequest, tenantId string, templateCode string, owners []model.Applicant) (map[string]interface{}, error) {
 	localizationMessage := s.localizationService.GetLocalizationMessage(
-		requestInfo,
+		application.RequestInfo,
 		templateCode,
 		tenantId,
 	)
 
-	message := localizationMessage["message"]
+	templateMsg := localizationMessage["message"]
 
-	// Construct SMSRequest
-	smsRequest := sms.SMSRequest{
-		MobileNumber: owner.MobileNumber,
-		Message:      message,
-		Category:     sms.CategoryTransaction, // Ensure enum is defined like: const CategoryTransaction = "TRANSACTION"
-		TenantID:     tenantId,
-		// Optionally: ExpiryTime: time.Now().Add(...).Unix(),
-	}
-
-	smsBytes, err := json.Marshal(smsRequest)
-	if err != nil {
-		log.Printf("Failed to marshal SMSRequest: %v", err)
-		return nil, err
-	}
-
-	// Push to Kafka if producer is available
-	if s.kafkaProducer != nil {
-		ctx := context.Background()
-		err := s.kafkaProducer.Push(ctx, config.GetEnv("SEND_SMS_TOPIC"), smsBytes)
-		if err != nil {
-			log.Printf("Failed to push Kafka message: %v", err)
-			return nil, err
-		}
-	} else {
+	if s.kafkaProducer == nil {
 		return nil, fmt.Errorf("Kafka producer is not initialized")
+	}
+
+	for _, owner := range owners {
+		msg := templateMsg
+
+		if owner.Name != "" {
+			msg = strings.ReplaceAll(msg, "{username}", owner.Name)
+		}
+		if application.Application.ApplicationNumber != "" {
+			msg = strings.ReplaceAll(msg, "{applicationNo}", application.Application.ApplicationNumber)
+		}
+		msg = strings.ReplaceAll(msg, "{taxamout}", "50.00")
+
+		smsRequest := sms.SMSRequest{
+			MobileNumber: strconv.FormatInt(owner.MobileNumber, 10),
+			Message:      msg,
+			Category:     sms.CategoryNotification,
+			TenantID:     tenantId,
+		}
+
+		smsBytes, err := json.Marshal(smsRequest)
+		if err != nil {
+			log.Printf("Failed to marshal SMSRequest for owner %v: %v", owner.MobileNumber, err)
+			continue
+		}
+
+		ctx := context.Background()
+		err = s.kafkaProducer.Push(ctx, config.GetEnv("SEND_SMS_TOPIC"), smsBytes)
+		if err != nil {
+			log.Printf("Failed to push Kafka message for owner %v: %v", owner.MobileNumber, err)
+			continue
+		}
 	}
 
 	return map[string]interface{}{
 		"status":  "success",
-		"message": message,
+		"message": "Messages sent",
 	}, nil
 }
