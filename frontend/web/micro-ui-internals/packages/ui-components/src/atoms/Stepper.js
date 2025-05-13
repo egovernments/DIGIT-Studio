@@ -100,7 +100,7 @@ const Stepper = ({
                 ((index <= currentStep - 1) || (index < activeSteps) ) && "active"
               }`}
             >
-              {((index < currentStep - 1) || (index < activeSteps) ) ? (
+              {((index < currentStep - 2) || (index < activeSteps - 1) ) ? (
                 <SVG.Check
                   width={isMobileView ? "18px" : "24px"}
                   height={isMobileView ? "18px" : "24px"}

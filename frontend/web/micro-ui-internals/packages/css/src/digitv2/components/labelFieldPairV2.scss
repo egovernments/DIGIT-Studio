@@ -1,10 +1,7 @@
  .digit-label-field-pair {
    @apply mb-lg flex;
+   @apply items-center !important;
 
-
-   @media (min-aspect-ratio: 9/16) {
-     @apply items-start;
-   }
 
    @media (min-aspect-ratio: 9/16) and (max-aspect-ratio: 3/4) {
      gap: theme(digitv2.spacers.spacer5);

@@ -1,6 +1,8 @@
 .digit-stepper-container {
   @apply flex overflow-auto;
   min-height: 4rem;
+  margin: theme(digitv2.spacers.spacer6);
+
 
   &.vertical {
     @apply flex-col;
@@ -28,7 +30,7 @@
     @apply flex flex-col items-center font-sans font-regular;
     min-height: 4rem;
     gap: theme(digitv2.spacers.spacer2);
-    color: theme(digitv2.lightTheme.text-secondary);
+    color: theme(digitv2.lightTheme.text-color-secondary);
     font-size: theme(digitv2.spacers.spacer4);
     line-height: theme(digitv2.spacers.spacer6);
     text-align: center;
@@ -60,7 +62,7 @@
       letter-spacing: theme(digitv2.spacers.spacer0);
 
       &.completed {
-        color: theme(digitv2.lightTheme.text-primary);
+        color: theme(digitv2.lightTheme.text-color-primary);
       }
 
       &.current {
@@ -85,7 +87,7 @@
           font-size: theme(digitv2.fontSize.heading-s.desktop);
         }
         line-height: 1.37rem;
-        color: theme(digitv2.lightTheme.text-primary);
+        color: theme(digitv2.lightTheme.text-color-primary);
       }
 
       &.vertical {
