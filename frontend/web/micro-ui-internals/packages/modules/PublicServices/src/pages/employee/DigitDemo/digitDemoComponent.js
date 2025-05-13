@@ -21,21 +21,26 @@ const DigitDemoComponent = () => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const queryStrings = Digit.Hooks.useQueryParams();
 
-  const requestCriteria = {
-    url: "/egov-mdms-service/v2/_search",
-    body: {
-      MdmsCriteria: {
-        tenantId: tenantId,
-        schemaCode: "Studio.ServiceConfiguration"
-      },
-    },
-    //changeQueryName: "sorOverhead"
-  };
-  const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(requestCriteria);
+  //TODO: hardcoded the config for now, need to be changed in future
 
-  let config = data?.mdms?.filter((item) => item?.uniqueIdentifier.toLowerCase() === `${module}.${service}`.toLowerCase())[0];
+  // const requestCriteria = {
+  //   url: "/egov-mdms-service/v2/_search",
+  //   body: {
+  //     MdmsCriteria: {
+  //       tenantId: tenantId,
+  //       schemaCode: "Studio.ServiceConfiguration"
+  //     },
+  //   },
+  //   //changeQueryName: "sorOverhead"
+  // };
+  // const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(requestCriteria);
+
+  // let config = data?.mdms?.filter((item) => item?.uniqueIdentifier.toLowerCase() === `${module}.${service}`.toLowerCase())[0];
+
+  let config = serviceConfigPGR;
+
   let Updatedconfig = {
-    ServiceConfiguration : [config?.data],
+    ServiceConfiguration : [config?.ServiceConfiguration[0]],
     tenantId: tenantId,
     module: module,
   }
@@ -129,9 +134,9 @@ const DigitDemoComponent = () => {
   };
 
 
-  if (moduleListLoading) {
-    return <Loader />;
-  }
+  // if (moduleListLoading) {
+  //   return <Loader />;
+  // }
 
   console.log(formData[currentFormConfig?.name || `section_${currentStep}`],"mmmmmmm")
   console.log(formData,"formdata");
