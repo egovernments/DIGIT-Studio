@@ -8,471 +8,44 @@ const configModal = (
     action,
     approvers,
     businessService,
-    moduleCode
+    moduleCode,
+    documentConfig = []
 ) => {
     
     const {action:actionString} = action
-    const bsEstimate = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("estimate");
-    const bsContract = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("contract");
-    const bsMuster = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("muster roll");
-    const bsPurchaseBill = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("works.purchase");
-    const bsRevisedWO = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("revisedWO");
-    const bsMeasurement = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("measurement")
-    
-    const configMap = {
-        "NewTL": {
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                // upload:{
-                //     isMandatory:false,
-                //     show:true,
-                //     allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                // }
-            },
-            "REJECT": {
-                comments: {
-                    isMandatory: true,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "SENDBACK": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "SENDBACKTOORIGINATOR": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "APPROVE": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            }
-        },
-        [bsContract]: {
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "REJECT": {
-                comments: {
-                    isMandatory: true,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "SEND_BACK": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "VERIFY_AND_FORWARD": {
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true
-                }
-            },
-            "SEND_BACK_TO_ORIGINATOR": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "APPROVE": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-        },
-        [bsRevisedWO]:{
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "REJECT": {
-                comments: {
-                    isMandatory: true,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "SEND_BACK": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "VERIFY_AND_FORWARD": {
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true
-                }
-            },
-            "SEND_BACK_TO_ORIGINATOR": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-            "APPROVE": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                }
-            },
-        },
-        [bsMuster]:{
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "APPROVE": {
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                },
-                acceptTerms: {
-                    isMandatory:true,
-                    show:true
-                }
-            },
-            "REJECT": {
-                comments: {
-                    isMandatory: true,
-                    show: true,
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                },
-            },
-            "SENDBACK":{
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                },
-                acceptTerms: {
-                    isMandatory:false,
-                    show:false
-                }
-            },
-            "SENDBACKTOCBO":{
-                comments: {
-                    isMandatory: false,
-                    show: true,
-                },
-                assignee: {
-                    isMandatory: false,
-                    show: false
-                },
-                upload: {
-                    isMandatory: false,
-                    show: true
-                },
-                acceptTerms: {
-                    isMandatory:false,
-                    show:false
-                }
-            }
-        },
-        [bsPurchaseBill]:{
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:false
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true
-                }
-            },
-            "VERIFY_AND_FORWARD":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true
-                }
-            },
-            "REJECT":{
-                comments:{
-                    isMandatory:true,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:false
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true
-                }
-            }
-        },
-        [bsMeasurement] : {
-            "default":{
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:true
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "SENT_BACK" : {
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:false
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "REJECT" : {
-                comments:{
-                    isMandatory:true,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:false
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            },
-            "APPROVE" : {
-                comments:{
-                    isMandatory:false,
-                    show:true,
-                },
-                assignee:{
-                    isMandatory:false,
-                    show:false
-                },
-                upload:{
-                    isMandatory:false,
-                    show:true,
-                    allowedFileTypes:/(.*?)(pdf|vnd.openxmlformats-officedocument.wordprocessingml.document|msword|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet|csv|jpeg)$/i
-                }
-            }
-        }
-    }
+    const prefix = `${moduleCode.toUpperCase()}_${businessService.toUpperCase()}`;
+
+    let currentModule = `${moduleCode.toLowerCase()}.${businessService.toLowerCase()}`;
+    let docData = documentConfig?.filter((ob) => ob?.module.toLowerCase() === currentModule)?.[0]?.actions;
+  
+    let docConfig = docData?.filter((item) => item?.action === actionString)?.[0];
+    if(docConfig === undefined) docConfig = docData?.filter((item) => item?.action === "DEFAULT")?.[0]
 //field can have (comments,assignee,upload)
     const fetchIsMandatory = (field) => {
-        
-        if(configMap?.[businessService]?.[actionString]){
-            return configMap?.[businessService]?.[actionString]?.[field]?.isMandatory ? configMap?.[businessService]?.[actionString]?.[field]?.isMandatory : false
-        }else{
-            return configMap?.[businessService]?.default?.[field]?.isMandatory ? configMap?.[businessService]?.default?.[field]?.isMandatory: false
-        }
+            return docConfig?.[field]?.isMandatory ? docConfig?.[field]?.isMandatory : false
     }
     const fetchIsShow = (field) => {
-        
-        if (configMap?.[businessService]?.[actionString]) {
-           return configMap?.[businessService]?.[actionString]?.[field]?.show ? configMap?.[businessService]?.[actionString]?.[field]?.show : false
-        } else {
-            return configMap?.[businessService]?.default?.[field]?.show ? configMap?.[businessService]?.default?.[field]?.show:false
-        }
-        
+           return docConfig?.[field]?.show ? docConfig?.[field]?.show : false
     }
+
+    const documentFields = (docConfig?.documents || []).map((doc, index) => ({
+        type: "documentUploadAndDownload",
+        label: t(`${doc.code}`),
+        localePrefix: prefix,
+        populators: {
+            name: `document.${doc.name}` || `document_${index}`,
+            allowedMaxSizeInMB: doc.maxSizeInMB || 5,
+            maxFilesAllowed: doc.maxFilesAllowed || 2,
+            allowedFileTypes: doc.allowedFileTypes,
+            hintText: t(doc.hintText || "COMMON_DOC_UPLOAD_HINT"),
+            showHintBelow: true,
+            customClass: "upload-margin-bottom",
+            errorMessage: t(doc.errorMessage || "COMMON_FILE_UPLOAD_CUSTOM_ERROR_MSG"),
+            hideInForm: false,
+            action: actionString,
+            flow: "WORKFLOW"
+        }
+    }));
 
     return {
         label: {
@@ -528,21 +101,7 @@ const configModal = (
                             }
                         },
                     },
-                    {
-                        type: "multiupload",
-                        label: t("WORKFLOW_MODAL_UPLOAD_FILES"),
-                        populators: {
-                            name: "documents",
-                            allowedMaxSizeInMB: 5,
-                            maxFilesAllowed: 1,
-                            allowedFileTypes:configMap?.[businessService]?.default?.upload?.allowedFileTypes,
-                            hintText:t("COMMON_DOC_UPLOAD_HINT"),
-                            showHintBelow:true,
-                            customClass: "upload-margin-bottom",
-                            errorMessage: t("COMMON_FILE_UPLOAD_CUSTOM_ERROR_MSG"),
-                            hideInForm:!fetchIsShow("upload")
-                        }
-                    }
+                    ...documentFields,
                 ]
             }
         ]

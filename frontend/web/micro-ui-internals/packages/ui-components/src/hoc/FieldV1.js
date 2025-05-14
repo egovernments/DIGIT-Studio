@@ -26,6 +26,7 @@ import { DateRangeNew } from "../molecules";
 import { FormComposer } from "./FormComposerV2";
 import isEqual from 'lodash/isEqual';
 import UploadAndDownloadDocumentHandler from "./UploadAndDownloadDocumentHandler";
+import BoundaryFilter from "./BoundaryFilter";
 
 const FieldV1 = ({
   type = "",
@@ -350,6 +351,8 @@ const FieldV1 = ({
             customClass={config?.customClass}
             customErrorMsg={config?.error}
             localePrefix={config?.localePrefix}
+            action={populators?.action}
+            flow={populators?.flow}
             variant={
               variant
                 ? variant
@@ -359,6 +362,18 @@ const FieldV1 = ({
             }
           />
         );
+        case "boundary":
+          return (
+            <BoundaryFilter
+              levelConfig={populators.levelConfig}
+              hierarchyType={populators.hierarchyType}
+              module={populators.module}
+              layoutConfig={{ isDropdownLayoutHorizontal: false, isLabelFieldLayoutHorizontal: false }}
+              preSelected={populators.preSelected}
+              frozenData={populators.frozenData}
+              onChange={onChange}
+            />
+          );
       case "custom":
         return populators.component;
       case "amount":

@@ -16,7 +16,7 @@ const DigitDemoViewComponent = () => {
   const queryStrings = Digit.Hooks.useQueryParams();
 
   const request = {
-    url : "/public-service/v1/application/SVC-DEV-TRADELICENSE-NEWTL-04",
+    url : `/public-service/v1/application/${queryStrings?.serviceCode|| "SVC-DEV-TRADELICENSE-NEWTL-04"}`,
     headers: {
       "X-Tenant-Id" : tenantId
     },

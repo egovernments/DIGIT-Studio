@@ -15,8 +15,13 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
 
   const getServiceDetails = (formData) => {
-    const { address, applicantDetails, uploadedDocs, ...validSections } = formData;
-  
+    const excludedKeys = ["address", "applicantDetails", "uploadedDocs", "uploaded"];
+    const validSections = Object.keys(formData).reduce((acc, key) => {
+      if (!excludedKeys.includes(key)) {
+        acc[key] = formData[key];
+      }
+      return acc;
+    }, {});
     const flattenValues = (obj) => {
       const flat = {};
       for (const [key, val] of Object.entries(obj)) {
@@ -58,7 +63,7 @@ import { UICustomizations } from "../configs/UICustomizations";
         serviceDetails[sectionKey] = sectionVal;
       }
     }
-  
+    console.log(serviceDetails,"service-details");
     return serviceDetails;
   };
   
@@ -110,8 +115,8 @@ import { UICustomizations } from "../configs/UICustomizations";
           documents : formData?.uploadedDocs
         },
         Workflow: {
-          action: "APPLY",
-          comment: "Applied new Application",
+          action: "CREATE",
+          comment: "",
           assignees: []
         }
       }
