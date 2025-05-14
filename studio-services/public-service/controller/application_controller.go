@@ -79,7 +79,6 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
 		}
 	}
-	c.enrichmentService.EnrichApplicationsWithDemand(req)
 	// Call workflow integrator on success
 	err = c.workflowIntegrator.CallWorkflow(&req)
 	if err != nil {
