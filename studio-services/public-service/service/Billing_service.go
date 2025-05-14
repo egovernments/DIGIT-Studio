@@ -95,7 +95,6 @@ func (r *DemandService) fetchBill(request model.ApplicationRequest) ([]demand.Bi
 	// Prepare request body
 	// Have to make IT citizen as type employee Cannot search state level tenantid Bills
 	requestInfo := request.RequestInfo
-	requestInfo.UserInfo.Type = "CITIZEN"
 	billRequest := map[string]interface{}{
 		"RequestInfo": requestInfo,
 	}
