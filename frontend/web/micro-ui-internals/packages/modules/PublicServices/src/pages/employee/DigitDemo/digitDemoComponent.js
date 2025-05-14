@@ -48,7 +48,7 @@ const DigitDemoComponent = () => {
 
   const rawConfig = generateFormConfig(Updatedconfig, module.toUpperCase(),service?.toUpperCase());
   const steps = rawConfig.map((config) => config.head || config.label || "Untitled Section");
-  
+
   const currentFormConfig = rawConfig[currentStep - 1];
   let schemaCode = queryStrings?.serviceCode || "SVC-DEV-TRADELICENSE-NEWTL-04";
 

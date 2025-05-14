@@ -13,7 +13,7 @@ const SearchTL = () => {
 
     const configs = useSearchGenericConfig();
 
-    
+
     const updatedConfig = useMemo(() => Digit.Utils.preProcessMDMSConfigInboxSearch(t, configs, "sections.search.uiConfig.fields", {
         updateDependent : [
           {
