@@ -1,5 +1,6 @@
 import { Link, useHistory } from "react-router-dom";
 import _ from "lodash";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
 import React from "react";
 
 //create functions here based on module name set in mdms(eg->SearchProjectConfig)
@@ -107,14 +108,21 @@ export const UICustomizations = {
 
       InboxGenericConfig:{
         preProcess: (data, additionalDetails) => {
+          const { module } = useParams();
           const tenantId = Digit.ULBService.getCurrentTenantId();
           data.body.inbox.moduleSearchCriteria.tenantId = tenantId;
-          data.body.inbox.moduleSearchCriteria.businessService=data?.state?.searchForm?.businessService?.code;
-          data.body.inbox.processSearchCriteria.businessService=[data?.state?.searchForm?.businessService?.code];
+          data.body.inbox.moduleSearchCriteria.businessService=`${module}.${data?.state?.searchForm?.businessService?.code}`;
+          data.body.inbox.processSearchCriteria.businessService=[`${module}.${data?.state?.searchForm?.businessService?.code}`];
           data.body.inbox.processSearchCriteria.tenantId = tenantId;
           data.body.inbox.tenantId = tenantId;
           data.method = "POST"
           return data;
         },
+        selectionHandler: (event) => {
+        }, // selectionHandler : Is used to handle row selections. gets on object which containes 3 key value pairs:  allSelected(whether all rows are selected or not), selectedCount (no, of rows selected),selectedRows( an array of selected rows)
+        actionSelectHandler: (index, label, selectedRows) => {
+        }, // actionSelectHandler : Is used to handle onClick functions of table action button on row selections, gets index,label and selectedRows as props
+        footerActionHandler: (index, event) => {
+        },// footerActionHandler : Is used to handle onclick functions of footer action buttons, gets index and event as props
       }
 };

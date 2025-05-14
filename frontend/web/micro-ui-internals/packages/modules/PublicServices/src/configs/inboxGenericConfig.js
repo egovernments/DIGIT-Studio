@@ -15,11 +15,11 @@ export const InboxConfig = () => {
                 inbox: {
                     processSearchCriteria: {
                         businessService: [],
-                        moduleName: "public-service",
+                        moduleName: "public-services",
                     },
                     moduleSearchCriteria: {
                         sortOrder: "ASC",
-                        module: "public-service",
+                        module: "public-services",
                     }
                 }
             },
@@ -151,8 +151,8 @@ export const InboxConfig = () => {
                                 name: "ward",
                                 type: "ward",
                                 optionsKey: "i18nKey",
-                                defaultText: "COMMON_SELECT_WARD",
-                                selectedText: "COMMON_SELECTED",
+                                // defaultText: "COMMON_SELECT_WARD",
+                                // selectedText: "COMMON_SELECTED",
                                 allowMultiSelect: true
                             }
                         },
