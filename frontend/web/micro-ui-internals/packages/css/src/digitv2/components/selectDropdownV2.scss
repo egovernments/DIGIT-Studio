@@ -77,7 +77,8 @@
   }
   .digit-dropdown-select-active {
     @apply relative block w-full h-10 bg-white;
-    border: 0.063rem solid theme(digitv2.lightTheme.primary-1);
+    border: 0.094rem solid theme(digitv2.lightTheme.primary-1);
+    border-radius: 8px;
     input[type="text"] {
       @extend .typography.body-s;
       @media (max-aspect-ratio: 9/16) {
@@ -280,7 +281,7 @@
   }
   &:hover,
   &.keyChange{
-    background: theme(digitv2.lightTheme.primary-bg) !important;
+    background: #CFF4E2 !important;
     border: 0.031rem solid theme(digitv2.lightTheme.primary-1);
   }
   &:active {

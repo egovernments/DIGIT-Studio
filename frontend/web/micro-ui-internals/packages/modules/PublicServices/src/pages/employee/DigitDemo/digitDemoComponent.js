@@ -21,23 +21,21 @@ const DigitDemoComponent = () => {
   const tenantId = Digit.ULBService.getCurrentTenantId();
   const queryStrings = Digit.Hooks.useQueryParams();
 
-  //TODO: hardcoded the config for now, need to be changed in future
+  const requestCriteria = {
+    url: "/egov-mdms-service/v2/_search",
+    body: {
+      MdmsCriteria: {
+        tenantId: tenantId,
+        schemaCode: "Studio.ServiceConfiguration"
+      },
+    },
+    //changeQueryName: "sorOverhead"
+  };
+  const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(requestCriteria);
 
-  // const requestCriteria = {
-  //   url: "/egov-mdms-service/v2/_search",
-  //   body: {
-  //     MdmsCriteria: {
-  //       tenantId: tenantId,
-  //       schemaCode: "Studio.ServiceConfiguration"
-  //     },
-  //   },
-  //   //changeQueryName: "sorOverhead"
-  // };
-  // const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(requestCriteria);
+  let config = data?.mdms?.filter((item) => item?.uniqueIdentifier.toLowerCase() === `${module}.${service}`.toLowerCase())[0];
 
-  // let config = data?.mdms?.filter((item) => item?.uniqueIdentifier.toLowerCase() === `${module}.${service}`.toLowerCase())[0];
-
-  let config = serviceConfigPGR;
+  // let config = serviceConfigPGR;
 
   let Updatedconfig = {
     ServiceConfiguration : [config?.ServiceConfiguration[0]],
