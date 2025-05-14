@@ -38,7 +38,7 @@ const DigitDemoComponent = () => {
   // let config = serviceConfigPGR;
 
   let Updatedconfig = {
-    ServiceConfiguration : [config?.ServiceConfiguration[0]],
+    ServiceConfiguration : [config?.data],
     tenantId: tenantId,
     module: module,
   }
@@ -132,9 +132,9 @@ const DigitDemoComponent = () => {
   };
 
 
-  // if (moduleListLoading) {
-  //   return <Loader />;
-  // }
+  if (moduleListLoading) {
+    return <Loader />;
+  }
 
   console.log(formData[currentFormConfig?.name || `section_${currentStep}`],"mmmmmmm")
   console.log(formData,"formdata");
