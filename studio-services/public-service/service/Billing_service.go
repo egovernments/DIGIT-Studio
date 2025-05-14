@@ -68,16 +68,51 @@ func (r *DemandService) UpdateDemand(requestInfo model.RequestInfo, demands []de
 
 }
 
-// GetDemandsToAddPenalty returns a list of consumer codes eligible for penalty
-/*func (r *DemandRepository) GetDemandsToAddPenalty(tenantId string, penaltyThresholdTime *big.Int, penaltyApplicableAfterDays int) ([]string, error) {
-	query, args := r.QueryBuilder.GetPenaltyQuery(tenantId, penaltyThresholdTime, penaltyApplicableAfterDays)
-	log.Printf("query: %s", query)
+/*
+	func (r *DemandRepository) GetDemandsToAddPenalty(tenantId string, penaltyThresholdTime *big.Int, penaltyApplicableAfterDays int) ([]string, error) {
+		query, args := r.QueryBuilder.GetPenaltyQuery(tenantId, penaltyThresholdTime, penaltyApplicableAfterDays)
+		log.Printf("query: %s", query)
 
-	var consumerCodes []string
-	if err := r.DB.Select(&consumerCodes, query, args...); err != nil {
-		return nil, fmt.Errorf("error querying demands for penalty: %w", err)
+		var consumerCodes []string
+		if err := r.DB.Select(&consumerCodes, query, args...); err != nil {
+			return nil, fmt.Errorf("error querying demands for penalty: %w", err)
+		}
+
+		return consumerCodes, nil
+	}
+*/
+func (r *DemandService) fetchBill(request model.ApplicationRequest) ([]demand.Bill, error) {
+	baseURL := config.GetEnv("BILLING_SERVICE_HOST")
+	endpoint := config.GetEnv("BILL_FETCH_ENDPOINT") // e.g., /billing-service/bill/v2/_fetchbill
+	queryParams := fmt.Sprintf("?tenantId=%s&consumerCode=%s&businessService=%s",
+		request.Application.TenantId,
+		request.Application.ApplicationNumber,
+		request.Application.BusinessService,
+	)
+
+	url := baseURL + endpoint + queryParams
+
+	// Prepare request body
+	// Have to make IT citizen as type employee Cannot search state level tenantid Bills
+	requestInfo := request.RequestInfo
+	requestInfo.UserInfo.Type = "CITIZEN"
+	billRequest := map[string]interface{}{
+		"RequestInfo": requestInfo,
 	}
 
-	return consumerCodes, nil
+	// Log request body
+	if jsonBytes, err := json.MarshalIndent(billRequest, "", "  "); err == nil {
+		log.Printf("FetchBill Request JSON:\n%s", string(jsonBytes))
+	} else {
+		log.Printf("Failed to marshal billRequest: %v", err)
+	}
+
+	// Make HTTP POST call
+	var resp demand.BillResponse
+	err := r.restCallRepo.Post(url, billRequest, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to call billing service: %w", err)
+	}
+
+	return resp.Bill, nil
 }
-*/

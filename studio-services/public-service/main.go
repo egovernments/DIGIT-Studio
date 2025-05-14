@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/segmentio/kafka-go"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +11,9 @@ import (
 	db "public-service/scripts"
 	"public-service/service"
 	"public-service/utils"
+
+	"github.com/gorilla/mux"
+	"github.com/segmentio/kafka-go"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 	mdmsv2sSvc := service.NewMDMSV2Service(restRepo)
 	idgenSvc := service.NewIdGenService(restRepo)
 	localizationService := service.NewLocalizationService(restRepo)
-	smsService := service.NewSMSService(restRepo, localizationService, kafkaProducer)
+	smsService := service.NewSMSService(restRepo, localizationService, kafkaProducer, demandSvc)
 	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc, idgenSvc, smsService)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)

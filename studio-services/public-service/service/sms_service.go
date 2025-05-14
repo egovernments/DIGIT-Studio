@@ -8,6 +8,7 @@ import (
 	"public-service/config"
 	producer "public-service/kafka"
 	"public-service/model"
+	_ "public-service/model/demand"
 	"public-service/model/sms"
 	"public-service/repository"
 	"strconv"
@@ -18,13 +19,15 @@ type SMSService struct {
 	restCallRepo        repository.RestCallRepository
 	localizationService *LocalizationService
 	kafkaProducer       *producer.PublicServiceProducer
+	demandService       *DemandService
 }
 
-func NewSMSService(repo repository.RestCallRepository, localizationService *LocalizationService, kafkaProducer *producer.PublicServiceProducer) *SMSService {
+func NewSMSService(repo repository.RestCallRepository, localizationService *LocalizationService, kafkaProducer *producer.PublicServiceProducer, demandService *DemandService) *SMSService {
 	return &SMSService{
 		restCallRepo:        repo,
 		localizationService: localizationService,
 		kafkaProducer:       kafkaProducer,
+		demandService:       demandService,
 	}
 }
 
@@ -36,11 +39,29 @@ func (s *SMSService) SendSMS(application model.ApplicationRequest, tenantId stri
 	)
 
 	templateMsg := localizationMessage["message"]
+	if templateMsg == "" {
+		log.Println("Localization message not found for template:", templateCode)
+		return nil, fmt.Errorf("template message not found")
+	}
 
 	if s.kafkaProducer == nil {
 		return nil, fmt.Errorf("Kafka producer is not initialized")
 	}
 
+	// Fetch bills and calculate total amount
+	bills, err := s.demandService.fetchBill(application)
+	if err != nil {
+		log.Printf("Error fetching bill for application %s: %v", application.Application.ApplicationNumber, err)
+		return nil, err
+	}
+
+	var totalAmount float64
+	for _, bill := range bills {
+		totalAmount += bill.TotalAmount
+	}
+	amountStr := strconv.FormatFloat(totalAmount, 'f', 2, 64)
+
+	// Loop over all owners to send SMS
 	for _, owner := range owners {
 		msg := templateMsg
 
@@ -50,7 +71,7 @@ func (s *SMSService) SendSMS(application model.ApplicationRequest, tenantId stri
 		if application.Application.ApplicationNumber != "" {
 			msg = strings.ReplaceAll(msg, "{applicationNo}", application.Application.ApplicationNumber)
 		}
-		msg = strings.ReplaceAll(msg, "{taxamout}", "50.00")
+		msg = strings.ReplaceAll(msg, "{taxamout}", amountStr)
 
 		smsRequest := sms.SMSRequest{
 			MobileNumber: strconv.FormatInt(owner.MobileNumber, 10),
