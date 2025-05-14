@@ -1,8 +1,10 @@
 @import url("../index.scss");
 
 .digit-radio-options-wrap {
-  @apply leading-10 flex justify-between flex-wrap;
+  @apply leading-10 flex flex-wrap;
   margin-bottom: theme(digitv2.spacers.spacer2);
+  gap: 60px !important;
+  justify-content: unset !important;
 
   @media (max-aspect-ratio: 9/16) {
     @apply flex-col;
