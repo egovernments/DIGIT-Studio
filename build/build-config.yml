@@ -31,3 +31,9 @@ config:
       - work-dir: "micro-ui/"
         dockerfile: "micro-ui/web/docker/Dockerfile"
         image-name: "digit-studio"
+
+# utilities
+  - name: "builds/DIGIT-Studio/utilities/studio-pdf"
+    build:
+      - work-dir: "utilities/studio-pdf"
+        image-name: "studio-pdf"
