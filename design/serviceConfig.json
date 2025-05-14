@@ -69,7 +69,10 @@
             "tradeType"
           ],
           "required": true,
-          "values": ["YES", "NO"]
+          "values": [
+            "YES",
+            "NO"
+          ]
         },
         {
           "name": "tradeName",
@@ -394,309 +397,350 @@
         "lowestLevel": "locality"
       },
       "notification": {
-        "sms": {
-          "TODO": "will fill later"
-        },
-        "email": {
-          "TODO": "will fill later"
-        }
-      },
-      "inbox": {
-        "module": "public-service",
-        "index": "public-service-index",
-        "allowedSearchCriteria": [
+        "sms": [
           {
-            "name": "tenantId",
-            "path": "Data.tenantId.keyword",
-            "isMandatory": true,
-            "operator": "EQUAL"
+            "states": [
+              "applied"
+            ],
+            "code": "DIGIT_STUDIO_NEW_APPLICATION",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} is received"
           },
           {
-            "name": "status",
-            "path": "Data.workflowStatus",
-            "isMandatory": false
+            "states": [
+              "approved"
+            ],
+            "code": "DIGIT_STUDIO_APPLY_APPROVED",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} is approved"
           },
           {
-            "name": "applicationNumber",
-            "path": "Data.applicationNumber.keyword",
-            "isMandatory": false
-          },
-          {
-            "name": "module",
-            "path": "Data.module.keyword",
-            "isMandatory": false
-          },
-          {
-            "name": "businessService",
-            "path": "Data.businessService.keyword",
-            "isMandatory": false
-          },
-          {
-            "name": "locality",
-            "path": "Data.address.locality.keyword",
-            "isMandatory": false
-          },
-          {
-            "name": "assignee",
-            "path": "Data.currentProcessInstance.assignes.uuid.keyword",
-            "isMandatory": false
-          }
-        ],
-        "sortBy": {
-          "path": "Data.auditDetails.createdTime",
-          "defaultOrder": "DESC"
-        },
-        "sourceFilterPathList": [
-          "Data.businessService",
-          "Data.applicationNumber",
-          "Data.currentProcessInstance",
-          "Data.auditDetails",
-          "Data.additionalDetails",
-          "Data.module",
-          "Data.locality",
-          "Data.status"
-        ]
-      },
-      "access": {
-        "roles": [
-          "TL_CREATOR"
-        ],
-        "actions": [
-          {
-            "url": "tl-services/v1/create"
+            "states": [
+              "pending_payment"
+            ],
+            "code": "DIGIT_STUDIO_DEMAND_CREATED",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} has pending dues of amount Rs {Bill.totalAmount} "
           }
         ]
       },
-      "rules": {
-        "validation": {
-          "type": "schema||api||custom||none",
-          "service": "tradelicence",
-          "schemaCode": "tradelicence.apply",
-          "customFunction": "eitherhookname||function"
-        },
-        "calculator": {
-          "type": "api||custom||none",
-          "service": "tradelicence",
-          "customFunction": "eitherhookname||function"
-        },
-        "registry": {
-          "type": "api||none",
-          "service": "tradelicence"
-        },
-        "references": [
+      "email":  [
           {
-            "type": "initiate",
-            "service": "tradelicence"
+            "states": [
+              "applied"
+            ],
+            "code": "DIGIT_STUDIO_NEW_APPLICATION",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} is received"
+          },
+          {
+            "states": [
+              "approved"
+            ],
+            "code": "DIGIT_STUDIO_APPLY_APPROVED",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} is approved"
+          },
+          {
+            "states": [
+              "pending_payment"
+            ],
+            "code": "DIGIT_STUDIO_DEMAND_CREATED",
+            "template": "Dear {PublicService.applicants[0].name} a new Application with application no {PublicService.applicationNo} has pending dues of amount Rs {Bill.totalAmount} "
           }
         ]
-      },
-      "pdf": [
+    },
+    "inbox": {
+      "module": "public-service",
+      "index": "public-service-index",
+      "allowedSearchCriteria": [
         {
-          "key": "tl-application",
-          "type": "application",
-          "states": [
-            "applied",
-            "approved"
-          ]
+          "name": "tenantId",
+          "path": "Data.tenantId.keyword",
+          "isMandatory": true,
+          "operator": "EQUAL"
         },
         {
-          "key": "tl-bill",
-          "type": "bill",
-          "states": [
-            "applied",
-            "approved"
-          ]
+          "name": "status",
+          "path": "Data.workflowStatus",
+          "isMandatory": false
         },
         {
-          "key": "tl-receipt",
-          "type": "receipt",
-          "states": [
-            "applied",
-            "approved"
-          ]
+          "name": "applicationNumber",
+          "path": "Data.applicationNumber.keyword",
+          "isMandatory": false
+        },
+        {
+          "name": "module",
+          "path": "Data.module.keyword",
+          "isMandatory": false
+        },
+        {
+          "name": "businessService",
+          "path": "Data.businessService.keyword",
+          "isMandatory": false
+        },
+        {
+          "name": "locality",
+          "path": "Data.address.locality.keyword",
+          "isMandatory": false
+        },
+        {
+          "name": "assignee",
+          "path": "Data.currentProcessInstance.assignes.uuid.keyword",
+          "isMandatory": false
         }
       ],
-      "bill": {
-        "businessService": "NewTL",
-        "code": "NewTL",
-        "collectionModesNotAllowed": [
-          "DD",
-          "OFFLINE_NEFT",
-          "OFFLINE_RTGS",
-          "POSTAL_ORDER"
-        ],
-        "partPaymentAllowed": true,
-        "minAmountPayable": 100,
-        "isAdvanceAllowed": false,
-        "demandUpdateTime": 86400000,
-        "isVoucherCreationEnabled": true,
-        "taxPeriod": [
-          {
-            "fromDate": 1522540800000,
-            "toDate": 1554076799000,
-            "periodCycle": "ANNUAL",
-            "service": "NewTL",
-            "code": "TLAN2018",
-            "financialYear": "2018-19"
-          }
-        ],
-        "taxHead": [
-          {
-            "category": "TAX",
-            "service": "NewTL",
-            "name": "tl tax",
-            "code": "TL_TAX",
-            "isDebit": false,
-            "isActualDemand": true,
-            "order": "2",
-            "isRequired": false
-          },
-          {
-            "category": "TAX",
-            "service": "NewTL",
-            "name": "tl roundoff",
-            "code": "TL_ROUNDOFF",
-            "isDebit": false,
-            "isActualDemand": true,
-            "order": "0",
-            "isRequired": false
-          },
-          {
-            "category": "TAX",
-            "service": "NewTL",
-            "name": "tl adhoc rebate",
-            "code": "TL_ADHOC_REBATE",
-            "isDebit": true,
-            "isActualDemand": false,
-            "order": "0",
-            "isRequired": false
-          },
-          {
-            "category": "TAX",
-            "service": "NewTL",
-            "name": "tl adhoc penalty",
-            "code": "TL_ADHOC_PENALTY",
-            "isDebit": false,
-            "isActualDemand": true,
-            "order": "1",
-            "isRequired": false
-          }
-        ]
+      "sortBy": {
+        "path": "Data.auditDetails.createdTime",
+        "defaultOrder": "DESC"
       },
-      "payment": {
-        "gateway": "TODO"
-      },
-      "apiconfig": [
-        {
-          "type": "register",
-          "host": "https://staging.digit.org||http://tl-services.egov:8080",
-          "endpoint": "/tl-services/v1/create",
-          "method": "post",
-          "service": "tradelicence"
-        },
-        {
-          "type": "register||calculate||validate||authenticate",
-          "host": "https://staging.digit.org||http://tl-services.egov:8080",
-          "endpoint": "/tl-services/v1/search",
-          "method": "post",
-          "service": "tradelicence"
-        }
-      ],
-      "calculator": {
-        "billingSlabs": [
-          {
-            "key": "applicationFee",
-            "value": 2000
-          }
-        ]
-      },
-      "enabled": [
-        "citizen",
-        "employee"
+      "sourceFilterPathList": [
+        "Data.businessService",
+        "Data.applicationNumber",
+        "Data.currentProcessInstance",
+        "Data.auditDetails",
+        "Data.additionalDetails",
+        "Data.module",
+        "Data.locality",
+        "Data.status"
       ]
     },
-    {
-      "module": "Tradelicence",
-      "service": "RenewTL",
-      "fields": null,
-      "workflow": {
-        "businessService": "ApprovedTL"
-      },
-      "idgen": {
-        "format": "tl.licence.number"
-      },
-      "rules": [
-        {
-          "referenceType": "NewTL"
-        }
+    "access": {
+      "roles": [
+        "TL_CREATOR"
       ],
-      "documents": null,
-      "pdf": [
+      "actions": [
         {
-          "key": "tl-certificate",
-          "type": "certificate"
+          "url": "tl-services/v1/create"
         }
-      ],
-      "bill": null
+      ]
     },
-    {
-      "module": "Tradelicence",
-      "service": "EditRenewTL",
-      "fields": null,
-      "workflow": {
-        "businessService": "RenewTL"
+    "rules": {
+      "validation": {
+        "type": "schema||api||custom||none",
+        "service": "tradelicence",
+        "schemaCode": "tradelicence.apply",
+        "customFunction": "eitherhookname||function"
       },
-      "idgen": {
-        "format": "tl.renewalapplication.number",
-        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
-      },
-      "rules": [
-        {
-          "referenceType": "ApprovedTL"
-        }
-      ],
-      "documents": [
-        {
-          "category": "owner-photo",
-          "documentTypes": [
-            "photo"
-          ],
-          "active": true,
-          "isMandatory": false,
-          "workflowAction": [
-            "apply",
-            "approved"
-          ],
-          "allowedFileTypes": [
-            "jpeg",
-            "jpg",
-            "png"
-          ],
-          "maxSizeInMB": 5,
-          "maxFilesAllowed": 1
-        }
-      ],
-      "pdf": [
-        {
-          "key": "tl-renew-application",
-          "type": "application",
-          "states": [
-            "applied",
-            "approved"
-          ]
-        }
-      ],
       "calculator": {
-        "billingSlabs": [
-          {
-            "key": "applicationFee",
-            "value": 2000
-          }
+        "type": "api||custom||none",
+        "service": "tradelicence",
+        "customFunction": "eitherhookname||function"
+      },
+      "registry": {
+        "type": "api||none",
+        "service": "tradelicence"
+      },
+      "references": [
+        {
+          "type": "initiate",
+          "service": "tradelicence"
+        }
+      ]
+    },
+    "pdf": [
+      {
+        "key": "tl-application",
+        "type": "application",
+        "states": [
+          "applied",
+          "approved"
         ]
       },
-      "bill": {
-        "service": "RenewalFee"
+      {
+        "key": "tl-bill",
+        "type": "bill",
+        "states": [
+          "applied",
+          "approved"
+        ]
+      },
+      {
+        "key": "tl-receipt",
+        "type": "receipt",
+        "states": [
+          "applied",
+          "approved"
+        ]
       }
+    ],
+    "bill": {
+      "businessService": "NewTL",
+      "code": "NewTL",
+      "collectionModesNotAllowed": [
+        "DD",
+        "OFFLINE_NEFT",
+        "OFFLINE_RTGS",
+        "POSTAL_ORDER"
+      ],
+      "partPaymentAllowed": true,
+      "minAmountPayable": 100,
+      "isAdvanceAllowed": false,
+      "demandUpdateTime": 86400000,
+      "isVoucherCreationEnabled": true,
+      "taxPeriod": [
+        {
+          "fromDate": 1522540800000,
+          "toDate": 1554076799000,
+          "periodCycle": "ANNUAL",
+          "service": "NewTL",
+          "code": "TLAN2018",
+          "financialYear": "2018-19"
+        }
+      ],
+      "taxHead": [
+        {
+          "category": "TAX",
+          "service": "NewTL",
+          "name": "tl tax",
+          "code": "TL_TAX",
+          "isDebit": false,
+          "isActualDemand": true,
+          "order": "2",
+          "isRequired": false
+        },
+        {
+          "category": "TAX",
+          "service": "NewTL",
+          "name": "tl roundoff",
+          "code": "TL_ROUNDOFF",
+          "isDebit": false,
+          "isActualDemand": true,
+          "order": "0",
+          "isRequired": false
+        },
+        {
+          "category": "TAX",
+          "service": "NewTL",
+          "name": "tl adhoc rebate",
+          "code": "TL_ADHOC_REBATE",
+          "isDebit": true,
+          "isActualDemand": false,
+          "order": "0",
+          "isRequired": false
+        },
+        {
+          "category": "TAX",
+          "service": "NewTL",
+          "name": "tl adhoc penalty",
+          "code": "TL_ADHOC_PENALTY",
+          "isDebit": false,
+          "isActualDemand": true,
+          "order": "1",
+          "isRequired": false
+        }
+      ]
+    },
+    "payment": {
+      "gateway": "TODO"
+    },
+    "apiconfig": [
+      {
+        "type": "register",
+        "host": "https://staging.digit.org||http://tl-services.egov:8080",
+        "endpoint": "/tl-services/v1/create",
+        "method": "post",
+        "service": "tradelicence"
+      },
+      {
+        "type": "register||calculate||validate||authenticate",
+        "host": "https://staging.digit.org||http://tl-services.egov:8080",
+        "endpoint": "/tl-services/v1/search",
+        "method": "post",
+        "service": "tradelicence"
+      }
+    ],
+    "calculator": {
+      "billingSlabs": [
+        {
+          "key": "applicationFee",
+          "value": 2000
+        }
+      ]
+    },
+    "enabled": [
+      "citizen",
+      "employee"
+    ]
+  },
+  {
+    "module": "Tradelicence",
+    "service": "RenewTL",
+    "fields": null,
+    "workflow": {
+      "businessService": "ApprovedTL"
+    },
+    "idgen": {
+      "format": "tl.licence.number"
+    },
+    "rules": [
+      {
+        "referenceType": "NewTL"
+      }
+    ],
+    "documents": null,
+    "pdf": [
+      {
+        "key": "tl-certificate",
+        "type": "certificate"
+      }
+    ],
+    "bill": null
+  },
+  {
+    "module": "Tradelicence",
+    "service": "EditRenewTL",
+    "fields": null,
+    "workflow": {
+      "businessService": "RenewTL"
+    },
+    "idgen": {
+      "format": "tl.renewalapplication.number",
+      "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+    },
+    "rules": [
+      {
+        "referenceType": "ApprovedTL"
+      }
+    ],
+    "documents": [
+      {
+        "category": "owner-photo",
+        "documentTypes": [
+          "photo"
+        ],
+        "active": true,
+        "isMandatory": false,
+        "workflowAction": [
+          "apply",
+          "approved"
+        ],
+        "allowedFileTypes": [
+          "jpeg",
+          "jpg",
+          "png"
+        ],
+        "maxSizeInMB": 5,
+        "maxFilesAllowed": 1
+      }
+    ],
+    "pdf": [
+      {
+        "key": "tl-renew-application",
+        "type": "application",
+        "states": [
+          "applied",
+          "approved"
+        ]
+      }
+    ],
+    "calculator": {
+      "billingSlabs": [
+        {
+          "key": "applicationFee",
+          "value": 2000
+        }
+      ]
+    },
+    "bill": {
+      "service": "RenewalFee"
     }
-  ]
+  }
+]
 }
