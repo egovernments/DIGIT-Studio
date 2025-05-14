@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
 	"log"
 	"math/big"
 	"os"
@@ -10,6 +9,8 @@ import (
 	"public-service/model/demand"
 	"public-service/model/individual"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type EnrichmentService struct {
@@ -201,7 +202,7 @@ if apps.Application.Workflow.Action == "PAY" {
 }*/
 
 func (s *EnrichmentService) EnrichApplicationsWithDemand(apps model.ApplicationRequest) model.ApplicationRequest {
-	if apps.Application.Workflow.Action == "PAY" {
+	if apps.Application.Workflow.Action == "VERIFY_AND_FORWARD" {
 		schemaCode := os.Getenv("SERVICE_MODULE_NAME") + "." + os.Getenv("SERVICE_MASTER_NAME")
 		mdmsData, _ := s.MDMSV2Service.SearchMDMS(
 			apps.Application.TenantId,
