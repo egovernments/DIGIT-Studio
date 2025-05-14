@@ -93,7 +93,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	_, err2 := c.smsService.SendSMS(req, req.Application.TenantId, "DIGIT_STUDIO_APPLY_NEW_CONNECTION", req.Application.Applicants)
+	_, err2 := c.smsService.SendSMS(req, req.Application.TenantId, "DIGIT_STUDIO_NEW_APPLICATION", req.Application.Applicants)
 	if err2 != nil {
 		log.Printf("error sending sms ")
 	}

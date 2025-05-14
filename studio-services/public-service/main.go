@@ -51,7 +51,7 @@ func main() {
 	serviceSvc := service.NewPublicService(publicRepo)
 
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc), individualSvc, enrichSvc, smsService)
+	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc,smsService), individualSvc, enrichSvc, smsService)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router

@@ -66,12 +66,12 @@ func (s *SMSService) SendSMS(application model.ApplicationRequest, tenantId stri
 		msg := templateMsg
 
 		if owner.Name != "" {
-			msg = strings.ReplaceAll(msg, "{username}", owner.Name)
+			msg = strings.ReplaceAll(msg, "{PublicService.applicants[0].name}", owner.Name)
 		}
 		if application.Application.ApplicationNumber != "" {
-			msg = strings.ReplaceAll(msg, "{applicationNo}", application.Application.ApplicationNumber)
+			msg = strings.ReplaceAll(msg, "{PublicService.applicationNo}", application.Application.ApplicationNumber)
 		}
-		msg = strings.ReplaceAll(msg, "{taxamout}", amountStr)
+		msg = strings.ReplaceAll(msg, "{Bill.totalAmount}", amountStr)
 
 		smsRequest := sms.SMSRequest{
 			MobileNumber: strconv.FormatInt(owner.MobileNumber, 10),
@@ -92,6 +92,12 @@ func (s *SMSService) SendSMS(application model.ApplicationRequest, tenantId stri
 			log.Printf("Failed to push Kafka message for owner %v: %v", owner.MobileNumber, err)
 			continue
 		}
+
+		//err = s.kafkaProducer.Push(ctx, config.GetEnv("SEND_NOTIFICATION_TOPIC"), smsBytes)
+		//if err != nil {
+		//	log.Printf("Failed to push Kafka message for owner %v: %v", owner.MobileNumber, err)
+		//	continue
+		//}
 	}
 
 	return map[string]interface{}{
