@@ -56,3 +56,27 @@ type Demand struct {
 func (d *Demand) AddDemandDetailsItem(item DemandDetail) {
 	d.DemandDetails = append(d.DemandDetails, item)
 }
+
+func (d *Demand) UnmarshalJSON(data []byte) error {
+	type Alias Demand
+	aux := &struct {
+		MinimumAmountPayable json.Number `json:"minimumAmountPayable"`
+		*Alias
+	}{
+		Alias: (*Alias)(d),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if aux.MinimumAmountPayable != "" {
+		floatVal, _, err := big.ParseFloat(aux.MinimumAmountPayable.String(), 10, 64, big.ToZero)
+		if err != nil {
+			return err
+		}
+		d.MinimumAmountPayable = floatVal
+	}
+
+	return nil
+}

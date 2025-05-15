@@ -29,27 +29,49 @@ const (
 
 // WorkflowIntegrator handles interaction with the workflow service.
 type WorkflowIntegrator struct {
-	HttpClient *http.Client
+	HttpClient    *http.Client
+	MDMSV2Service *MDMSV2Service
+	smsService    *SMSService 
 }
 
 // NewWorkflowIntegrator returns a new instance of WorkflowIntegrator.
-func NewWorkflowIntegrator() *WorkflowIntegrator {
+func NewWorkflowIntegrator(MdmsV2sService *MDMSV2Service, smsService *SMSService,
+	) *WorkflowIntegrator {
 	return &WorkflowIntegrator{
-		HttpClient: &http.Client{},
+		HttpClient:    &http.Client{},
+		MDMSV2Service: MdmsV2sService,
+		smsService: smsService,
 	}
 }
 
 // CallWorkflow integrates with the workflow and updates the application with the workflow response.
-func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.ApplicationResponse, req model.ApplicationRequest) error {
-	app := applicationResponse.Application
+func (wi *WorkflowIntegrator) CallWorkflow(req *model.ApplicationRequest) error {
+	app := req.Application
 	log.Println("inside CallWorkflow")
 	log.Println("🔥🔥🔥 Inside CallWorkflow - LOG TRIGGERED 🔥🔥🔥")
 	requestPayload := make(map[string]interface{})
 	processInstance := make(map[string]interface{})
+	schemaCode := os.Getenv("SERVICE_MODULE_NAME") + "." + os.Getenv("SERVICE_MASTER_NAME")
+	mdmsData, err := wi.MDMSV2Service.SearchMDMS(app.TenantId, schemaCode, app.BusinessService, app.Module, req.RequestInfo)
+	mdmsList, ok := mdmsData["mdms"].([]interface{})
+	if !ok || len(mdmsList) == 0 {
+		log.Println("MDMS data missing or invalid")
+		return nil
+	}
+	log.Println("mdmsData:", mdmsData)
+	firstEntry, _ := mdmsList[0].(map[string]interface{})
+	data, _ := firstEntry["data"].(map[string]interface{})
+	workflowData, ok := data["workflow"].(map[string]interface{})
+	if !ok {
+		log.Println("No 'Workflow' section in MDMS data")
+	}
+
+	// Step 2: Extract businessService from from workflow
+	businessService, ok := workflowData["businessService"].(string)
 
 	processInstance[BUSINESS_ID_KEY] = app.ApplicationNumber
 	processInstance[TENANT_ID_KEY] = app.TenantId
-	processInstance[BUSINESS_SERVICE_KEY] = app.BusinessService
+	processInstance[BUSINESS_SERVICE_KEY] = businessService
 	processInstance[MODULE_NAME_KEY] = app.Module
 	processInstance[ACTION_KEY] = app.Workflow.Action
 	log.Println("workflow")
@@ -103,7 +125,10 @@ func (wi *WorkflowIntegrator) CallWorkflow(applicationResponse *model.Applicatio
 		return errors.New("no process instance returned from workflow")
 	}
 	app.ProcessInstance = &wfResponse.ProcessInstances
-	applicationResponse.Application.ProcessInstance = &wfResponse.ProcessInstances
+	req.Application.ProcessInstance = &wfResponse.ProcessInstances
+    if req.Application.Workflow.Action == "APPROVE" {
+         wi.smsService.SendSMS(*req,req.Application.TenantId,"DIGIT_STUDIO_APPLY_APPROVED",req.Application.Applicants)
+	}
 	return nil
 }
 

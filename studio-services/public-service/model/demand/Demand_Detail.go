@@ -20,6 +20,8 @@ type DemandDetail struct {
 func (d *DemandDetail) UnmarshalJSON(data []byte) error {
 	type Alias DemandDetail
 	aux := &struct {
+		TaxAmount        json.Number `json:"taxAmount"`
+		CollectionAmount json.Number `json:"collectionAmount"`
 		*Alias
 	}{
 		Alias: (*Alias)(d),
@@ -29,9 +31,19 @@ func (d *DemandDetail) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if d.CollectionAmount == nil {
-		d.CollectionAmount = big.NewFloat(0)
+	// Parse TaxAmount
+	taxAmountFloat, _, err := big.ParseFloat(aux.TaxAmount.String(), 10, 64, big.ToZero)
+	if err != nil {
+		return err
 	}
+	d.TaxAmount = taxAmountFloat
+
+	// Parse CollectionAmount
+	collectionAmountFloat, _, err := big.ParseFloat(aux.CollectionAmount.String(), 10, 64, big.ToZero)
+	if err != nil {
+		return err
+	}
+	d.CollectionAmount = collectionAmountFloat
 
 	return nil
 }

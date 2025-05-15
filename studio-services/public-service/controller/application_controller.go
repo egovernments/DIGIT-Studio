@@ -21,10 +21,11 @@ type ApplicationController struct {
 	workflowIntegrator *service.WorkflowIntegrator
 	individualService  *service.IndividualService
 	enrichmentService  *service.EnrichmentService
+	smsService         *service.SMSService
 }
 
-func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService) *ApplicationController {
-	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService}
+func NewApplicationController(service *service.ApplicationService, workflowIntegrator *service.WorkflowIntegrator, individualService *service.IndividualService, enrichmentService *service.EnrichmentService, smsService *service.SMSService) *ApplicationController {
+	return &ApplicationController{service: service, workflowIntegrator: workflowIntegrator, individualService: individualService, enrichmentService: enrichmentService, smsService: smsService}
 }
 
 func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,29 +69,62 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	}
 
 	for i, applicant := range req.Application.Applicants {
+	req = c.enrichmentService.EnrichApplicationsWithIdGen(req)
+	log.Println(req)	
+	for i := range req.Application.Applicants {
+		applicant := req.Application.Applicants[i]
+		mobile := strconv.FormatInt(applicant.MobileNumber, 10)
+	
+		// Log input applicant in JSON
+		if data, _ := json.MarshalIndent(applicant, "", "  "); true {
+			log.Println("Processing applicant:", string(data))
+		}
+	
+
 		criteria := map[string]interface{}{
-			"mobileNumber": strconv.FormatInt(applicant.MobileNumber, 10),
+			"mobileNumber": mobile,
 			"tenantId":     req.Application.TenantId,
 		}
-
+	
 		// Check if individual exists
 		resp := c.individualService.GetIndividual(req.RequestInfo, criteria)
-
+		if data, _ := json.MarshalIndent(resp, "", "  "); true {
+			log.Println("GetIndividual response:", string(data))
+		}
+	
 		if len(resp.Individual) == 0 {
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
+			if data, _ := json.MarshalIndent(createdResp, "", "  "); true {
+				log.Println("Created individual response:", string(data))
+			}
+	
 			if createdResp.Individual.IndividualId != "" {
 				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
+				log.Println("Failed to create individual for applicant:", applicant.Name)
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, "Failed to create individual")
 				return
 			}
 		} else {
 			// Individual exists, update applicant UserId
-			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
+			req.Application.Applicants[i].UserId = resp.Individual[0].IndividualId
+			result := map[string]string{
+				"applicant": applicant.Name,
+				"userId":    resp.Individual[0].IndividualId,
+			}
+			if data, _ := json.MarshalIndent(result, "", "  "); true {
+				log.Println("Existing individual found:", string(data))
+			}
 		}
 	}
-	c.enrichmentService.EnrichApplicationsWithDemand(req)
+	
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
+	}
 	ctx := context.Background()
 	log.Println("inside CreateApplicationHandler")
 	res, err := c.service.CreateApplication(ctx, req, serviceCode)
@@ -98,12 +132,9 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&res, req)
-	if err != nil {
-		log.Printf("Workflow integration failed: %v", err)
-		// Optional: return HTTP error or log only
+	_, err2 := c.smsService.SendSMS(req, req.Application.TenantId, "DIGIT_STUDIO_NEW_APPLICATION", req.Application.Applicants)
+	if err2 != nil {
+		log.Printf("error sending sms ")
 	}
 	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
@@ -158,13 +189,14 @@ func (c *ApplicationController) SearchApplicationHandler(w http.ResponseWriter, 
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	for i := range res.Application {
+	//TODO: enrich ProcessInstance as request nfo not there its throwing error
+	/*for i := range res.Application {
 		err = c.workflowIntegrator.SearchWorkflow(&res.Application[i], criteria.RequestInfo)
 		if err != nil {
 			log.Printf("Workflow integration failed for application %s: %v", res.Application[i].Id, err)
 			// Optional: handle error per item or break early
 		}
-	}
+	}*/
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
@@ -208,22 +240,19 @@ func (c *ApplicationController) UpdateApplicationHandler(w http.ResponseWriter, 
 		req.Application.Id = parsedID
 	}
 	ctx := context.Background()
-	if req.Application.Workflow.Action == "PAY" {
-
+	c.enrichmentService.EnrichApplicationsWithDemand(req)
+	// Call workflow integrator on success
+	err = c.workflowIntegrator.CallWorkflow(&req)
+	if err != nil {
+		log.Printf("Workflow integration failed: %v", err)
+		// Optional: return HTTP error or log only
 	}
 	res, err := c.service.UpdateApplication(ctx, req, serviceCode, applicationId)
 	if err != nil {
 		utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	// Call workflow integrator on success
-	err = c.workflowIntegrator.CallWorkflow(&res, req)
-	if err != nil {
-		log.Printf("Workflow integration failed: %v", err)
-		// Optional: return HTTP error or log only
-	}
-
+	log.Printf("ProcessInstance enriched: %+v", res.Application.ProcessInstance)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }

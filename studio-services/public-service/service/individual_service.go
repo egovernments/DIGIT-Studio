@@ -27,6 +27,11 @@ func (s *IndividualService) CreateUser(req model.Applicant, info model.RequestIn
 	url := config.GetEnv("INDIVIDUAL_SERVICE_HOST") + config.GetEnv("INDIVIDUAL_CREATE_ENDPOINT")
 	log.Println("Individual service url: " + url)
 	var resp individual.IndividualResponse
+	if jsonBytes, err := json.MarshalIndent(individualReq, "", "  "); err == nil {
+		log.Printf("Search request payload:\n%s\n", string(jsonBytes))
+	} else {
+		log.Printf("Search request (raw): %+v\n", individualReq)
+	}
 	err := s.restCallRepo.Post(url, individualReq, &resp)
 	if err != nil {
 		log.Printf("Error calling create individual API: %v", err)

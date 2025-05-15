@@ -4,12 +4,14 @@ go 1.24
 
 require (
 	github.com/Priyansuvaish/digit_client v0.0.0-20250509093150-7ee7515ae879
+
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/oliveagle/jsonpath v0.0.0-20180606110733-2e52cf6e6852
 	github.com/segmentio/kafka-go v0.4.47
 )
 
@@ -34,4 +36,5 @@ require (
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
+
 )
