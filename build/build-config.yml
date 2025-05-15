@@ -28,6 +28,6 @@ config:
         
   - name: "builds/DIGIT-Studio/studio-ui/digit-studio"
     build:
-      - work-dir: "micro-ui/"
-        dockerfile: "micro-ui/web/docker/Dockerfile"
+      - work-dir: "frontend/"
+        dockerfile: "frontend/web/docker/Dockerfile"
         image-name: "digit-studio"

@@ -116,168 +116,168 @@
       ],
       "workflow": {
         "businessService": "NewTL",
-        "details":[
-       {
-         "tenantId": "pg",
-         "businessService": "CONTRACT",
-         "business": "contract-service",
-         "businessServiceSla": 604800000,
-         "states": [
-           {
-             "sla": null,
-             "state": null,
-             "applicationStatus": null,
-             "docUploadRequired": false,
-             "isStartState": true,
-             "isTerminateState": false,
-             "isStateUpdatable": true,
-             "actions": [
-               {
-                 "action": "CREATE",
-                 "nextState": "PENDING_FOR_VERIFICATION",
-                 "roles": [
-                   "WORK_ORDER_CREATOR"
-                 ]
-               }
-             ]
-           },
-           {
-             "sla": 172800000,
-             "state": "PENDING_FOR_VERIFICATION",
-             "applicationStatus": "INWORKFLOW",
-             "docUploadRequired": false,
-             "isStartState": false,
-             "isTerminateState": false,
-             "isStateUpdatable": true,
-             "actions": [
-               {
-                 "action": "VERIFY_AND_FORWARD",
-                 "nextState": "PENDING_FOR_APPROVAL",
-                 "roles": [
-                   "WORK_ORDER_VERIFIER"
-                 ]
-               },
-               {
-                 "action": "SEND_BACK",
-                 "nextState": "PENDING_FOR_CORRECTION",
-                 "roles": [
-                   "WORK_ORDER_VERIFIER"
-                 ]
-               }
-             ]
-           },
-           {
-             "sla": 86400000,
-             "state": "PENDING_FOR_APPROVAL",
-             "applicationStatus": "INWORKFLOW",
-             "docUploadRequired": false,
-             "isStartState": false,
-             "isTerminateState": false,
-             "isStateUpdatable": true,
-             "actions": [
-               {
-                 "action": "APPROVE",
-                 "nextState": "PENDING_FOR_ACCEPTANCE",
-                 "roles": [
-                   "WORK_ORDER_APPROVER"
-                 ]
-               },
-               {
-                 "action": "SEND_BACK",
-                 "nextState": "PENDING_FOR_VERIFICATION",
-                 "roles": [
-                   "WORK_ORDER_APPROVER"
-                 ]
-               },
-               {
-                 "action": "REJECT",
-                 "nextState": "REJECTED",
-                 "roles": [
-                   "WORK_ORDER_APPROVER"
-                 ]
-               },
-               {
-                 "action": "SEND_BACK_TO_ORIGINATOR",
-                 "nextState": "PENDING_FOR_CORRECTION",
-                 "roles": [
-                   "WORK_ORDER_APPROVER"
-                 ]
-               }
-             ]
-           },
-           {
-             "sla": 604800000,
-             "state": "PENDING_FOR_ACCEPTANCE",
-             "applicationStatus": "INWORKFLOW",
-             "docUploadRequired": false,
-             "isStartState": false,
-             "isTerminateState": false,
-             "isStateUpdatable": true,
-             "actions": [
-               {
-                 "action": "ACCEPT",
-                 "nextState": "ACCEPTED",
-                 "roles": [
-                   "ORG_ADMIN"
-                 ]
-               },
-               {
-                 "action": "DECLINE",
-                 "nextState": "PENDING_FOR_CORRECTION",
-                 "roles": [
-                   "ORG_ADMIN"
-                 ]
-               }
-             ]
-           },
-           {
-             "sla": 86400000,
-             "state": "PENDING_FOR_CORRECTION",
-             "applicationStatus": "INWORKFLOW",
-             "docUploadRequired": false,
-             "isStartState": true,
-             "isTerminateState": false,
-             "isStateUpdatable": true,
-             "actions": [
-               {
-                 "action": "EDIT",
-                 "nextState": "PENDING_FOR_VERIFICATION",
-                 "roles": [
-                   "WORK_ORDER_CREATOR"
-                 ]
-               },
-               {
-                 "action": "REJECT",
-                 "nextState": "REJECTED",
-                 "roles": [
-                   "WORK_ORDER_CREATOR"
-                 ]
-               }
-             ]
-           },
-           {
-             "sla": null,
-             "state": "ACCEPTED",
-             "applicationStatus": "ACTIVE",
-             "docUploadRequired": false,
-             "isStartState": false,
-             "isTerminateState": true,
-             "isStateUpdatable": false,
-             "actions": []
-           },
-           {
-             "sla": null,
-             "state": "REJECTED",
-             "applicationStatus": "INACTIVE",
-             "docUploadRequired": false,
-             "isStartState": false,
-             "isTerminateState": true,
-             "isStateUpdatable": false,
-             "actions": []
-           }
-         ]
-       }
-     ],
+        "details": [
+          {
+            "tenantId": "pg",
+            "businessService": "CONTRACT",
+            "business": "contract-service",
+            "businessServiceSla": 604800000,
+            "states": [
+              {
+                "sla": null,
+                "state": null,
+                "applicationStatus": null,
+                "docUploadRequired": false,
+                "isStartState": true,
+                "isTerminateState": false,
+                "isStateUpdatable": true,
+                "actions": [
+                  {
+                    "action": "CREATE",
+                    "nextState": "PENDING_FOR_VERIFICATION",
+                    "roles": [
+                      "WORK_ORDER_CREATOR"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sla": 172800000,
+                "state": "PENDING_FOR_VERIFICATION",
+                "applicationStatus": "INWORKFLOW",
+                "docUploadRequired": false,
+                "isStartState": false,
+                "isTerminateState": false,
+                "isStateUpdatable": true,
+                "actions": [
+                  {
+                    "action": "VERIFY_AND_FORWARD",
+                    "nextState": "PENDING_FOR_APPROVAL",
+                    "roles": [
+                      "WORK_ORDER_VERIFIER"
+                    ]
+                  },
+                  {
+                    "action": "SEND_BACK",
+                    "nextState": "PENDING_FOR_CORRECTION",
+                    "roles": [
+                      "WORK_ORDER_VERIFIER"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sla": 86400000,
+                "state": "PENDING_FOR_APPROVAL",
+                "applicationStatus": "INWORKFLOW",
+                "docUploadRequired": false,
+                "isStartState": false,
+                "isTerminateState": false,
+                "isStateUpdatable": true,
+                "actions": [
+                  {
+                    "action": "APPROVE",
+                    "nextState": "PENDING_FOR_ACCEPTANCE",
+                    "roles": [
+                      "WORK_ORDER_APPROVER"
+                    ]
+                  },
+                  {
+                    "action": "SEND_BACK",
+                    "nextState": "PENDING_FOR_VERIFICATION",
+                    "roles": [
+                      "WORK_ORDER_APPROVER"
+                    ]
+                  },
+                  {
+                    "action": "REJECT",
+                    "nextState": "REJECTED",
+                    "roles": [
+                      "WORK_ORDER_APPROVER"
+                    ]
+                  },
+                  {
+                    "action": "SEND_BACK_TO_ORIGINATOR",
+                    "nextState": "PENDING_FOR_CORRECTION",
+                    "roles": [
+                      "WORK_ORDER_APPROVER"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sla": 604800000,
+                "state": "PENDING_FOR_ACCEPTANCE",
+                "applicationStatus": "INWORKFLOW",
+                "docUploadRequired": false,
+                "isStartState": false,
+                "isTerminateState": false,
+                "isStateUpdatable": true,
+                "actions": [
+                  {
+                    "action": "ACCEPT",
+                    "nextState": "ACCEPTED",
+                    "roles": [
+                      "ORG_ADMIN"
+                    ]
+                  },
+                  {
+                    "action": "DECLINE",
+                    "nextState": "PENDING_FOR_CORRECTION",
+                    "roles": [
+                      "ORG_ADMIN"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sla": 86400000,
+                "state": "PENDING_FOR_CORRECTION",
+                "applicationStatus": "INWORKFLOW",
+                "docUploadRequired": false,
+                "isStartState": true,
+                "isTerminateState": false,
+                "isStateUpdatable": true,
+                "actions": [
+                  {
+                    "action": "EDIT",
+                    "nextState": "PENDING_FOR_VERIFICATION",
+                    "roles": [
+                      "WORK_ORDER_CREATOR"
+                    ]
+                  },
+                  {
+                    "action": "REJECT",
+                    "nextState": "REJECTED",
+                    "roles": [
+                      "WORK_ORDER_CREATOR"
+                    ]
+                  }
+                ]
+              },
+              {
+                "sla": null,
+                "state": "ACCEPTED",
+                "applicationStatus": "ACTIVE",
+                "docUploadRequired": false,
+                "isStartState": false,
+                "isTerminateState": true,
+                "isStateUpdatable": false,
+                "actions": []
+              },
+              {
+                "sla": null,
+                "state": "REJECTED",
+                "applicationStatus": "INACTIVE",
+                "docUploadRequired": false,
+                "isStartState": false,
+                "isTerminateState": true,
+                "isStateUpdatable": false,
+                "actions": []
+              }
+            ]
+          }
+        ],
         "ACTIVE": [
           "APPROVED"
         ],
@@ -288,6 +288,10 @@
       },
       "documents": [
         {
+          "states": [
+            "applied",
+            "approved"
+          ],
           "category": "address-proof",
           "documentTypes": [
             "aadhar",
@@ -345,9 +349,15 @@
           "maxFilesAllowed": 1
         }
       ],
-      "idgen": {
-        "format": "tl.application.number"
-      },
+      "idgen":[ {
+        "type":"application"
+        "format": "tl.application.number",
+        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+      },{
+        "type":"bill"
+        "format": "tl.application.number",
+        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
+      }],
       "localization": {
         "modules": [
           "digit-tradelicence"
@@ -409,19 +419,95 @@
       "pdf": [
         {
           "key": "tl-application",
-          "type": "application"
+          "type": "application",
+          "states": [
+            "applied",
+            "approved"
+          ]
         },
         {
           "key": "tl-bill",
-          "type": "bill"
+          "type": "bill",
+          "states": [
+            "applied",
+            "approved"
+          ]
         },
         {
           "key": "tl-receipt",
-          "type": "receipt"
+          "type": "receipt",
+          "states": [
+            "applied",
+            "approved"
+          ]
         }
       ],
       "bill": {
-        "service": "ApplicationFee"
+        "businessService": "NewTL",
+        "code": "NewTL",
+        "collectionModesNotAllowed": [
+          "DD",
+          "OFFLINE_NEFT",
+          "OFFLINE_RTGS",
+          "POSTAL_ORDER"
+        ],
+        "partPaymentAllowed": true,
+        "minAmountPayable": 100,
+        "isAdvanceAllowed": false,
+        "demandUpdateTime": 86400000,
+        "isVoucherCreationEnabled": true,
+        "taxPeriod": [
+          {
+            "fromDate": 1522540800000,
+            "toDate": 1554076799000,
+            "periodCycle": "ANNUAL",
+            "service": "NewTL",
+            "code": "TLAN2018",
+            "financialYear": "2018-19"
+          }
+        ],
+        "taxHead": [
+          {
+            "category": "TAX",
+            "service": "NewTL",
+            "name": "tl tax",
+            "code": "TL_TAX",
+            "isDebit": false,
+            "isActualDemand": true,
+            "order": "2",
+            "isRequired": false
+          },
+          {
+            "category": "TAX",
+            "service": "NewTL",
+            "name": "tl roundoff",
+            "code": "TL_ROUNDOFF",
+            "isDebit": false,
+            "isActualDemand": true,
+            "order": "0",
+            "isRequired": false
+          },
+          {
+            "category": "TAX",
+            "service": "NewTL",
+            "name": "tl adhoc rebate",
+            "code": "TL_ADHOC_REBATE",
+            "isDebit": true,
+            "isActualDemand": false,
+            "order": "0",
+            "isRequired": false
+          },
+          {
+            "category": "TAX",
+            "service": "NewTL",
+            "name": "tl adhoc penalty",
+            "code": "TL_ADHOC_PENALTY",
+            "isDebit": false,
+            "isActualDemand": true,
+            "order": "1",
+            "isRequired": false
+          }
+        ]
       },
       "payment": {
         "gateway": "TODO"
@@ -487,7 +573,8 @@
         "businessService": "RenewTL"
       },
       "idgen": {
-        "format": "tl.renewalapplication.number"
+        "format": "tl.renewalapplication.number",
+        "sequence": "BILL-[SEQ_EGOV_COMMON_TEST_AUTOCRE]"
       },
       "rules": [
         {
@@ -502,6 +589,10 @@
           ],
           "active": true,
           "isMandatory": false,
+          "workflowAction": [
+            "apply",
+            "approved"
+          ],
           "allowedFileTypes": [
             "jpeg",
             "jpg",
@@ -514,7 +605,11 @@
       "pdf": [
         {
           "key": "tl-renew-application",
-          "type": "application"
+          "type": "application",
+          "states": [
+            "applied",
+            "approved"
+          ]
         }
       ],
       "calculator": {
