@@ -6,16 +6,17 @@ import (
 	"log"
 	"os"
 	"public-service/config"
+	"public-service/model"
 	"public-service/model/payment"
 	"public-service/service"
-    "public-service/model"
+
 	"github.com/segmentio/kafka-go"
 )
 
-func ConsumePayments(workflowIntegrator *service.WorkflowIntegrator) {
+func ConsumePayments(applicationService *service.ApplicationService) {
 	topic := os.Getenv("KAFKA_TOPICS_PAYMENT_CREATE_NAME")
 	if topic == "" {
-		log.Fatal("KAFKA_TOPICS_PAYMENT_CREATE_NAME is not set")
+		log.Fatal("❌ KAFKA_TOPICS_PAYMENT_CREATE_NAME is not set")
 	}
 
 	r := kafka.NewReader(kafka.ReaderConfig{
@@ -26,10 +27,12 @@ func ConsumePayments(workflowIntegrator *service.WorkflowIntegrator) {
 	})
 	defer r.Close()
 
+	log.Printf("📡 Kafka consumer started on topic: %s", topic)
+
 	for {
 		m, err := r.FetchMessage(context.Background())
 		if err != nil {
-			log.Printf("Error reading message: %v", err)
+			log.Printf("❌ Error reading message: %v", err)
 			continue
 		}
 
@@ -44,28 +47,34 @@ func ConsumePayments(workflowIntegrator *service.WorkflowIntegrator) {
 			continue
 		}
 
-		applicationRequest := &model.ApplicationRequest{
-			RequestInfo: paymentReq.RequestInfo,
-			Application: model.Application{
-				ApplicationNumber: paymentReq.Payment.PaymentDetails[0].Bill.ConsumerCode,
-				TenantId:          paymentReq.Payment.TenantID,
-				Workflow:          model.WorkFlow{Action: "PAY"},
-			},
+		criteria := model.SearchCriteria{
+			TenantId:         paymentReq.Payment.TenantID,
+			ApplicationNumber: paymentReq.Payment.PaymentDetails[0].Bill.ConsumerCode,
+			BusinessService:  paymentReq.Payment.PaymentDetails[0].BusinessService,
 		}
 
-		log.Printf("📩 Received payment on topic [%s] for application [%s]",
-			m.Topic, applicationRequest.Application.ApplicationNumber,
-		)
-
-		if err := workflowIntegrator.CallWorkflow(applicationRequest); err != nil {
-			log.Printf("❌ Workflow call failed: %v", err)
+		searchRes, err := applicationService.SearchApplication(context.Background(), criteria)
+		if err != nil || len(searchRes.Application) == 0 {
+			log.Printf("❌ Application not found for payment: %+v, error: %v", criteria, err)
 			continue
 		}
 
-		if err := r.CommitMessages(context.Background(), m); err != nil {
-			log.Printf("❌ Failed to commit message: %v", err)
+		application := searchRes.Application[0]
+		application.Workflow.Action = "PAY"
+
+		appReq := model.ApplicationRequest{
+			RequestInfo: paymentReq.RequestInfo,
+			Application: application,
 		}
+
+		log.Printf("📩 Payment received for application [%s] on topic [%s]", application.ApplicationNumber, m.Topic)
+
+		_, err = applicationService.UpdateApplication(context.Background(), appReq, application.ServiceCode, application.Id.String())
+		if err != nil {
+			log.Printf("❌ Failed to update application after payment: %v", err)
+			continue
+		}
+
+		log.Printf("✅ Application [%s] updated successfully after payment", application.ApplicationNumber)
 	}
 }
-
-

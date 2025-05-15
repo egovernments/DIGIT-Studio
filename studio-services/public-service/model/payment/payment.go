@@ -3,7 +3,6 @@ package payment
 import (
 	"encoding/json"
 	"math/big"
-	"public-service/model"
 	"public-service/model/demand"
 )
 
@@ -19,7 +18,6 @@ type Payment struct {
 	InstrumentNumber string          `json:"instrumentNumber,omitempty"`
 	InstrumentStatus string          `json:"instrumentStatus,omitempty"`
 	IFSCCode         string          `json:"ifscCode,omitempty"`
-	AuditDetails     model.AuditDetails    `json:"auditDetails,omitempty"`
 	AdditionalDetails json.RawMessage `json:"additionalDetails,omitempty"`
 	PaymentDetails   []PaymentDetail `json:"paymentDetails,omitempty"`
 	PaidBy           string          `json:"paidBy"`
@@ -47,5 +45,4 @@ type PaymentDetail struct {
 	BillID             string          `json:"billId"`
 	Bill               demand.Bill           `json:"bill,omitempty"`
 	AdditionalDetails  json.RawMessage `json:"additionalDetails,omitempty"`
-	AuditDetails       model.AuditDetails    `json:"auditDetails,omitempty"`
 }

@@ -551,14 +551,23 @@ func (r *ApplicationRepository) SearchWithIndividual(ctx context.Context, criter
 	argPos := 1
 
 	// Check if service exists
-	searchServiceCriteria := model.SearchCriteria{
-		TenantId:    criteria.TenantId,
-		ServiceCode: criteria.ServiceCode,
-	}
-	existingService, _ := r.publicRepo.SearchService(ctx, searchServiceCriteria)
-	if len(existingService.Services) == 0 {
-		return model.SearchResponse{}, errors.New("Service with given serviceCode not present in the application. Please create the service.")
-	}
+	if criteria.ServiceCode != "" {
+		searchServiceCriteria := model.SearchCriteria{
+			TenantId:    criteria.TenantId,
+			ServiceCode: criteria.ServiceCode,
+		}
+
+		existingService, err := r.publicRepo.SearchService(ctx, searchServiceCriteria)
+		if err != nil {
+			return model.SearchResponse{}, err
+		}
+
+		if len(existingService.Services) == 0 {
+			return model.SearchResponse{}, errors.New("Service with given serviceCode not present in the application. Please create the service.")
+		}
+	}	
+	
+	
 
 	queryBuilder.WriteString(`
 		SELECT 

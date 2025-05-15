@@ -61,7 +61,7 @@ func main() {
 
 	// Start Kafka consumer in a separate goroutine if enabled
 	if os.Getenv("KAFKA_PAYMENT_CONSUMER_ENABLED") == "true" {
-		go consumer.ConsumePayments(workflowIntegrator)
+		go consumer.ConsumePayments(appSvc)
 		log.Println("Kafka payment consumer started...")
 	}
 
