@@ -1,4 +1,107 @@
-<!-- TODO: update this -->
+# @tekdi/djibouti-ui-css
+
+A customized CSS library for DJIBOUTI UI with Inter font as the default font family.
+
+## Features
+
+- Inter font set as the default font throughout the application
+- Complete tailwind configuration customized for DJIBOUTI UI
+- Pre-configured components styling
+- Mobile responsive design
+- Font utility classes for easy typography
+
+## Install
+
+```bash
+npm install --save @tekdi/djibouti-ui-css
+```
+
+## Usage
+
+After adding the dependency in your package.json:
+
+```json
+"@tekdi/djibouti-ui-css": "^0.0.3"
+```
+
+### Method 1: Add to HTML directly
+
+Add the following to your HTML head:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/@tekdi/djibouti-ui-css@0.0.3/dist/index.css" />
+```
+
+### Method 2: Import in JavaScript
+
+If you're using a bundler like webpack, you can import the styles directly:
+
+```javascript
+import '@tekdi/djibouti-ui-css/dist/index.css';
+```
+
+## Font Configuration
+
+This package uses Inter as the default font. All elements automatically use Inter without requiring explicit font-family declarations in your components.
+
+### Font Weights Available:
+- Regular (400)
+- Medium (500)
+- Semi-bold (600)
+- Bold (700)
+
+### Using Font Utility Classes
+
+The package comes with utility classes for easy font usage:
+
+```css
+/* Base font class */
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Font weight variants */
+.font-inter-regular {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.font-inter-medium {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.font-inter-semibold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.font-inter-bold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+```
+
+## Tailwind Configuration
+
+This package includes a customized Tailwind configuration specifically for DJIBOUTI UI applications.
+The configuration sets Inter as the default font for all component classes.
+
+## Components
+
+The package includes CSS for all DJIBOUTI UI components with Inter font styling applied.
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome. Feel free to check the issues page if you want to contribute.
+
+## License
+
+MIT © Tekdi Technologies Pvt. Ltd.
+
+## Credits
+
+This package is a customized version of the original DJIBOUTI CSS components, optimized for use with Inter font.
 
 # digit-ui-css
 
@@ -77,7 +180,7 @@ DIGIT-UI-LIBRARIES Repo (https://github.com/egovernments/DIGIT-UI-LIBRARIES/tree
 
 [nabeelmd-egov] [bhavya-eGov] [nipunarora-eGov] [swathi-egov] [jagankumar-egov] [Tulika-eGov] [Ramkrishna-egov]
 
-# Reference 
+# Reference
 
 Storybook (https://unified-dev.digit.org/storybook/)
 

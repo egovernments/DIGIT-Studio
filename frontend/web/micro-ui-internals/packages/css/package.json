@@ -1,9 +1,10 @@
 {
-  "name": "@egovernments/digit-ui-sample-css",
-  "version": "0.0.1",
+  "name": "@tekdi/djibouti-ui-css",
+  "version": "0.0.2",
+  "description": "CSS library for djibouti UI",
   "license": "MIT",
   "main": "dist/index.css",
-  "author": "Jagankumar <jagan.kumar@egovernments.org>",
+  "author": "Tekdi <ajinkya.pande@tekditechnologies.com>",
   "engines": {
     "node": ">=14"
   },
@@ -17,7 +18,9 @@
     "prepublish": "yarn build:prod",
     "publish:css-develop": "npm publish --tag core-v0.1",
     "publish:css": "npm publish --access public",
-    "deploy": "gulp && cp -R svg example && cp -R img example && gh-pages -d example"
+    "deploy": "gulp && cp -R svg example && cp -R img example && gh-pages -d example",
+    "publish:develop": "npm publish --tag dev",
+    "publish": "npm publish --access public"
   },
   "browserslist": [
     "> 3%",
@@ -58,10 +61,11 @@
   ],
   "keywords": [
     "digit",
-    "egov",
+    "tekdi",
     "dpg",
     "digit-ui",
     "css",
-    "digit-ui-components"
+    "djibouti-ui-components",
+    "inter-font"
   ]
 }
