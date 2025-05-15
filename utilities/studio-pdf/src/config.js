@@ -34,7 +34,7 @@ module.exports = {
     workflow: process.env.EGOV_WORKFLOW_HOST || HOST,
     localization: process.env.EGOV_LOCALIZATION_HOST || 'http://localhost:8088',
     filestore: process.env.EGOV_FILESTORE_SERVICE_HOST || 'http://localhost:8092',
-    publicService: process.env.PUBLIC_SERVICE_HOST || 'https://unified-dev.digit.org/digit-studio'
+    publicService: process.env.PUBLIC_SERVICE_HOST || 'https://unified-dev.digit.org'
   },
   paths: {
     pdf_create: "/pdf-service/v1/_createnosave",
@@ -44,8 +44,5 @@ module.exports = {
     mdms_get: "/egov-mdms-service/v1/_get",
     localization_search: "/localization/messages/v1/_search",
     publicService_search :"/public-service/v1/application"
-  },
-  constraints: {
-    "beneficiaryIdByHeadCode": "Deduction_{tanentId}_{headcode}"
   }
 };

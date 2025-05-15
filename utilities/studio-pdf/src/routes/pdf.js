@@ -2,8 +2,8 @@ var express = require("express");
 var router = express.Router();
 var config = require("../config");
 var { search_serviceDetails, create_pdf } = require("../api");
-var { search_applicationDetails, create_pdf } = require("../api"); // Replace with actual function
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
+const { logger } = require("../logger");
 
 function renderError(res, errorMessage, errorCode) {
     if (errorCode === undefined) errorCode = 500;
@@ -11,7 +11,7 @@ function renderError(res, errorMessage, errorCode) {
 }
 
 router.post(
-    "/generatepdf",
+    "/generate",
     asyncMiddleware(async function (req, res) {
         const tenantId = req.query.tenantId;
         const applicationNumber = req.query.applicationNumber;
@@ -39,8 +39,10 @@ router.post(
             let response;
             try {
                 response = await search_serviceDetails(tenantId, serviceCode, applicationNumber);
-
+                // logger.info(`response of the application search is ${JSON.stringify(response)}`);
             } catch (ex) {
+                logger.error(`Error in the application search for App no ${applicationNumber} of service ${serviceCode}`);
+                logger.error(ex);
                 return renderError(res, "Failed to query details of the application", 500);
             }
 
@@ -48,6 +50,8 @@ router.post(
             if (application && application?.Application && application?.Application.length > 0) {
                 let pdfResponse;
                 try {
+                    logger.info(`Sent the request to create a pdf of key ${pdfKey} for application number ${applicationNumber}`);
+                    logger.info(`application object  :: ${JSON.stringify(application)}`);
                     pdfResponse = await create_pdf(
                         tenantId,
                         pdfKey,
