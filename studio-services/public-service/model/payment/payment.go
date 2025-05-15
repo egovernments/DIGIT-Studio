@@ -2,7 +2,6 @@ package payment
 
 import (
 	"encoding/json"
-	"math/big"
 	"public-service/model/demand"
 )
 
@@ -34,8 +33,8 @@ type PaymentDetail struct {
 	ID                 string          `json:"id,omitempty"`
 	PaymentID          string          `json:"paymentId,omitempty"`
 	TenantID           string          `json:"tenantId"`
-	TotalDue           *big.Float      `json:"totalDue,omitempty"`
-	TotalAmountPaid    *big.Float      `json:"totalAmountPaid"`
+	TotalDue           float64      `json:"totalDue,omitempty"`
+	TotalAmountPaid    float64      `json:"totalAmountPaid"`
 	ReceiptNumber      string          `json:"receiptNumber,omitempty"`
 	ManualReceiptNumber string         `json:"manualReceiptNumber,omitempty"`
 	ManualReceiptDate  int64           `json:"manualReceiptDate,omitempty"`
