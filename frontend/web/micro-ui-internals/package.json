@@ -23,9 +23,11 @@
     "publish:css": "cd packages/css && yarn && npm publish --tag workbench-1.0",
     "dev:example": "cd example && yarn start",
     "dev:publicServices": "cd packages/modules/PublicServices && yarn start",
+    "dev:openPayment": "cd packages/modules/open-payment && yarn start",
     "dev:components": "cd packages/ui-components && yarn start",
     "build": "run-p build:**",
     "build:publicServices": "cd packages/modules/PublicServices && yarn build",
+    "build:openPayment": "cd packages/modules/open-payment && yarn build",
     "build:components": "cd packages/ui-components && yarn build",
     "deploy:jenkins": "./scripts/jenkins.sh",
     "clean": "rm -rf node_modules"
@@ -50,6 +52,7 @@
   },
   "dependencies": {
     "@egovernments/digit-ui-components": "0.2.0-studio.1",
+    "@egovernments/digit-ui-module-open-payment": "0.0.5",
     "@egovernments/digit-ui-react-components": "1.8.19",
     "ajv": "8.12.0",
     "lodash": "4.17.21",

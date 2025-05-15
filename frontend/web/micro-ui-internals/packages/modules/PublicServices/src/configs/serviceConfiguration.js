@@ -34,6 +34,17 @@ export const serviceConfig = {
                   "orderNumber": 2
                 },
                 {
+                  "name": "Licensedemo",
+                  "label": "New License",
+                  //"defaultValue" : "PERMANENT",
+                  // "prefix": "LICENSETYPE",
+                  "type": "enum",
+                  "format": "radioordropdown",
+                  "required": false,
+                  "values": ["yes", "No"],
+                  "orderNumber": 2
+                },
+                {
                   "name": "tradeName",
                   "label": "Trade Name ",
                   "type": "string",

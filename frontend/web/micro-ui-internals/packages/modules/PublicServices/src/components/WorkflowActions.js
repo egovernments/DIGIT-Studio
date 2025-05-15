@@ -65,8 +65,7 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
   const history = useHistory()
   const { estimateNumber, mbNumber, workOrderNumber } = Digit.Hooks.useQueryParams();
   applicationNo = applicationNo ? applicationNo : estimateNumber 
-  const { module } = useParams();
-  const { service } = useParams();
+  const { module, service } = useParams();
 
   const { mutate } = useUpdateCustom(url)
 
@@ -75,6 +74,8 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
   const [selectedAction,setSelectedAction] = useState(null)
   const [isEnableLoader, setIsEnableLoader] = useState(false);
   const [showToast,setShowToast] = useState(null)
+  const queryStrings = Digit.Hooks.useQueryParams();
+
 
   
 
@@ -138,55 +139,62 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
 
   const onActionSelect = (action) => {
     
-    const bsContract = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("contract");
-    const bsEstimate = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("estimate")
-    const bsAttendance = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("muster roll")
-    const bsPurchaseBill = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("works.purchase")
-    const bsRevisedWO = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("revisedWO");
-    const bsMeasurement = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("measurement");
+    // const bsContract = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("contract");
+    // const bsEstimate = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("estimate")
+    // const bsAttendance = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("muster roll")
+    // const bsPurchaseBill = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("works.purchase")
+    // const bsRevisedWO = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("revisedWO");
+    // const bsMeasurement = Digit?.Customizations?.["commonUiConfig"]?.getBusinessService("measurement");
     
     
     setDisplayMenu(false)
-    setSelectedAction(action)
+    setSelectedAction(action);
+    if(action.action === "PAY")
+    {
+      history.push(`/${window.contextPath}/employee/openpayment/open-view?consumerCode=${applicationNo}&tenantId=${tenantId}&businessService=${businessService}`, {
+        redirectionUrl :  `/${window.contextPath}/employee/publicservices/${module}/${service}/ViewScreen?applicationNumber=${applicationNo}&serviceCode=${queryStrings?.serviceCode}`,
+
+      });
+    }
 
     //here check if actin is edit then do a history.push acc to the businessServ and action
     //send appropriate states over
 
-    if(bsEstimate === businessService && action?.action === "RE-SUBMIT"){
-       editCallback()
-        return 
-    }
+  //   if(bsEstimate === businessService && action?.action === "RE-SUBMIT"){
+  //      editCallback()
+  //       return 
+  //   }
 
-    if(bsContract === businessService && action?.action === "EDIT"){
-      history.push(`/${window?.contextPath}/employee/contracts/create-contract?tenantId=${tenantId}&workOrderNumber=${applicationNo}`);
-      return 
-  }
-    if(bsAttendance === businessService && action?.action === "RE-SUBMIT"){
-        editCallback()
-        return 
-    }
-    if(bsAttendance === businessService && action?.action === "APPROVE"){
-      WorflowValidation(setShowModal);
-      return 
-    }
+  //   if(bsContract === businessService && action?.action === "EDIT"){
+  //     history.push(`/${window?.contextPath}/employee/contracts/create-contract?tenantId=${tenantId}&workOrderNumber=${applicationNo}`);
+  //     return 
+  // }
+  //   if(bsAttendance === businessService && action?.action === "RE-SUBMIT"){
+  //       editCallback()
+  //       return 
+  //   }
+  //   if(bsAttendance === businessService && action?.action === "APPROVE"){
+  //     WorflowValidation(setShowModal);
+  //     return 
+  //   }
 
-    if(bsPurchaseBill === businessService && action?.action==="RE-SUBMIT"){
-      history.push(`/${window?.contextPath}/employee/expenditure/create-purchase-bill?tenantId=${tenantId}&billNumber=${editApplicationNumber}&workOrderNumber=${fullData?.contract?.contractNumber}`);
-      return 
-    }
+  //   if(bsPurchaseBill === businessService && action?.action==="RE-SUBMIT"){
+  //     history.push(`/${window?.contextPath}/employee/expenditure/create-purchase-bill?tenantId=${tenantId}&billNumber=${editApplicationNumber}&workOrderNumber=${fullData?.contract?.contractNumber}`);
+  //     return 
+  //   }
 
-    if(bsMeasurement === businessService && action?.action?.includes("RE-SUBMIT")){
-      history.push(`/${window?.contextPath}/employee/measurement/update?tenantId=${tenantId}&workOrderNumber=${workOrderNumber}&mbNumber=${mbNumber}`);
-      return 
-    }
+  //   if(bsMeasurement === businessService && action?.action?.includes("RE-SUBMIT")){
+  //     history.push(`/${window?.contextPath}/employee/measurement/update?tenantId=${tenantId}&workOrderNumber=${workOrderNumber}&mbNumber=${mbNumber}`);
+  //     return 
+  //   }
 
-    if(bsRevisedWO === businessService && action?.action === "EDIT"){
-      editCallback()
-      return 
-    }
+  //   if(bsRevisedWO === businessService && action?.action === "EDIT"){
+  //     editCallback()
+  //     return 
+  //   }
     //here we can add cases of toast messages,edit application and more...
     // the default result is setting the modal to show
-    setShowModal(true)
+    action !== "PAY" && setShowModal(true)
     
   }
 
