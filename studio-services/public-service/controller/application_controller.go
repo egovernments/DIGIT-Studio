@@ -55,30 +55,54 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		req.Application.ServiceCode = serviceCode
 	}
 	req = c.enrichmentService.EnrichApplicationsWithIdGen(req)
-	log.Println(req)
-	for i, applicant := range req.Application.Applicants {
+	log.Println(req)	
+	for i := range req.Application.Applicants {
+		applicant := req.Application.Applicants[i]
+		mobile := strconv.FormatInt(applicant.MobileNumber, 10)
+	
+		// Log input applicant in JSON
+		if data, _ := json.MarshalIndent(applicant, "", "  "); true {
+			log.Println("Processing applicant:", string(data))
+		}
+	
 		criteria := map[string]interface{}{
-			"mobileNumber": strconv.FormatInt(applicant.MobileNumber, 10),
+			"mobileNumber": mobile,
 			"tenantId":     req.Application.TenantId,
 		}
-
+	
 		// Check if individual exists
 		resp := c.individualService.GetIndividual(req.RequestInfo, criteria)
-
+		if data, _ := json.MarshalIndent(resp, "", "  "); true {
+			log.Println("GetIndividual response:", string(data))
+		}
+	
 		if len(resp.Individual) == 0 {
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
+			if data, _ := json.MarshalIndent(createdResp, "", "  "); true {
+				log.Println("Created individual response:", string(data))
+			}
+	
 			if createdResp.Individual.IndividualId != "" {
 				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
+				log.Println("Failed to create individual for applicant:", applicant.Name)
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, "Failed to create individual")
 				return
 			}
 		} else {
 			// Individual exists, update applicant UserId
-			req.Application.Applicants[i].UserId = resp.Individual[i].IndividualId
+			req.Application.Applicants[i].UserId = resp.Individual[0].IndividualId
+			result := map[string]string{
+				"applicant": applicant.Name,
+				"userId":    resp.Individual[0].IndividualId,
+			}
+			if data, _ := json.MarshalIndent(result, "", "  "); true {
+				log.Println("Existing individual found:", string(data))
+			}
 		}
 	}
+	
 	// Call workflow integrator on success
 	err = c.workflowIntegrator.CallWorkflow(&req)
 	if err != nil {
