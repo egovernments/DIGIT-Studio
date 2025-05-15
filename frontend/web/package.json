@@ -9,7 +9,6 @@
   },
   "workspaces": [
     "micro-ui-internals/packages/modules/*",
-    "micro-ui-internals/packages/css",
     "micro-ui-internals/packages/ui-components",
     "micro-ui-internals/packages/modules/core",
     "micro-ui-internals/packages/react-components"
