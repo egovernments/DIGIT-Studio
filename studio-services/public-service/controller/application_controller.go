@@ -68,37 +68,35 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 		return
 	}
 
-	for i, applicant := range req.Application.Applicants {
 	req = c.enrichmentService.EnrichApplicationsWithIdGen(req)
-	log.Println(req)	
+	log.Println(req)
 	for i := range req.Application.Applicants {
 		applicant := req.Application.Applicants[i]
 		mobile := strconv.FormatInt(applicant.MobileNumber, 10)
-	
+
 		// Log input applicant in JSON
 		if data, _ := json.MarshalIndent(applicant, "", "  "); true {
 			log.Println("Processing applicant:", string(data))
 		}
-	
 
 		criteria := map[string]interface{}{
 			"mobileNumber": mobile,
 			"tenantId":     req.Application.TenantId,
 		}
-	
+
 		// Check if individual exists
 		resp := c.individualService.GetIndividual(req.RequestInfo, criteria)
 		if data, _ := json.MarshalIndent(resp, "", "  "); true {
 			log.Println("GetIndividual response:", string(data))
 		}
-	
+
 		if len(resp.Individual) == 0 {
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
 			if data, _ := json.MarshalIndent(createdResp, "", "  "); true {
 				log.Println("Created individual response:", string(data))
 			}
-	
+
 			if createdResp.Individual.IndividualId != "" {
 				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
@@ -118,7 +116,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			}
 		}
 	}
-	
+
 	// Call workflow integrator on success
 	err = c.workflowIntegrator.CallWorkflow(&req)
 	if err != nil {

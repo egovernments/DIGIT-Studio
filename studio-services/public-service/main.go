@@ -27,8 +27,6 @@ func main() {
 		"https://unified-dev.digit.org",
 		"",
 	)
-	// Init DB always, migrations optional
-	dbConn := repository.InitDB()
 	// Load environment variables
 	config.LoadEnv()
 
