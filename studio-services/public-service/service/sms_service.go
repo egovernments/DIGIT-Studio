@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 	"public-service/config"
-	producer "public-service/kafka"
+	producer "public-service/kafka/producer"
 	"public-service/model"
 	_ "public-service/model/demand"
 	"public-service/model/sms"

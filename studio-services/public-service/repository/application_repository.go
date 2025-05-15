@@ -10,7 +10,7 @@ import (
 	"github.com/lib/pq"
 	"log"
 	"public-service/config"
-	producer "public-service/kafka"
+	producer "public-service/kafka/producer"
 	"public-service/model"
 	"strconv"
 	"strings"

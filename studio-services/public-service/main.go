@@ -6,7 +6,8 @@ import (
 	"os"
 	"public-service/config"
 	"public-service/controller"
-	producer "public-service/kafka"
+	"public-service/kafka/consumer"
+	producer "public-service/kafka/producer"
 	"public-service/repository"
 	db "public-service/scripts"
 	"public-service/service"
@@ -19,25 +20,32 @@ import (
 func main() {
 	utils.InitLogger()
 
-	// Init DB always, migrations optional
-	dbConn := repository.InitDB()
+	// Load environment variables
 	config.LoadEnv()
 
+	// Initialize database connection
+	dbConn := repository.InitDB()
+
+	// Run DB migrations if enabled
 	if os.Getenv("FLYWAY_ENABLED") == "true" {
 		db.RunMigrations()
 	}
+
+	// Kafka producer setup
 	writerFunc := func(topic string) *kafka.Writer {
 		return kafka.NewWriter(kafka.WriterConfig{
-			Brokers:  []string{config.GetEnv("KAFKA_BOOTSTRAP_SERVERS")}, // Example: "localhost:9092"
+			Brokers:  []string{config.GetEnv("KAFKA_BOOTSTRAP_SERVERS")},
 			Topic:    topic,
 			Balancer: &kafka.LeastBytes{},
 		})
 	}
 	kafkaProducer := producer.NewPublicServiceProducer(writerFunc)
+
 	// Initialize repositories
 	publicRepo := repository.NewPublicRepository(dbConn)
 	appRepo := repository.NewApplicationRepository(dbConn, publicRepo, kafkaProducer)
 	restRepo := repository.NewRestCallRepository()
+
 	// Initialize services
 	demandSvc := service.NewDemandService(restRepo)
 	individualSvc := service.NewIndividualService(restRepo)
@@ -49,9 +57,16 @@ func main() {
 	enrichSvc := service.NewEnrichmentService(individualSvc, demandSvc, mdmsSvc, mdmsv2sSvc, idgenSvc, smsService)
 	appSvc := service.NewApplicationService(appRepo, enrichSvc)
 	serviceSvc := service.NewPublicService(publicRepo)
+	workflowIntegrator := service.NewWorkflowIntegrator(mdmsv2sSvc, smsService)
+
+	// Start Kafka consumer in a separate goroutine if enabled
+	if os.Getenv("KAFKA_PAYMENT_CONSUMER_ENABLED") == "true" {
+		go consumer.ConsumePayments(workflowIntegrator)
+		log.Println("Kafka payment consumer started...")
+	}
 
 	// Initialize controllers
-	appCtrl := controller.NewApplicationController(appSvc, service.NewWorkflowIntegrator(mdmsv2sSvc,smsService), individualSvc, enrichSvc, smsService)
+	appCtrl := controller.NewApplicationController(appSvc, workflowIntegrator, individualSvc, enrichSvc, smsService)
 	serviceCtrl := controller.NewServiceController(serviceSvc)
 
 	// Setup router
@@ -67,11 +82,11 @@ func main() {
 	router.HandleFunc("/public-service/v1/application/{serviceCode}", appCtrl.SearchApplicationHandler).Methods("GET")
 	router.HandleFunc("/public-service/v1/application/{serviceCode}/{applicationId}", appCtrl.UpdateApplicationHandler).Methods("PUT")
 
-	// Start server
+	// Start HTTP server
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
 		port = "8080"
 	}
-	log.Printf(" Server started at :%s\n", port)
+	log.Printf("Server started at :%s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
