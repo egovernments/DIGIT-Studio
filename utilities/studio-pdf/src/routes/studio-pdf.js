@@ -24,7 +24,7 @@ function renderError(res, message, status = 500) {
  *  - RequestInfo (object, required)
  */
 router.post(
-  "/generate",
+  "/pdf",
   asyncMiddleware(async (req, res) => {
     const { tenantId, applicationNumber, pdfKey, serviceCode } = req.query;
     const requestInfo = req.body;

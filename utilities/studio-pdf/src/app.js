@@ -25,12 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use(config.app.contextPath + "/download/public-service", pdfRouter);
+console.log(`App Running in port ${config.app.port} with contextPath ${config.app.contextPath}`)
+app.use(config.app.contextPath + "/public-service/download", pdfRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  logger.error(`404 - Route not found: ${req.method} ${req.originalUrl}`);
+  next(createError(404, "Route not found"));
 });
 
 // error handler

@@ -53,7 +53,7 @@ Currently below endpoints are in use for ‘CITIZEN' and 'EMPLOYEE’ roles
 
 | Endpoint | module | query parameter | Restrict Citizen to own records |
 | -------- | ------ | --------------- | ------------------------------- |
-|`/studio-pdf/download/pdf/generate` | project | `applicationNumber, tenantId,pdfKey` | false |
+|`/studio-pdf/public-service/download/pdf` | project | `applicationNumber,serviceCode, tenantId,pdfKey` | false |
 
 
 ### Kafka Consumers
