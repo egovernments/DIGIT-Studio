@@ -52,6 +52,9 @@ const modulePageComponent = ({}) => {
             <Link className="link" to={`/${window.contextPath}/employee/publicservices/${product.module}/Search`}>
               Search
             </Link>
+            <Link className="link" to={`/${window.contextPath}/employee/publicservices/${product.module}/Inbox`}>
+              Inbox
+            </Link>
           </Card>
         ))}
       </div>
