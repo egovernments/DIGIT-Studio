@@ -1,81 +1,98 @@
-var express = require("express");
-var router = express.Router();
-var config = require("../config");
-var { search_serviceDetails, create_pdf } = require("../api");
+const express = require("express");
+const router = express.Router();
+const config = require("../config");
+const { getPublicServiceApplicationDetails, create_pdf, getBaseMDMSData } = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 const { logger } = require("../logger");
 
-function renderError(res, errorMessage, errorCode) {
-    if (errorCode === undefined) errorCode = 500;
-    res.status(errorCode).send({ errorMessage });
+/**
+ * Helper to render a standardized error response
+ */
+function renderError(res, message, status = 500) {
+  res.status(status).send({ errorMessage: message });
 }
 
+/**
+ * Endpoint: POST /generate
+ * Description: Generates a PDF for a given service application
+ * Query Params:
+ *  - tenantId (string, required)
+ *  - applicationNumber (string, required)
+ *  - pdfKey (string, required)
+ *  - serviceCode (string, optional)
+ * Body:
+ *  - RequestInfo (object, required)
+ */
 router.post(
-    "/generate",
-    asyncMiddleware(async function (req, res) {
-        const tenantId = req.query.tenantId;
-        const applicationNumber = req.query.applicationNumber;
-        const pdfKey = req.query.pdfKey;
-        const serviceCode = req.query.serviceCode
-        const requestInfo = req.body;
-        
+  "/generate",
+  asyncMiddleware(async (req, res) => {
+    const { tenantId, applicationNumber, pdfKey, serviceCode } = req.query;
+    const requestInfo = req.body;
 
-        // Validation
-        if (!requestInfo) {
-            return renderError(res, "requestinfo cannot be null", 400);
-        }
-        if (!tenantId) {
-            return renderError(res, "tenantId is mandatory to generate the receipt", 400);
-        }
-        if (!applicationNumber) {
-            return renderError(res, "applicationNumber is mandatory to generate the receipt", 400);
-        }
-        if (!pdfKey) {
-            return renderError(res, "pdfKey is mandatory to generate the receipt", 400);
-        }
+    // Basic validations for required parameters
+    if (!requestInfo) return renderError(res, "requestInfo cannot be null", 400);
+    if (!tenantId) return renderError(res, "tenantId is mandatory to generate the receipt", 400);
+    if (!applicationNumber) return renderError(res, "applicationNumber is mandatory to generate the receipt", 400);
+    if (!pdfKey) return renderError(res, "pdfKey is mandatory to generate the receipt", 400);
 
+    try {
+      let applicationDetails, mdmsData;
+
+      // Fetch application details and base MDMS data
+      try {
+        applicationDetails = await getPublicServiceApplicationDetails(tenantId, serviceCode, applicationNumber);
+        mdmsData = await getBaseMDMSData(tenantId);
+      } catch (err) {
+        logger.error(`Error fetching details for application ${applicationNumber} with service ${serviceCode}`);
+        logger.error(err);
+        return renderError(res, "Failed to query details of the application", 500);
+      }
+
+      const application = applicationDetails?.Application;
+
+      // Proceed only if application exists
+      if (application?.length > 0) {
         try {
-            // Fetch application details
-            let response;
-            try {
-                response = await search_serviceDetails(tenantId, serviceCode, applicationNumber);
-                // logger.info(`response of the application search is ${JSON.stringify(response)}`);
-            } catch (ex) {
-                logger.error(`Error in the application search for App no ${applicationNumber} of service ${serviceCode}`);
-                logger.error(ex);
-                return renderError(res, "Failed to query details of the application", 500);
-            }
+          logger.info(`Generating PDF with key ${pdfKey} for application ${applicationNumber}`);
 
-            const application = response.data;
-            if (application && application?.Application && application?.Application.length > 0) {
-                let pdfResponse;
-                try {
-                    logger.info(`Sent the request to create a pdf of key ${pdfKey} for application number ${applicationNumber}`);
-                    logger.info(`application object  :: ${JSON.stringify(application)}`);
-                    pdfResponse = await create_pdf(
-                        tenantId,
-                        pdfKey,
-                        application,
-                        requestInfo
-                    );
+          const PDFGenerateObject= {
+            PublicService: [
+              {
+                ...applicationDetails,
+                ...mdmsData,
+              },
+            ],
+          }
+          logger.info(`PDFGenerateObject data: ${JSON.stringify(PDFGenerateObject)}`);
 
-                } catch (ex) {
-                    return renderError(res, "Failed to generate PDF for application", 500);
-                }
+          // Call PDF generation service
+          const pdfResponse = await create_pdf(
+            tenantId,
+            pdfKey,
+            PDFGenerateObject,
+            requestInfo
+          );
 
-                const filename = `${pdfKey}_${Date.now()}`;
-                res.writeHead(200, {
-                    "Content-Type": "application/pdf",
-                    "Content-Disposition": `attachment; filename=${filename}.pdf`,
-                });
-                pdfResponse.data.pipe(res);
-            } else {
-                return renderError(res, "No application found for the given applicationNumber", 404);
-            }
-        } catch (ex) {
-            return renderError(res, "Something went wrong", 500);
+          // Send the PDF as downloadable response
+          const filename = `${pdfKey}_${Date.now()}`;
+          res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}.pdf`,
+          });
+          pdfResponse.data.pipe(res);
+        } catch (err) {
+          logger.error("Error generating PDF", err);
+          return renderError(res, "Failed to generate PDF for application", 500);
         }
-    })
+      } else {
+        // No matching application found
+        return renderError(res, "No application found for the given applicationNumber", 404);
+      }
+    } catch (err) {
+      logger.error("Unexpected error during PDF generation", err);
+      return renderError(res, "Something went wrong", 500);
+    }
+  })
 );
 
 module.exports = router;

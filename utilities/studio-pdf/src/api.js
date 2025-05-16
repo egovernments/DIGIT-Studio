@@ -5,6 +5,8 @@ var url = require("url");
 var logger = require("./logger").logger;
 const { Pool } = require('pg');
 const get = require('lodash/get');
+
+const set = require('lodash/set');
 var FormData = require("form-data");
 const uuidv4 = require("uuid/v4");
 
@@ -53,6 +55,9 @@ async function search_mdms(request) {
   });
 }
 
+
+
+
 async function search_localization(request, lang, module, tenantId) {
   return await axios({
     method: "post",
@@ -67,6 +72,8 @@ async function search_localization(request, lang, module, tenantId) {
 }
 
 async function create_pdf(tenantId, key, data, requestInfo) {
+  logger.info(`creating a pdf for key ${key}`);
+  logger.debug(JSON.stringify(data))
   const respone =  await axios({
     responseType: "stream",
     method: "post",
@@ -137,27 +144,64 @@ async function upload_file_using_filestore(filename, tenantId, fileData) {
   }
 };
 
-async function search_serviceDetails(tenantId, serviceCode, applicationNumber) {
-  var params = {
-    applicationNumber: applicationNumber
-  };
-  logger.info(`Making the application search for App no ${applicationNumber} of service ${serviceCode}`);
+async function getPublicServiceApplicationDetails(tenantId, serviceCode, applicationNumber) {
+  const params = { applicationNumber };
   const searchEndpoint = `${config.paths.publicService_search}/${serviceCode}`;
+  const requestUrl = url.resolve(config.host.publicService, searchEndpoint);
 
+  logger.info(`Making the application search for App no ${applicationNumber} of service ${serviceCode}`);
+  logger.info(`URL for application search ${requestUrl}`);
 
-  const URL= url.resolve(config.host.publicService, searchEndpoint);
-  logger.info(`URL for application search ${URL}`);
+  try {
+    const response = await axios({
+      method: "get",
+      url: requestUrl,
+      params,
+      headers: {
+        "X-Tenant-Id": tenantId,
+      },
+    });
 
-
-return await axios({
-    method: "get",
-    url: URL,
-    params,
-    headers: {
-      "X-Tenant-Id": tenantId, // 👈 Add the custom header here
-    },
-  });
+    // Return only the Application array from the response
+    return {
+      Application: get(response, "data.Application", [])
+    };
+  } catch (error) {
+    logger.error(`Error fetching application details for App no ${applicationNumber} of service ${serviceCode}`);
+    logger.error(error.stack || error);
+    return [];
+  }
 }
+const getBaseMDMSData = async (tenantId) => {
+  try {
+    const request = {
+      RequestInfo: {},
+      MdmsCriteria: {
+        tenantId: tenantId.split(".")[0],
+        moduleDetails: [
+          {
+            moduleName: "common-masters",
+            masterDetails: [{ name: "StateInfo" }],
+          },
+          {
+            moduleName: "tenant",
+            masterDetails: [{ name: "tenants" }],
+          },
+        ],
+      },
+    };
+    logger.debug(`getBaseData request ${JSON.stringify(request )}`);
+    const response = await search_mdms(request);    
+
+    return {
+      MdmsRes: get(response, "data.MdmsRes", {})
+    };
+  } catch (error) {
+    logger.error(error.stack || error);
+    return null;
+  }
+};
+
 
 module.exports = {
   pool,
@@ -170,5 +214,6 @@ module.exports = {
   search_localization,
   search_payment_details,
   upload_file_using_filestore,
-  search_serviceDetails
+  getPublicServiceApplicationDetails,
+  getBaseMDMSData
 };
