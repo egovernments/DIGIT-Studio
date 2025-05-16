@@ -7,13 +7,13 @@ import { useHistory } from "react-router-dom";
 const CheckListCard = (props) => {
     const [filled, setFilled] = useState(false);
     const [loading, setLoading] = useState(false);
+    const tenantId = Digit.ULBService.getCurrentTenantId();
     const history = useHistory();
 
     const style = {
         display: "flex",
         alignItems: "center",
-        gap: "1rem",
-        margin: "20px"
+        gap: "1rem"
     };
 
     const request = {
@@ -34,7 +34,7 @@ const CheckListCard = (props) => {
             {
                 url: '/health-service-request/service/v1/_search',
                 method: "POST",
-                body: transformViewApplication(id, accid),
+                body: transformViewApplication(id, accid,tenantId),
                 config: {
                     enable: false,
                 },
@@ -63,11 +63,11 @@ const CheckListCard = (props) => {
         <div>
             {loading ? (
                 <Card type="primary" style={style}>
-                    <TextBlock body={props.item.code} />
+                    <TextBlock body={props.t(props.item.code)} />
                     {filled ? (
                         <Button label="View Response" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/viewresponse/${props.accid}/${props.item.id}/${props.item.code}` })} />
                     ) : (
-                        <Button label="Fill Checklist" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}` })} />
+                        <Button label="Fill Checklist" onClick={() => history.push({ pathname: `/${window.contextPath}/employee/publicservices/checklist/${props.accid}/${props.item.id}/${props.item.code}?redirectionUrl=${window.location.href}` })} />
                     )}
                 </Card>
             ) : (

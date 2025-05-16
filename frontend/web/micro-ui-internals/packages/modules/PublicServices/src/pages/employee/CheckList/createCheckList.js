@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
-import { FormComposerV2, Loader } from "@egovernments/digit-ui-components";
+import { FormComposerV2, Loader, Toast } from "@egovernments/digit-ui-components";
 import CreateCheckListConfig from "../../../configs/createCheckListConfig.js";
 import { updateCheckListConfig } from "../../../configs/createCheckListConfig.js";
 import { useParams } from "react-router-dom";
@@ -13,8 +13,20 @@ const CreateCheckList = () => {
   const { t } = useTranslation();
   const [cardItems, setCardItems] = useState([]);
   const [formData, setFormData] = useState({});
+  const [showToast,setShowToast] = useState(null)
 
   const [config, setConfig] = useState(null);
+
+  const closeToast = () => {
+    setTimeout(() => {
+      setShowToast(null)
+    }, 5000);
+  }
+ 
+  setTimeout(() => {
+    setShowToast(null);
+  }, 20000);
+    
 
   const search_request = {
     url: "/health-service-request/service/definition/v1/_search",
@@ -89,7 +101,11 @@ const CreateCheckList = () => {
         {
           onSuccess: (res) => {
             console.log(res, "application_response");
+            setShowToast({ label: Digit.Utils.locale.getTransformedLocale(`${code?.replaceAll(".","_").toUpperCase()}_CREATE_SUCCESS_CHECKLIST`) })
             setCardItems(res?.ServiceDefinitions || []);
+            setTimeout(() => {
+              window.history.back();
+            }, 3000);
           },
           onError: () => {
             console.log("Error occurred");
@@ -120,6 +136,16 @@ const CreateCheckList = () => {
         />
       ) : (
         <Loader />
+      )}
+       {showToast && (
+        <Toast
+          type={showToast?.type}
+          label={t(showToast?.label)}
+          onClose={() => {
+            setShowToast(null);
+          }}
+          isDleteBtn={showToast?.isDleteBtn}
+        />
       )}
     </div>
   );

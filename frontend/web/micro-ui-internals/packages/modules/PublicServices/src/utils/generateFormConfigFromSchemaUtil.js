@@ -77,7 +77,8 @@ export const generateFormConfig = (config, module, service) => {
     return {
       head: `${module}_${service}_${documentField.head.toUpperCase()}`,
       "type": "documents",
-      body: documentField?.body,
+      body: [{...documentField?.body?.[0], localePrefix: `${module.toUpperCase()}_${service.toUpperCase()}_${documentField.head.toUpperCase()}`}],
+     
     };
   };
 

@@ -171,13 +171,13 @@ export const transformHRMSCreateData = (data)=>{
 
 }
 
-export const transformViewApplication = (id, accid) => {
+export const transformViewApplication = (id, accid, tenantId) => {
     let requestBody = {
         "ServiceCriteria": {
             "clientId": "",
             "serviceDefId": id,
             "accountId": accid,
-            "tenantId": "dev",
+            "tenantId": tenantId,
             "rowVersion": 1,
             "isDeleted": false
         },

@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { generateViewConfigFromResponse } from "../../../utils";
 import WorkflowActions from "../../../components/WorkflowActions";
+import ViewCheckListCards from "../CheckList/viewCheckListCards";
+import { useWorkflowDetailsWorks } from "../../../utils";
 
 const DigitDemoViewComponent = () => {
   const { t } = useTranslation();
@@ -30,7 +32,19 @@ const DigitDemoViewComponent = () => {
   let response =  data ? data?.Application?.[0] : {};
   let config = generateViewConfigFromResponse(response,t);
 
-  if (isLoading) {
+  let {data :workflowDetails, isLoading: workflowLoading} = useWorkflowDetailsWorks(
+    {
+      tenantId: tenantId,
+      id: queryStrings?.applicationNumber,
+      moduleCode: response?.businessService,
+      config: {
+        enabled: response ? true : false,
+        cacheTime: 0
+      }
+    }
+  );
+  let checkListCodes = workflowDetails ? [`${response?.businessService}.${workflowDetails?.processInstances[0].state?.state}`] : [];
+  if (isLoading || workflowLoading) {
     return <Loader />;
   }
 
@@ -46,6 +60,7 @@ const DigitDemoViewComponent = () => {
         </div>
       }
       <ViewComposer data={config} isLoading={false} />
+      <ViewCheckListCards applicationId={data?.Application?.[0]?.id} checkListCodes={checkListCodes} />
       <WorkflowActions
           forcedActionPrefix={`WF_${response?.businessService}_ACTION`}
           businessService={response?.businessService}

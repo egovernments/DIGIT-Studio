@@ -21,17 +21,13 @@ const PublicServicesCard = () => {
       //   label: t("Services Search"),
       //   link: `/${window?.contextPath}/employee/publicservices/modules?selectedpath=Search`,
       // },
-      {
-        label: t("Services Apply (PGR)"),
-        link: `/${window?.contextPath}/employee/publicservices/pgr/Newpgr/Apply`,
-      },
-      {
-        label: t("CheckList"),
-        link: `/${window?.contextPath}/employee/publicservices/viewapp`,
-      },
+      // {
+      //   label: t("Services Apply (PGR)"),
+      //   link: `/${window?.contextPath}/employee/publicservices/pgr/Newpgr/Apply`,
+      // },
     ],
   };
-
+  //employeemodulecard categorization
   return <EmployeeModuleCard {...propsForModuleCard} />;
 };
 

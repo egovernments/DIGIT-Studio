@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { UICustomizations } from "../configs/UICustomizations";
+import { useQuery, useQueryClient } from "react-query";
 
   /* To Overide any existing libraries  we need to use similar method */
   const setupLibraries = (Library, service, method) => {
@@ -394,6 +395,23 @@ import { UICustomizations } from "../configs/UICustomizations";
     const options = services?.filter((ob) => ob?.module === module && ob?.status === "ACTIVE").map((ob) =>  {return { code: ob?.businessService, name: ob?.businessService, serviceCode: ob?.serviceCode }});
     return options;
   }
+
+  export const useWorkflowDetailsWorks = ({ tenantId, id, moduleCode, role = "CITIZEN", serviceData = {}, getStaleData, getTripData = false, config }) => {
+    const queryClient = useQueryClient();
+  
+    const staleDataConfig = { staleTime: Infinity };
+    
+  
+    const { isLoading, error, isError, data } = useQuery(
+        ["workFlowDetailsWorks", tenantId, id, moduleCode, role, config],
+        () => Digit.WorkflowService.getDetailsByIdWorks({ tenantId, id, moduleCode, role, getTripData }),
+        getStaleData ? { ...staleDataConfig, ...config } : config
+    );
+  
+    if (getStaleData) return { isLoading, error, isError, data };
+  
+    return { isLoading, error, isError, data, revalidate: () => queryClient.invalidateQueries(["workFlowDetailsWorks", tenantId, id, moduleCode, role]) };
+  };
   
   
   

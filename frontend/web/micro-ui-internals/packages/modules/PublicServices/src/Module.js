@@ -25,8 +25,10 @@ export const PublicServicesModule = ({ stateCode, userType, tenants }) => {
   
   // Define the modules that this component depends on
   let moduleList = [...new Set(data?.Services?.map((ob) => ob?.module))];
-  const moduleCode = ["sample", "common", "workflow"];
+  let moduleCode = ["sample", "common", "workflow"];
   moduleList?.forEach((ob) => moduleCode.push(`studio-${ob}`));
+
+  moduleCode = [...moduleCode, "studio-newtl-checklist"];
   
   // Get the current language selected in the DIGIT Store
   const language = Digit.StoreData.getCurrentLanguage();

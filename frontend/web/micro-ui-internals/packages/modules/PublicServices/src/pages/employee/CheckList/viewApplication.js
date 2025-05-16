@@ -5,11 +5,14 @@ import { useHistory, useParams } from "react-router-dom";
 import { transformViewApplication } from "../../../utils/createUtils";
 import ViewApplicationConfig from "../../../configs/viewAppConfig";
 import { ViewComposer } from "@egovernments/digit-ui-react-components";
+import { useTranslation } from "react-i18next";
 
 const ViewApplication = () => {
     const { accid, id, code } = useParams();
     const [config, setConfig] = useState([]);
     const [loading, setLoading] = useState(false);
+    const tenantId = Digit.ULBService.getCurrentTenantId();
+    const {t} = useTranslation();
 
     const request = {
         url: "/health-service-request/service/v1/_search",
@@ -28,7 +31,7 @@ const ViewApplication = () => {
             {
                 url: '/health-service-request/service/v1/_search',
                 method: "POST",
-                body: transformViewApplication(id, accid),
+                body: transformViewApplication(id, accid, tenantId),
                 config: {
                     enable: false,
                 },
@@ -36,7 +39,7 @@ const ViewApplication = () => {
             {
                 onSuccess: (res) => {
                     let field = res.Services.filter(items => items.serviceDefId == id);
-                    setConfig(ViewApplicationConfig(field[0],code));
+                    setConfig(ViewApplicationConfig(field[0],code,t));
                     setLoading(true);
                 },
                 onError: () => {

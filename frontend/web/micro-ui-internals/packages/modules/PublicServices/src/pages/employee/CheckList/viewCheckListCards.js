@@ -4,18 +4,15 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import transformViewCheckList from "../../../utils/createUtils.js"
 import CheckListCard from "../../../components/CheckListCard.js";
+import { useTranslation } from "react-i18next";
 
-const ViewCheckListCards = () => {
+const ViewCheckListCards = ({checkListCodes, applicationId}) => {
+    const { t } = useTranslation();
 
-    const code = [
-        // "SMC BHAVYA.TRAINING_SUPERVISION.TEAM_SUPERVISOR",
-        // "LLIN-mz_april_2025.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR",
-        // "apr14.TRAINING_SUPERVISION.PROVINCIAL_SUPERVISOR",
-        // "SMC BHAVYA.T
-        // RAINING_SUPERVISION.DISTRICT_SUPERVISOR",
-        // "SMC Dev.TEAM_FORMATION.DISTRIBUTOR"
-    ];
-    const accountID = "873c8ebc-487b-4e0a-a9cf-ec98d57fd5ff";
+    const code = checkListCodes;
+    //businessService.workflowstate
+    //applicationid
+    const accountID = applicationId;
     const [cardItems, setCardItems] = useState([]);
 
     const request = {
@@ -59,7 +56,7 @@ const ViewCheckListCards = () => {
         <React.Fragment>
             {
                 cardItems.map((item, index) => (
-                    <CheckListCard item={item} accid={accountID} />
+                    <CheckListCard item={item} t={t} accid={accountID} />
                 ))
             }
         </React.Fragment>

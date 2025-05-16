@@ -76,15 +76,15 @@ const OpenView = () => {
 
       mutation.mutate(
         {
-          url: `/collection-services/payments/_create?tenantId=${"dev"}`,
+          url: `/collection-services/payments/_create?tenantId=${queryParams.tenantId}`,
           body,
-          headers:{ "X-Tenant-Id": "dev" }
+          headers:{ "X-Tenant-Id": queryParams.tenantId }
         },
         {
           onSuccess: (data) => {
            
             if (data?.Payments?.[0].paymentDetails[0].businessService && data?.Payments?.[0].paymentDetails?.[0]?.bill?.consumerCode && data?.Payments?.[0]?.tenantId) {
-              history.push(`/${window.contextPath}/employee/openpayment/success/${data?.Payments?.[0].paymentDetails[0].businessService}/${data?.Payments?.[0].paymentDetails?.[0]?.bill?.consumerCode}/${data?.Payments?.[0]?.tenantId}`,{iSuccess:true, applicationNumber:"PAY_EMO_1",...state});
+              history.push(`/${window.contextPath}/employee/openpayment/success/${data?.Payments?.[0].paymentDetails[0].businessService}/${data?.Payments?.[0].paymentDetails?.[0]?.bill?.consumerCode}/${data?.Payments?.[0]?.tenantId}`,{iSuccess:true, applicationNumber:data?.Payments?.[0].paymentDetails?.[0]?.receiptNumber,...state});
               //setHasRedirected(true);  // Mark that redirection has happened
             } else {
              history.push(`/${window.contextPath}/employee/openpayment/failure`,{iSuccess:false,...state});

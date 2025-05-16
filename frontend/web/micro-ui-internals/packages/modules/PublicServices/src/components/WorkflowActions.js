@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "react-query";
 
 import { Request } from "./Request";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { useWorkflowDetailsWorks } from "../utils";
 
 export const CustomService = {
   getResponse: ({ url, params, body, plainAccessRequest,useCache=true,userService=true,setTimeParam=true,userDownload=false,auth=true, headers={}, method="POST"}) =>  Request({
@@ -28,36 +29,18 @@ export const CustomService = {
     })
 };
 
-const useWorkflowDetailsWorks = ({ tenantId, id, moduleCode, role = "CITIZEN", serviceData = {}, getStaleData, getTripData = false, config }) => {
-  const queryClient = useQueryClient();
-
-  const staleDataConfig = { staleTime: Infinity };
-  
-
-  const { isLoading, error, isError, data } = useQuery(
-      ["workFlowDetailsWorks", tenantId, id, moduleCode, role, config],
-      () => Digit.WorkflowService.getDetailsByIdWorks({ tenantId, id, moduleCode, role, getTripData }),
-      getStaleData ? { ...staleDataConfig, ...config } : config
-  );
-
-  if (getStaleData) return { isLoading, error, isError, data };
-
-  return { isLoading, error, isError, data, revalidate: () => queryClient.invalidateQueries(["workFlowDetailsWorks", tenantId, id, moduleCode, role]) };
-};
-
-
-const ApplicationUpdateActionsCustom = async ({ url, body }) => {
+const ApplicationUpdateActionsCustom = async ({ url, body, headers }) => {
   try {
       //here need to update this object to send
-      const response = await CustomService.getResponse({ url, body,useCache:false,setTimeParam:false, method:"PUT",headers:{"X-Tenant-Id": "dev"} });
+      const response = await CustomService.getResponse({ url, body,useCache:false,setTimeParam:false, method:"PUT",headers });
       return response;
   } catch (error) {
       throw new Error(error?.response?.data?.Errors[0].message);
   }
 };
 
-const useUpdateCustom = ( url ) => {
-  return useMutation((applicationData) => ApplicationUpdateActionsCustom({url,body:applicationData}));
+const useUpdateCustom = ( url,headers ) => {
+  return useMutation((applicationData) => ApplicationUpdateActionsCustom({url,body:applicationData,headers}));
 };
 
 const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActionPrefix, ActionBarStyle = {}, MenuStyle = {}, applicationDetails, url, setStateChanged, moduleCode,editApplicationNumber,editCallback ,callback, WorflowValidation, fullData}) => {
@@ -67,7 +50,7 @@ const WorkflowActions = ({ businessService, tenantId, applicationNo, forcedActio
   applicationNo = applicationNo ? applicationNo : estimateNumber 
   const { module, service } = useParams();
 
-  const { mutate } = useUpdateCustom(url)
+  const { mutate } = useUpdateCustom(url,{"X-Tenant-Id": tenantId});
 
   const [displayMenu,setDisplayMenu] = useState(false)
   const [showModal,setShowModal] = useState(false)

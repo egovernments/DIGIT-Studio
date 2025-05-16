@@ -1,9 +1,9 @@
 import React from "react";
 
-export const ViewApplicationConfig = (response,code) => {
+export const ViewApplicationConfig = (response,code,t) => {
     const values = response.attributes.map(attr => ({
         key: `${code}.${attr.attributeCode}`,
-        value: `${code}.${attr.attributeCode}.${attr.value}`
+        value: t(`${code}.${attr.value}`)
     }));
 
     const config = {
