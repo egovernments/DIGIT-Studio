@@ -33,6 +33,11 @@ export const generateFormConfig = (config, module, service) => {
               },
             }
           : {}),
+          ...(field?.type === "enum"
+            ? {
+                options: field?.values?.map((ob) => ({"code" : ob.toUpperCase(), name: `${module}_${service}_${field.name.toUpperCase()}_${ob.toUpperCase()}`})),
+              }
+            : {}),
         ...(field?.defaultValue
           ? {
               options: [

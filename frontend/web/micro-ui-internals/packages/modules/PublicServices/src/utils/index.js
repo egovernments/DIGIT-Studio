@@ -68,24 +68,47 @@ import { UICustomizations } from "../configs/UICustomizations";
   };
   
 
-  export const transformToApplicationPayload = (formData, configMap, service, tenantId) => {
-    let currentConfig = configMap?.ServiceConfiguration?.find(ob => ob?.service === service);
+
+  const transformUploadedDocs = (uploadedDocs = {}) => {
+    const documents = [];
   
-    let serviceDetails = getServiceDetails(formData);
+    Object.entries(uploadedDocs).forEach(([docType, docEntries]) => {
+      docEntries?.forEach(([fileName, docMeta]) => {
+        const fileStoreId = docMeta?.fileStoreId?.fileStoreId;
+  
+        if (fileStoreId) {
+          documents.push({
+            documentType: docType,
+            fileStoreId: fileStoreId,
+            documentUid: null, // Reusing fileStoreId as UID if no separate UID exists
+            additionalDetails: {}
+          });
+        }
+      });
+    });
+  
+    return documents;
+  };  
+
+  export const transformToApplicationPayload = (formData, configMap, service, tenantId) => {
+    const currentConfig = configMap?.ServiceConfiguration?.find(ob => ob?.service === service);
+  
+    const serviceDetails = getServiceDetails(formData);
   
     const applicants = formData.applicantDetails?.filter(Boolean)?.map((applicant, index) => ({
       type: "CITIZEN",
       name: applicant?.OwnerName,
-      //userId: (index + 2).toString(),//remove field in future // Example: generate userId dynamically or use real IDs
       mobileNumber: Number(applicant?.mobileNumber),
-      emailId: applicant?.email || `user${index + 1}@example.com`, // fallback or use actual
-      prefix: "91", // or dynamically detect
+      emailId: applicant?.email || `user${index + 1}@example.com`,
+      prefix: "91",
       active: true,
     })) || [];
   
-    let requestBody = {
+    const documents = transformUploadedDocs(formData?.uploadedDocs);
+  
+    const requestBody = {
       Application: {
-        tenantId: tenantId,
+        tenantId,
         module: currentConfig?.module,
         businessService: currentConfig?.service,
         status: "INACTIVE",
@@ -97,7 +120,7 @@ import { UICustomizations } from "../configs/UICustomizations";
         },
         applicants,
         address: {
-          tenantId: tenantId,
+          tenantId,
           latitude: 0,
           longitude: 0,
           addressNumber: "1",
@@ -110,9 +133,9 @@ import { UICustomizations } from "../configs/UICustomizations";
           boundarylevel: currentConfig?.boundary?.lowestLevel,
           boundarycode: `dev.${formData.tradeAddress?.city?.code?.toLowerCase() || "city"}`,
         },
+        documents, // <-- documents as top-level key
         additionalDetails: {
-          ref1: "val1",
-          documents : formData?.uploadedDocs
+          ref1: "val1" 
         },
         Workflow: {
           action: "CREATE",

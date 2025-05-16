@@ -55,6 +55,7 @@ module.exports = function (app) {
     "/tl-services/v1/_create",
     "/tl-services/v1/_search",
     "/egov-url-shortening/shortener",
+    "/health-service-request",
     "/inbox/v1/_search",
     "/inbox/v2/_search",
     "/public-service",
