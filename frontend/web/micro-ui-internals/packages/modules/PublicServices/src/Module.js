@@ -13,11 +13,22 @@ export const PublicServicesModule = ({ stateCode, userType, tenants }) => {
   
   // Get the currently selected tenant ID from DIGIT's ULB Service
   const tenantId = Digit.ULBService.getCurrentTenantId();
+
+  const request = {
+    url : "/public-service/v1/service",
+    headers: {
+      "X-Tenant-Id" : tenantId
+    },
+    method: "GET",
+  }
+  const {isLoading: moduleListLoading, data} = Digit.Hooks.useCustomAPIHook(request);
   
   // Define the modules that this component depends on
-  let moduleList = ["tl","pgr"];
-  const moduleCode = ["sample", "common", "workflow"];
-  moduleList.forEach((ob) => moduleCode.push(`studio-${ob}`));
+  let moduleList = [...new Set(data?.Services?.map((ob) => ob?.module))];
+  let moduleCode = ["sample", "common", "workflow"];
+  moduleList?.forEach((ob) => moduleCode.push(`studio-${ob}`));
+
+  moduleCode = [...moduleCode, "studio-newtl-checklist"];
   
   // Get the current language selected in the DIGIT Store
   const language = Digit.StoreData.getCurrentLanguage();
@@ -30,7 +41,7 @@ export const PublicServicesModule = ({ stateCode, userType, tenants }) => {
   });
 
   // Display a loader until the data is available
-  if (isLoading) {
+  if (isLoading || moduleListLoading) {
     return  <Loader page={true} variant={"PageLoader"}/>;
   }
 
