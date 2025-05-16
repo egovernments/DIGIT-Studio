@@ -21,6 +21,10 @@ const PublicServicesCard = () => {
         label: t("Services Apply (PGR)"),
         link: `/${window?.contextPath}/employee/publicservices/pgr/Apply`,
       },
+      {
+        label: t("CheckList"),
+        link: `/${window?.contextPath}/employee/publicservices/viewapp`,
+      },
     ],
   };
 
