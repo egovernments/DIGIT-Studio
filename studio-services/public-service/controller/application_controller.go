@@ -2,17 +2,18 @@ package controller
 
 import (
 	"context"
+	//"crypto/internal/fips140/edwards25519/field"
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	_ "os"
 	"public-service/model"
 	"public-service/service"
 	"public-service/utils"
 	"strconv"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 type ApplicationController struct {
@@ -54,35 +55,48 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 	if req.Application.ServiceCode == "" {
 		req.Application.ServiceCode = serviceCode
 	}
+	mdmsSearch := service.NewMDMSService(nil)
+	//MDMS Search
+	fields := mdmsSearch.MdmsSearchWithFilter(req)
+
+	// Print only the fields part
+	// fmt.Printf("Fields: %+v\n", fields)
+
+	// Validate the service details against the fields schema
+	if err := mdmsSearch.ValidateServiceDetailsWithSchema(req, fields); err != nil {
+		utils.WriteErrorResponse(w, http.StatusBadRequest, "Service details validation failed: "+err.Error())
+		return
+	}
+
 	req = c.enrichmentService.EnrichApplicationsWithIdGen(req)
-	log.Println(req)	
+	log.Println(req)
 	for i := range req.Application.Applicants {
 		applicant := req.Application.Applicants[i]
 		mobile := strconv.FormatInt(applicant.MobileNumber, 10)
-	
+
 		// Log input applicant in JSON
 		if data, _ := json.MarshalIndent(applicant, "", "  "); true {
 			log.Println("Processing applicant:", string(data))
 		}
-	
+
 		criteria := map[string]interface{}{
 			"mobileNumber": mobile,
 			"tenantId":     req.Application.TenantId,
 		}
-	
+
 		// Check if individual exists
 		resp := c.individualService.GetIndividual(req.RequestInfo, criteria)
 		if data, _ := json.MarshalIndent(resp, "", "  "); true {
 			log.Println("GetIndividual response:", string(data))
 		}
-	
+
 		if len(resp.Individual) == 0 {
 			// If not found, create individual
 			createdResp := c.individualService.CreateUser(applicant, req.RequestInfo)
 			if data, _ := json.MarshalIndent(createdResp, "", "  "); true {
 				log.Println("Created individual response:", string(data))
 			}
-	
+
 			if createdResp.Individual.IndividualId != "" {
 				req.Application.Applicants[i].UserId = createdResp.Individual.IndividualId
 			} else {
@@ -102,7 +116,7 @@ func (c *ApplicationController) CreateApplicationHandler(w http.ResponseWriter, 
 			}
 		}
 	}
-	
+
 	// Call workflow integrator on success
 	err = c.workflowIntegrator.CallWorkflow(&req)
 	if err != nil {

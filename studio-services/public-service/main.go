@@ -13,6 +13,8 @@ import (
 	"public-service/service"
 	"public-service/utils"
 
+	"github.com/Priyansuvaish/digit_client/configdigit"
+
 	"github.com/gorilla/mux"
 	"github.com/segmentio/kafka-go"
 )
@@ -20,6 +22,11 @@ import (
 func main() {
 	utils.InitLogger()
 
+	// Initialize the configuration
+	configdigit.GetGlobalConfig().Initialize(
+		"https://unified-dev.digit.org",
+		"",
+	)
 	// Load environment variables
 	config.LoadEnv()
 
@@ -61,7 +68,7 @@ func main() {
 
 	// Start Kafka consumer in a separate goroutine if enabled
 	if os.Getenv("KAFKA_PAYMENT_CONSUMER_ENABLED") == "true" {
-		go consumer.ConsumePayments(workflowIntegrator,appSvc)
+		go consumer.ConsumePayments(workflowIntegrator, appSvc)
 		log.Println("Kafka payment consumer started...")
 	}
 
