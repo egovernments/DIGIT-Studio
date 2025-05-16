@@ -4,7 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var config = require("./config");
-var pdfRouter = require("./routes/pdf")
+var pdfRouter = require("./routes/studio-pdf")
 
 
 
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(config.app.contextPath + "/download/pdf", pdfRouter);
+app.use(config.app.contextPath + "/download/public-service", pdfRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

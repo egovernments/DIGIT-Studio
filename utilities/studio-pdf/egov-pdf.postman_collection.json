@@ -188,7 +188,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/studio-pdf/download/pdf/generate?applicationNumber=APL-2025-05-12-000044&pdfKey=studio-application&serviceCode=SVC-DEV-TRADELICENSE-OLDTL-07&tenantId=dev",
+					"raw": "http://localhost:8080/studio-pdf/download/public-service/generate?applicationNumber=APL-2025-05-12-000044&pdfKey=studio-application&serviceCode=SVC-DEV-TRADELICENSE-OLDTL-07&tenantId=dev",
 					"protocol": "http",
 					"host": [
 						"localhost"
